@@ -1,0 +1,16 @@
+{
+  "id": "greeter",
+  "name": "Greeter",
+  "description": "Writes a short, friendly greeting.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You write one-line friendly greetings. Return JSON with a single field, \"greeting\". Keep it under 20 words.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": { "greeting": { "type": "string" } },
+      "required": ["greeting"]
+    }
+  }
+}

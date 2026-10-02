@@ -1,0 +1,20 @@
+{
+  "id": "generic-webhook-relay",
+  "title": "Generic Webhook Relay",
+  "summary": "Verify any signed incoming webhook, reshape it, and forward it to a downstream service with retries.",
+  "category": "ops",
+  "tags": ["webhook", "relay", "hmac", "retries", "no-llm"],
+  "difficulty": "beginner",
+  "trigger": "Generic HMAC webhook",
+  "integrations": [],
+  "secrets": [
+    { "name": "INBOUND_HMAC_SECRET", "description": "HMAC-SHA256 secret the sender uses to sign webhook bodies." },
+    { "name": "RELAY_TARGET_URL", "description": "Downstream URL to POST the transformed event to." },
+    { "name": "DOWNSTREAM_API_KEY", "description": "Bearer token for the downstream service." }
+  ],
+  "setup": [
+    "Add the three secrets above.",
+    "Edit steps/transform.ts to reshape the payload the way the downstream service expects.",
+    "Publish and point the sender's webhook at the URL shown in Studio."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "ticket-summarizer",
+  "name": "Ticket Summarizer",
+  "description": "Condenses a support ticket into three bullets.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You summarise customer support tickets for the agent who will pick them up.\n\nReturn JSON with one field, \"bullets\": an array of at most 3 short strings covering (1) what the customer wants, (2) any error messages, product names or order numbers they mention, and (3) their tone or urgency.\n\nBe factual. Do not invent details that are not in the ticket. Do not answer the customer.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "bullets": { "type": "array", "items": { "type": "string" }, "maxItems": 3 }
+      },
+      "required": ["bullets"]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+name: Template request
+description: Ask for a playbook template you would like to see
+labels: [template-request]
+body:
+  - type: input
+    id: job
+    attributes:
+      label: What job should it do?
+      description: One sentence, for example "Triage new Intercom conversations and tag them".
+    validations:
+      required: true
+  - type: input
+    id: tools
+    attributes:
+      label: Tools involved
+      description: Systems it should read from or write to.
+  - type: dropdown
+    id: trigger
+    attributes:
+      label: How should it start?
+      options:
+        - Webhook from another system
+        - Schedule
+        - Manual run
+        - Not sure

@@ -1,0 +1,37 @@
+{
+  "themed": [
+    {
+      "repo": "ballet-support-playbooks",
+      "title": "Ballet Support Playbooks",
+      "tagline": "Support triage, summaries and reply drafting for Zendesk, Freshdesk and more. One click into Ballet.",
+      "categories": ["support"],
+      "audience": "support leads, CX ops and anyone running a helpdesk",
+      "topics": ["ai-agents", "customer-support", "zendesk", "freshdesk", "helpdesk-automation", "workflow-automation", "playbook-templates", "ballet"]
+    },
+    {
+      "repo": "ballet-sales-playbooks",
+      "title": "Ballet Sales Playbooks",
+      "tagline": "Lead enrichment, scoring and Slack alerts for Salesforce and web forms. One click into Ballet.",
+      "categories": ["sales"],
+      "audience": "RevOps, sales ops and founders handling inbound leads",
+      "topics": ["ai-agents", "sales-automation", "salesforce", "lead-enrichment", "revops", "workflow-automation", "playbook-templates", "ballet"]
+    },
+    {
+      "repo": "ballet-ops-playbooks",
+      "title": "Ballet Ops Playbooks",
+      "tagline": "Signed webhooks, scheduled digests and issue triage with retries and observability. One click into Ballet.",
+      "categories": ["ops"],
+      "audience": "platform, DevOps and internal-tools engineers",
+      "topics": ["ai-agents", "webhooks", "github-automation", "devops", "scheduled-jobs", "workflow-automation", "playbook-templates", "ballet"]
+    },
+    {
+      "repo": "ballet-mcp-playbooks",
+      "title": "Ballet MCP Playbooks",
+      "tagline": "Agent workflows that call MCP servers such as Linear and Slack. One click into Ballet.",
+      "categories": ["mcp"],
+      "audience": "developers building on the Model Context Protocol",
+      "topics": ["mcp", "model-context-protocol", "ai-agents", "linear", "slack", "workflow-automation", "playbook-templates", "ballet"]
+    }
+  ],
+  "hubTopics": ["ai-agents", "agent-orchestration", "workflow-automation", "mcp", "durable-workflows", "playbook-templates", "ballet", "templates"]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "ticket-classifier",
+  "name": "Ticket Classifier",
+  "description": "Assigns a priority and tags to an incoming support ticket.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You triage customer support tickets.\n\nGiven a ticket subject and body, return JSON with exactly two fields:\n- priority: one of \"low\", \"normal\", \"high\", \"urgent\". Use \"urgent\" only for outages, data loss, security issues or billing errors blocking the customer.\n- tags: up to 5 short lowercase tags describing the topic (for example \"billing\", \"login\", \"bug\", \"feature-request\").\n\nDo not answer the customer. Do not include any text outside the JSON.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "priority": { "type": "string", "enum": ["low", "normal", "high", "urgent"] },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["priority", "tags"]
+    }
+  }
+}

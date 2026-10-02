@@ -1,0 +1,21 @@
+{
+  "id": "salesforce-lead-enrichment",
+  "title": "Salesforce Lead Enrichment",
+  "summary": "Research each new Salesforce Lead on the web and write a short brief and rating back to the record.",
+  "category": "sales",
+  "tags": ["salesforce", "sales", "enrichment", "webhook", "llm", "search"],
+  "difficulty": "intermediate",
+  "trigger": "Salesforce webhook (Lead created)",
+  "integrations": ["salesforce"],
+  "secrets": [
+    { "name": "SALESFORCE_WEBHOOK_TOKEN", "description": "Bearer token Salesforce sends in the Authorization header when calling the webhook." },
+    { "name": "SALESFORCE_INSTANCE_URL", "description": "Your instance URL, for example `https://acme.my.salesforce.com`." },
+    { "name": "SALESFORCE_ACCESS_TOKEN", "description": "OAuth access token with permission to update Lead records." }
+  ],
+  "setup": [
+    "Add the three secrets above.",
+    "Publish the playbook and copy its webhook URL.",
+    "In Salesforce, create a Flow on Lead creation that sends an outbound message or HTTP callout with lead_id, company, email and title.",
+    "Create a test Lead and check the Description field."
+  ]
+}

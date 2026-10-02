@@ -1,0 +1,29 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: my-first-playbook
+  name: My First Playbook
+  description: Takes a short text, asks an agent to turn it into a friendly greeting, and returns the result.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Who to greet.
+    required:
+      - name
+  steps:
+    - id: greet
+      type: code
+      language: typescript
+      codeFile: steps/greet.ts
+      description: Ask the greeter agent for a one-line greeting.
+      friendlyMessage: Writing a greeting
+      input:
+        name: "{{ flow.input.name }}"
+      output:
+        variable: result
+        format: json

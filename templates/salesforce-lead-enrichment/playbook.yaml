@@ -1,0 +1,78 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: salesforce-lead-enrichment
+  name: Salesforce Lead Enrichment
+  description: When a Lead is created in Salesforce, research the company on the web and write a short brief and fit score back to the lead.
+spec:
+  trigger:
+    type: webhook
+    webhook:
+      provider: salesforce
+      token: ""
+      responseMode: immediate
+      credentialRef: SALESFORCE_WEBHOOK_TOKEN
+      objectType: Lead
+  inputSchema:
+    type: object
+    properties:
+      lead_id:
+        type: string
+      company:
+        type: string
+      email:
+        type: string
+      title:
+        type: string
+    required:
+      - lead_id
+      - company
+  steps:
+    - id: research_company
+      type: code
+      language: typescript
+      codeFile: steps/research_company.ts
+      description: Search the web for what the company does and recent news.
+      friendlyMessage: Researching the company
+      input:
+        company: "{{ flow.input.company }}"
+      output:
+        variable: result
+        format: json
+    - id: write_brief
+      type: code
+      language: typescript
+      codeFile: steps/write_brief.ts
+      description: Turn the research into a short brief and a fit score.
+      friendlyMessage: Writing the brief
+      input:
+        company: "{{ flow.input.company }}"
+        title: "{{ flow.input.title }}"
+        email: "{{ flow.input.email }}"
+        hits: "{{ steps.research_company.output.hits }}"
+      output:
+        variable: result
+        format: json
+    - id: update_lead
+      type: http
+      description: Write the brief back to the Lead record.
+      friendlyMessage: Updating the lead
+      method: PATCH
+      url: "{{ secret.SALESFORCE_INSTANCE_URL }}/services/data/v60.0/sobjects/Lead/{{ flow.input.lead_id }}"
+      headers:
+        Content-Type: application/json
+      body:
+        Description: "{{ steps.write_brief.output.brief }}"
+        Rating: "{{ steps.write_brief.output.rating }}"
+      auth:
+        type: bearer
+        tokenRef: SALESFORCE_ACCESS_TOKEN
+      input: {}
+      output:
+        variable: result
+        format: text
+      timeoutMs: 20000
+      retry:
+        maxAttempts: 3
+        backoff: exponential
+        delayMs: 500

@@ -1,0 +1,16 @@
+{
+  "id": "support-reply-writer",
+  "name": "Support Reply Writer",
+  "description": "Drafts a polite, accurate customer support reply for human review.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You draft replies to customer support messages. A human will review the draft before it is sent.\n\nRules:\n- Answer the question directly in the first two sentences.\n- Use only facts from the customer message, the product context and the reference material. If something is unknown, say you are checking rather than guessing.\n- Match the requested tone; default to friendly and concise.\n- Never promise refunds, dates or features that are not in the context.\n- Sign off with a short closing and no name.\n\nReturn JSON with one field, \"reply\".",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": { "reply": { "type": "string" } },
+      "required": ["reply"]
+    }
+  }
+}

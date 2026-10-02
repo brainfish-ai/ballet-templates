@@ -1,0 +1,282 @@
+{
+  "version": 1,
+  "repo": "brainfish-ai/ballet-templates",
+  "ref": "main",
+  "templates": [
+    {
+      "id": "daily-api-digest-slack",
+      "title": "Daily API Digest to Slack",
+      "summary": "Pull records from any JSON API, summarise them, and post a digest to Slack on a schedule.",
+      "category": "ops",
+      "tags": [
+        "scheduled",
+        "api",
+        "slack",
+        "digest",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Manual run, or attach a daily schedule in Studio",
+      "integrations": [
+        "slack"
+      ],
+      "mcpServers": [],
+      "secrets": [
+        "DIGEST_API_URL",
+        "DIGEST_API_TOKEN",
+        "SLACK_BOT_TOKEN",
+        "SLACK_DIGEST_CHANNEL"
+      ],
+      "agents": [
+        "digest-writer"
+      ],
+      "steps": 3,
+      "path": "templates/daily-api-digest-slack"
+    },
+    {
+      "id": "freshdesk-ticket-summary",
+      "title": "Freshdesk Ticket Summary",
+      "summary": "Summarise each new Freshdesk ticket in three bullets and add it as a private note for the agent who picks it up.",
+      "category": "support",
+      "tags": [
+        "freshdesk",
+        "support",
+        "summary",
+        "webhook",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Freshdesk webhook (ticket created)",
+      "integrations": [
+        "freshdesk"
+      ],
+      "mcpServers": [],
+      "secrets": [
+        "FRESHDESK_WEBHOOK_SECRET",
+        "FRESHDESK_DOMAIN",
+        "FRESHDESK_API_KEY",
+        "FRESHDESK_API_PASSWORD"
+      ],
+      "agents": [
+        "ticket-summarizer"
+      ],
+      "steps": 2,
+      "path": "templates/freshdesk-ticket-summary"
+    },
+    {
+      "id": "generic-webhook-relay",
+      "title": "Generic Webhook Relay",
+      "summary": "Verify any signed incoming webhook, reshape it, and forward it to a downstream service with retries.",
+      "category": "ops",
+      "tags": [
+        "webhook",
+        "relay",
+        "hmac",
+        "retries",
+        "no-llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Generic HMAC webhook",
+      "integrations": [],
+      "mcpServers": [],
+      "secrets": [
+        "INBOUND_HMAC_SECRET",
+        "RELAY_TARGET_URL",
+        "DOWNSTREAM_API_KEY"
+      ],
+      "agents": [],
+      "steps": 2,
+      "path": "templates/generic-webhook-relay"
+    },
+    {
+      "id": "github-issue-triage",
+      "title": "GitHub Issue Triage",
+      "summary": "Label every newly opened GitHub issue with an LLM through a signed webhook.",
+      "category": "ops",
+      "tags": [
+        "github",
+        "triage",
+        "webhook",
+        "llm",
+        "devtools"
+      ],
+      "difficulty": "intermediate",
+      "trigger": "GitHub webhook (issues)",
+      "integrations": [
+        "github"
+      ],
+      "mcpServers": [],
+      "secrets": [
+        "GITHUB_WEBHOOK_SECRET",
+        "GITHUB_TOKEN"
+      ],
+      "agents": [
+        "issue-labeler"
+      ],
+      "steps": 2,
+      "path": "templates/github-issue-triage"
+    },
+    {
+      "id": "inbound-lead-slack-alert",
+      "title": "Inbound Lead Slack Alert",
+      "summary": "Score every form submission that hits a webhook and post it to Slack, flagging hot leads.",
+      "category": "sales",
+      "tags": [
+        "sales",
+        "leads",
+        "slack",
+        "webhook",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Generic HMAC webhook",
+      "integrations": [
+        "slack"
+      ],
+      "mcpServers": [],
+      "secrets": [
+        "INBOUND_HMAC_SECRET",
+        "SLACK_BOT_TOKEN",
+        "SLACK_LEADS_CHANNEL"
+      ],
+      "agents": [
+        "lead-scorer"
+      ],
+      "steps": 2,
+      "path": "templates/inbound-lead-slack-alert"
+    },
+    {
+      "id": "mcp-linear-weekly-digest",
+      "title": "Linear Weekly Digest via MCP",
+      "summary": "Read recent Linear issues and post a weekly digest to Slack, using the Linear and Slack MCP servers.",
+      "category": "mcp",
+      "tags": [
+        "mcp",
+        "linear",
+        "slack",
+        "digest",
+        "llm"
+      ],
+      "difficulty": "intermediate",
+      "trigger": "Manual run, or attach a weekly schedule in Studio",
+      "integrations": [],
+      "mcpServers": [
+        "linear",
+        "slack"
+      ],
+      "secrets": [],
+      "agents": [
+        "weekly-digest-writer"
+      ],
+      "steps": 3,
+      "path": "templates/mcp-linear-weekly-digest"
+    },
+    {
+      "id": "mcp-slack-thread-to-linear",
+      "title": "Slack Thread to Linear Issue via MCP",
+      "summary": "Turn a Slack thread into a well-formed Linear issue using the Slack and Linear MCP servers.",
+      "category": "mcp",
+      "tags": [
+        "mcp",
+        "slack",
+        "linear",
+        "bug-report",
+        "llm"
+      ],
+      "difficulty": "intermediate",
+      "trigger": "Manual run",
+      "integrations": [],
+      "mcpServers": [
+        "slack",
+        "linear"
+      ],
+      "secrets": [],
+      "agents": [
+        "issue-drafter"
+      ],
+      "steps": 3,
+      "path": "templates/mcp-slack-thread-to-linear"
+    },
+    {
+      "id": "salesforce-lead-enrichment",
+      "title": "Salesforce Lead Enrichment",
+      "summary": "Research each new Salesforce Lead on the web and write a short brief and rating back to the record.",
+      "category": "sales",
+      "tags": [
+        "salesforce",
+        "sales",
+        "enrichment",
+        "webhook",
+        "llm",
+        "search"
+      ],
+      "difficulty": "intermediate",
+      "trigger": "Salesforce webhook (Lead created)",
+      "integrations": [
+        "salesforce"
+      ],
+      "mcpServers": [],
+      "secrets": [
+        "SALESFORCE_WEBHOOK_TOKEN",
+        "SALESFORCE_INSTANCE_URL",
+        "SALESFORCE_ACCESS_TOKEN"
+      ],
+      "agents": [
+        "lead-researcher"
+      ],
+      "steps": 3,
+      "path": "templates/salesforce-lead-enrichment"
+    },
+    {
+      "id": "support-reply-drafter",
+      "title": "Support Reply Drafter",
+      "summary": "Paste a customer message and get a polite, source-aware draft reply to review and send.",
+      "category": "support",
+      "tags": [
+        "support",
+        "drafting",
+        "manual",
+        "llm",
+        "search"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Manual run",
+      "integrations": [],
+      "mcpServers": [],
+      "secrets": [],
+      "agents": [
+        "support-reply-writer"
+      ],
+      "steps": 2,
+      "path": "templates/support-reply-drafter"
+    },
+    {
+      "id": "zendesk-ticket-triage",
+      "title": "Zendesk Ticket Triage",
+      "summary": "Classify every new Zendesk ticket with an LLM and write the priority and tags back as an internal note.",
+      "category": "support",
+      "tags": [
+        "zendesk",
+        "support",
+        "triage",
+        "webhook",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Zendesk webhook (ticket created)",
+      "integrations": [
+        "zendesk"
+      ],
+      "mcpServers": [],
+      "secrets": [
+        "ZENDESK_API_TOKEN",
+        "ZENDESK_SUBDOMAIN"
+      ],
+      "agents": [
+        "ticket-classifier"
+      ],
+      "steps": 2,
+      "path": "templates/zendesk-ticket-triage"
+    }
+  ]
+}

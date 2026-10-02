@@ -1,0 +1,66 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: freshdesk-ticket-summary
+  name: Freshdesk Ticket Summary
+  description: Summarise each new Freshdesk ticket in three bullets and add it as a private note for the agent who picks it up.
+spec:
+  trigger:
+    type: webhook
+    webhook:
+      provider: freshdesk
+      token: ""
+      responseMode: immediate
+      credentialRef: FRESHDESK_WEBHOOK_SECRET
+  inputSchema:
+    type: object
+    properties:
+      ticket_id:
+        type: string
+      subject:
+        type: string
+      description:
+        type: string
+      requester_email:
+        type: string
+    required:
+      - ticket_id
+      - subject
+      - description
+  steps:
+    - id: summarize
+      type: code
+      language: typescript
+      codeFile: steps/summarize.ts
+      description: Summarise the ticket into three short bullets.
+      friendlyMessage: Summarising the ticket
+      input:
+        subject: "{{ flow.input.subject }}"
+        description: "{{ flow.input.description }}"
+      output:
+        variable: result
+        format: json
+    - id: add_note
+      type: http
+      description: Add the summary as a private note on the ticket.
+      friendlyMessage: Adding a private note
+      method: POST
+      url: https://{{ secret.FRESHDESK_DOMAIN }}.freshdesk.com/api/v2/tickets/{{ flow.input.ticket_id }}/notes
+      headers:
+        Content-Type: application/json
+      body:
+        private: true
+        body: "{{ steps.summarize.output.note }}"
+      auth:
+        type: basic
+        userRef: FRESHDESK_API_KEY
+        passRef: FRESHDESK_API_PASSWORD
+      input: {}
+      output:
+        variable: result
+        format: json
+      timeoutMs: 15000
+      retry:
+        maxAttempts: 3
+        backoff: exponential
+        delayMs: 250

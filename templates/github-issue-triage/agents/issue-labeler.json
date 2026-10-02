@@ -1,0 +1,21 @@
+{
+  "id": "issue-labeler",
+  "name": "Issue Labeler",
+  "description": "Chooses GitHub labels for a new issue.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You label GitHub issues for an open-source or product repository.\n\nReturn JSON with one field, \"labels\": an array containing one or more of exactly these values: \"bug\" (something is broken), \"enhancement\" (a feature request), \"question\" (the author needs help using the project), \"documentation\" (docs are missing or wrong).\n\nPrefer a single label. Use two only when clearly warranted. Return an empty array if the issue is spam or unintelligible.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "labels": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["bug", "enhancement", "question", "documentation"] }
+        }
+      },
+      "required": ["labels"]
+    }
+  }
+}

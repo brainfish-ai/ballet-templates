@@ -1,0 +1,21 @@
+{
+  "id": "mcp-linear-weekly-digest",
+  "title": "Linear Weekly Digest via MCP",
+  "summary": "Read recent Linear issues and post a weekly digest to Slack, using the Linear and Slack MCP servers.",
+  "category": "mcp",
+  "tags": ["mcp", "linear", "slack", "digest", "llm"],
+  "difficulty": "intermediate",
+  "trigger": "Manual run, or attach a weekly schedule in Studio",
+  "integrations": [],
+  "mcpServers": [
+    { "id": "linear", "tools": ["list_issues"] },
+    { "id": "slack", "tools": ["slack_send_message"] }
+  ],
+  "secrets": [],
+  "setup": [
+    "In Studio, open MCP Servers and connect Linear and Slack from the registry (OAuth, no keys to paste). Keep the server ids `linear` and `slack`.",
+    "Run the playbook with your team key and a Slack channel id.",
+    "If a tool name or argument differs in your MCP server version, adjust the call in steps/*.ts (use Studio's tool list for the exact names).",
+    "Add a weekly schedule once the output looks right."
+  ]
+}

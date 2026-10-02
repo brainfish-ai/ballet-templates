@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+  <rect width="1280" height="640" fill="#0a0a0a"/>
+  <rect x="24" y="24" width="1232" height="592" rx="20" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" fill="#ffffff">
+    <text x="80" y="120" font-size="26" font-weight="600" fill-opacity="0.6" letter-spacing="3">BALLET</text>
+    <text x="80" y="240" font-size="68" font-weight="700">Ballet Templates</text>
+    <text x="80" y="330" font-size="34" fill-opacity="0.72"><tspan x="80" dy="0">Importable playbook templates for support, sales,</tspan><tspan x="80" dy="46">ops and MCP workflows.</tspan></text>
+    <rect x="80" y="500" width="250" height="60" rx="12" fill="#ffffff"/>
+    <text x="205" y="539" font-size="26" font-weight="700" fill="#0a0a0a" text-anchor="middle">Import to Ballet</text>
+  </g>
+</svg>

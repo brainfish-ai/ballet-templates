@@ -1,0 +1,13 @@
+{
+  "description": "Importable Ballet playbook templates for support, sales, ops and MCP workflows.",
+  "topics": [
+    "ai-agents",
+    "agent-orchestration",
+    "workflow-automation",
+    "mcp",
+    "durable-workflows",
+    "playbook-templates",
+    "ballet",
+    "templates"
+  ]
+}

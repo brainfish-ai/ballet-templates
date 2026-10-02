@@ -1,0 +1,7 @@
+{
+  "appUrl": "https://app.ballet.dev",
+  "org": "brainfish-ai",
+  "hubRepo": "ballet-templates",
+  "branch": "main",
+  "importMode": "import"
+}

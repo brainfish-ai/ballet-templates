@@ -1,0 +1,21 @@
+{
+  "id": "daily-api-digest-slack",
+  "title": "Daily API Digest to Slack",
+  "summary": "Pull records from any JSON API, summarise them, and post a digest to Slack on a schedule.",
+  "category": "ops",
+  "tags": ["scheduled", "api", "slack", "digest", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Manual run, or attach a daily schedule in Studio",
+  "integrations": ["slack"],
+  "secrets": [
+    { "name": "DIGEST_API_URL", "description": "Full URL of the JSON endpoint to read, without the query string." },
+    { "name": "DIGEST_API_TOKEN", "description": "Bearer token for that API." },
+    { "name": "SLACK_BOT_TOKEN", "description": "Slack bot token with the `chat:write` scope." },
+    { "name": "SLACK_DIGEST_CHANNEL", "description": "Channel id or name to post to, for example `#ops`." }
+  ],
+  "setup": [
+    "Add the four secrets above.",
+    "Run the playbook once manually to check the digest.",
+    "In Studio, add a schedule (for example `0 9 * * *`) to run it every morning."
+  ]
+}

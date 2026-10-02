@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="172" height="36" viewBox="0 0 172 36" role="img" aria-label="Import to Ballet">
+  <title>Import to Ballet</title>
+  <rect width="172" height="36" rx="8" fill="#0a0a0a"/>
+  <rect x="0.5" y="0.5" width="171" height="35" rx="7.5" fill="none" stroke="#ffffff" stroke-opacity="0.18"/>
+  <g fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 11v10"/>
+    <path d="M13.5 17l4.5 4.5L22.5 17"/>
+    <path d="M12 25h12"/>
+  </g>
+  <text x="36" y="23" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="600">Import to Ballet</text>
+</svg>

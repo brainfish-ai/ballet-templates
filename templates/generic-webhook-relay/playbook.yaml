@@ -1,0 +1,50 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: generic-webhook-relay
+  name: Generic Webhook Relay
+  description: Verify any signed incoming webhook, reshape the payload, and forward it to a downstream service with retries.
+spec:
+  trigger:
+    type: webhook
+    webhook:
+      provider: generic
+      token: ""
+      responseMode: immediate
+      credentialRef: INBOUND_HMAC_SECRET
+      idempotencyHeader: X-Event-Id
+  inputSchema:
+    type: object
+  steps:
+    - id: transform
+      type: code
+      language: typescript
+      codeFile: steps/transform.ts
+      description: Reshape the verified payload before relaying.
+      friendlyMessage: Preparing the event
+      input:
+        payload: "{{ flow.input }}"
+      output:
+        variable: result
+        format: json
+    - id: relay
+      type: http
+      description: POST the transformed body to the downstream service.
+      friendlyMessage: Forwarding the event
+      method: POST
+      url: "{{ secret.RELAY_TARGET_URL }}"
+      headers:
+        Content-Type: application/json
+      body: "{{ steps.transform.output }}"
+      auth:
+        type: bearer
+        tokenRef: DOWNSTREAM_API_KEY
+      input: {}
+      output:
+        variable: result
+        format: json
+      timeoutMs: 15000
+      retry:
+        maxAttempts: 5
+        backoff: exponential
+        delayMs: 500

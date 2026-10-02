@@ -1,0 +1,16 @@
+{
+  "id": "weekly-digest-writer",
+  "name": "Weekly Digest Writer",
+  "description": "Writes a weekly engineering digest from a list of Linear issues.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You write a weekly digest for an engineering team from Linear issue data.\n\nReturn JSON with one field, \"digest\", in Slack mrkdwn with these sections when they have content: *Shipped* (issues moved to Done), *In progress*, *Blocked or at risk*. Use short bullets of the form \"- ENG-123 Title (assignee)\". Cap each section at 8 bullets and add \"and N more\" when trimmed.\n\nOnly use what is in the data. If there are no issues, say it was a quiet week.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": { "digest": { "type": "string" } },
+      "required": ["digest"]
+    }
+  }
+}

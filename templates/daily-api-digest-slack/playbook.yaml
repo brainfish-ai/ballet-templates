@@ -1,0 +1,66 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: daily-api-digest-slack
+  name: Daily API Digest to Slack
+  description: Pull records from any JSON API, summarise what changed, and post the digest to Slack. Attach a daily schedule in Studio.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+  steps:
+    - id: fetch_data
+      type: http
+      description: Fetch records from the vendor API.
+      friendlyMessage: Fetching the latest data
+      method: GET
+      url: "{{ secret.DIGEST_API_URL }}"
+      headers:
+        Accept: application/json
+      auth:
+        type: bearer
+        tokenRef: DIGEST_API_TOKEN
+      input: {}
+      output:
+        variable: result
+        format: json
+      timeoutMs: 60000
+      retry:
+        maxAttempts: 5
+        backoff: exponential
+        delayMs: 500
+    - id: summarize
+      type: code
+      language: typescript
+      codeFile: steps/summarize.ts
+      description: Reduce the records to counts and a short written digest.
+      friendlyMessage: Writing the digest
+      input:
+        records: "{{ steps.fetch_data.output.body }}"
+      output:
+        variable: result
+        format: json
+    - id: post_digest
+      type: http
+      description: Post the digest to Slack.
+      friendlyMessage: Posting to Slack
+      method: POST
+      url: https://slack.com/api/chat.postMessage
+      headers:
+        Content-Type: application/json
+      body:
+        channel: "{{ secret.SLACK_DIGEST_CHANNEL }}"
+        text: "{{ steps.summarize.output.text }}"
+      auth:
+        type: bearer
+        tokenRef: SLACK_BOT_TOKEN
+      input: {}
+      output:
+        variable: result
+        format: json
+      timeoutMs: 15000
+      retry:
+        maxAttempts: 3
+        backoff: exponential
+        delayMs: 250

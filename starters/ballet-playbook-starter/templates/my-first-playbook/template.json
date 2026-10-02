@@ -1,0 +1,16 @@
+{
+  "id": "my-first-playbook",
+  "title": "My First Playbook",
+  "summary": "A minimal manual playbook that asks an agent for a friendly greeting. Replace it with your own.",
+  "category": "ops",
+  "tags": ["starter", "manual", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Manual run",
+  "integrations": [],
+  "secrets": [],
+  "setup": [
+    "Import the template. No secrets are required.",
+    "Run it from Studio with a name.",
+    "Edit steps/greet.ts and agents/greeter.json to make it your own."
+  ]
+}

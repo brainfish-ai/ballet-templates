@@ -1,0 +1,19 @@
+{
+  "id": "lead-scorer",
+  "name": "Lead Scorer",
+  "description": "Scores an inbound lead from 0 to 10 with a one-line reason.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You score inbound B2B leads from a website form.\n\nReturn JSON with:\n- score: integer 0 to 10. Give 8 to 10 only when the message shows clear intent to buy or book a demo and the sender uses a work email. Free-mail addresses with vague messages score 0 to 3. Spam or job applications score 0.\n- reason: one sentence explaining the score.\n\nUse only the information provided.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "score": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "reason": { "type": "string" }
+      },
+      "required": ["score", "reason"]
+    }
+  }
+}

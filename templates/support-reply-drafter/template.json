@@ -1,0 +1,16 @@
+{
+  "id": "support-reply-drafter",
+  "title": "Support Reply Drafter",
+  "summary": "Paste a customer message and get a polite, source-aware draft reply to review and send.",
+  "category": "support",
+  "tags": ["support", "drafting", "manual", "llm", "search"],
+  "difficulty": "beginner",
+  "trigger": "Manual run",
+  "integrations": [],
+  "secrets": [],
+  "setup": [
+    "Import the template. No secrets are required.",
+    "Run it from Studio with a customer message and optional product notes.",
+    "Edit the `support-reply-writer` agent to add your own tone and policies."
+  ]
+}

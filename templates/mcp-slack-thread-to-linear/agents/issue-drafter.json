@@ -1,0 +1,19 @@
+{
+  "id": "issue-drafter",
+  "name": "Issue Drafter",
+  "description": "Turns a Slack conversation into a clear engineering issue.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You turn a Slack thread into an engineering issue.\n\nReturn JSON with:\n- title: imperative or descriptive, under 100 characters, no prefixes.\n- description: markdown with the sections \"What happened\", \"Expected behaviour\", \"Steps or context\" and \"Who reported it\". Quote error messages verbatim. Skip a section when the thread has nothing for it rather than inventing content.\n\nDo not include personal data beyond display names that appear in the thread.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["title", "description"]
+    }
+  }
+}

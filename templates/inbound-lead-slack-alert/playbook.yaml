@@ -1,0 +1,66 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: inbound-lead-slack-alert
+  name: Inbound Lead Slack Alert
+  description: Score every form submission or signup that hits a webhook and post it to Slack, flagging hot leads.
+spec:
+  trigger:
+    type: webhook
+    webhook:
+      provider: generic
+      token: ""
+      responseMode: immediate
+      credentialRef: INBOUND_HMAC_SECRET
+      idempotencyHeader: X-Event-Id
+  inputSchema:
+    type: object
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      company:
+        type: string
+      message:
+        type: string
+    required:
+      - email
+  steps:
+    - id: score
+      type: code
+      language: typescript
+      codeFile: steps/score.ts
+      description: Score the lead and write a one-line reason.
+      friendlyMessage: Scoring the lead
+      input:
+        name: "{{ flow.input.name }}"
+        email: "{{ flow.input.email }}"
+        company: "{{ flow.input.company }}"
+        message: "{{ flow.input.message }}"
+      output:
+        variable: result
+        format: json
+    - id: notify
+      type: http
+      description: Post the lead to Slack, flagged as hot when it scores 7 or higher.
+      friendlyMessage: Notifying the team
+      method: POST
+      url: https://slack.com/api/chat.postMessage
+      headers:
+        Content-Type: application/json
+      body:
+        channel: "{{ secret.SLACK_LEADS_CHANNEL }}"
+        text: "{{ steps.score.output.slack_text }}"
+      auth:
+        type: bearer
+        tokenRef: SLACK_BOT_TOKEN
+      input: {}
+      output:
+        variable: result
+        format: json
+      timeoutMs: 15000
+      retry:
+        maxAttempts: 3
+        backoff: exponential
+        delayMs: 250

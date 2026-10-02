@@ -1,0 +1,48 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: support-reply-drafter
+  name: Support Reply Drafter
+  description: Paste a customer message, search the web for context if needed, and get a polite draft reply you can review and send.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      customer_message:
+        type: string
+      product_context:
+        type: string
+        description: Optional notes about the product, plan or known issues.
+      tone:
+        type: string
+        description: Optional tone, for example friendly, formal or concise.
+    required:
+      - customer_message
+  steps:
+    - id: research
+      type: code
+      language: typescript
+      codeFile: steps/research.ts
+      description: Look up public documentation relevant to the question, when the agent decides it needs it.
+      friendlyMessage: Looking for relevant docs
+      input:
+        message: "{{ flow.input.customer_message }}"
+      output:
+        variable: result
+        format: json
+    - id: draft
+      type: code
+      language: typescript
+      codeFile: steps/draft.ts
+      description: Write the draft reply.
+      friendlyMessage: Drafting a reply
+      input:
+        message: "{{ flow.input.customer_message }}"
+        product_context: "{{ flow.input.product_context }}"
+        tone: "{{ flow.input.tone }}"
+        sources: "{{ steps.research.output.sources }}"
+      output:
+        variable: result
+        format: json

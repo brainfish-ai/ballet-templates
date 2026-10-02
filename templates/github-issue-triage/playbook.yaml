@@ -1,0 +1,79 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: github-issue-triage
+  name: GitHub Issue Triage
+  description: Label every newly opened GitHub issue (bug, feature, question, docs) with an LLM through a signed webhook.
+spec:
+  trigger:
+    type: webhook
+    webhook:
+      provider: generic
+      token: ""
+      responseMode: immediate
+      credentialRef: GITHUB_WEBHOOK_SECRET
+      idempotencyHeader: X-GitHub-Delivery
+      signatureProfile:
+        header: X-Hub-Signature-256
+        prefix: "sha256="
+        encoding: hex
+  inputSchema:
+    type: object
+    properties:
+      action:
+        type: string
+      issue:
+        type: object
+        properties:
+          number:
+            type: integer
+          title:
+            type: string
+          body:
+            type: string
+      repository:
+        type: object
+        properties:
+          full_name:
+            type: string
+    required:
+      - action
+      - issue
+      - repository
+  steps:
+    - id: classify
+      type: code
+      language: typescript
+      codeFile: steps/classify.ts
+      description: Pick labels for newly opened issues; ignore every other webhook action.
+      friendlyMessage: Reading the issue
+      input:
+        action: "{{ flow.input.action }}"
+        title: "{{ flow.input.issue.title }}"
+        body: "{{ flow.input.issue.body }}"
+      output:
+        variable: result
+        format: json
+    - id: apply_labels
+      type: http
+      description: Add the chosen labels to the issue.
+      friendlyMessage: Labelling the issue
+      method: POST
+      url: https://api.github.com/repos/{{ flow.input.repository.full_name }}/issues/{{ flow.input.issue.number }}/labels
+      headers:
+        Accept: application/vnd.github+json
+        Content-Type: application/json
+        User-Agent: ballet-github-issue-triage
+      body: "{{ steps.classify.output.request }}"
+      auth:
+        type: bearer
+        tokenRef: GITHUB_TOKEN
+      input: {}
+      output:
+        variable: result
+        format: json
+      timeoutMs: 15000
+      retry:
+        maxAttempts: 3
+        backoff: exponential
+        delayMs: 500

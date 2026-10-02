@@ -1,0 +1,62 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: mcp-slack-thread-to-linear
+  name: Slack Thread to Linear Issue via MCP
+  description: Read a Slack thread through the Slack MCP server, draft a well-formed bug report, and create the Linear issue through the Linear MCP server.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      channel_id:
+        type: string
+        description: Slack channel id of the thread.
+      thread_ts:
+        type: string
+        description: Timestamp of the thread's parent message.
+      team:
+        type: string
+        description: Linear team name or key to create the issue in.
+    required:
+      - channel_id
+      - thread_ts
+      - team
+  steps:
+    - id: read_thread
+      type: code
+      language: typescript
+      codeFile: steps/read_thread.ts
+      description: Read the thread through the Slack MCP server.
+      friendlyMessage: Reading the Slack thread
+      input:
+        channel_id: "{{ flow.input.channel_id }}"
+        thread_ts: "{{ flow.input.thread_ts }}"
+      output:
+        variable: result
+        format: json
+    - id: draft_issue
+      type: code
+      language: typescript
+      codeFile: steps/draft_issue.ts
+      description: Draft a title and description from the conversation.
+      friendlyMessage: Drafting the issue
+      input:
+        thread: "{{ steps.read_thread.output.thread }}"
+      output:
+        variable: result
+        format: json
+    - id: create_issue
+      type: code
+      language: typescript
+      codeFile: steps/create_issue.ts
+      description: Create the issue through the Linear MCP server.
+      friendlyMessage: Creating the Linear issue
+      input:
+        team: "{{ flow.input.team }}"
+        title: "{{ steps.draft_issue.output.title }}"
+        description: "{{ steps.draft_issue.output.description }}"
+      output:
+        variable: result
+        format: json

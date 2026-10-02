@@ -1,0 +1,20 @@
+{
+  "id": "github-issue-triage",
+  "title": "GitHub Issue Triage",
+  "summary": "Label every newly opened GitHub issue with an LLM through a signed webhook.",
+  "category": "ops",
+  "tags": ["github", "triage", "webhook", "llm", "devtools"],
+  "difficulty": "intermediate",
+  "trigger": "GitHub webhook (issues)",
+  "integrations": ["github"],
+  "secrets": [
+    { "name": "GITHUB_WEBHOOK_SECRET", "description": "The secret you set on the GitHub webhook; used to verify X-Hub-Signature-256." },
+    { "name": "GITHUB_TOKEN", "description": "Fine-grained token with Issues: read and write on the target repositories." }
+  ],
+  "setup": [
+    "Add the two secrets above.",
+    "Publish the playbook and copy its webhook URL from Studio.",
+    "In the GitHub repo, add a webhook: payload URL from Studio, content type application/json, the same secret, and the Issues event only.",
+    "Open a test issue and check the labels."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "freshdesk-ticket-summary",
+  "title": "Freshdesk Ticket Summary",
+  "summary": "Summarise each new Freshdesk ticket in three bullets and add it as a private note for the agent who picks it up.",
+  "category": "support",
+  "tags": ["freshdesk", "support", "summary", "webhook", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Freshdesk webhook (ticket created)",
+  "integrations": ["freshdesk"],
+  "secrets": [
+    { "name": "FRESHDESK_WEBHOOK_SECRET", "description": "Shared secret used to verify inbound Freshdesk webhooks (HMAC-SHA256)." },
+    { "name": "FRESHDESK_DOMAIN", "description": "Your Freshdesk subdomain, for example `acme` for acme.freshdesk.com." },
+    { "name": "FRESHDESK_API_KEY", "description": "Freshdesk API key (used as the Basic auth username)." },
+    { "name": "FRESHDESK_API_PASSWORD", "description": "Basic auth password. Freshdesk accepts any value, for example `X`." }
+  ],
+  "setup": [
+    "Add the four secrets above.",
+    "Publish the playbook and copy its webhook URL from Studio.",
+    "In Freshdesk, create an automation rule on ticket creation that calls the webhook with the ticket fields.",
+    "Create a test ticket and watch the run in Studio."
+  ]
+}

@@ -1,0 +1,57 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: mcp-linear-weekly-digest
+  name: Linear Weekly Digest via MCP
+  description: Read a team's recent Linear issues through the Linear MCP server, write a weekly digest, and post it to Slack through the Slack MCP server.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      team:
+        type: string
+        description: Linear team name or key, for example ENG.
+      slack_channel_id:
+        type: string
+        description: Slack channel id to post the digest to, for example C0123456789.
+    required:
+      - team
+      - slack_channel_id
+  steps:
+    - id: fetch_issues
+      type: code
+      language: typescript
+      codeFile: steps/fetch_issues.ts
+      description: List issues updated in the last 7 days from the Linear MCP server.
+      friendlyMessage: Reading Linear issues
+      input:
+        team: "{{ flow.input.team }}"
+      output:
+        variable: result
+        format: json
+    - id: write_digest
+      type: code
+      language: typescript
+      codeFile: steps/write_digest.ts
+      description: Turn the issue list into a short weekly digest.
+      friendlyMessage: Writing the digest
+      input:
+        team: "{{ flow.input.team }}"
+        issues: "{{ steps.fetch_issues.output.issues }}"
+      output:
+        variable: result
+        format: json
+    - id: post_digest
+      type: code
+      language: typescript
+      codeFile: steps/post_digest.ts
+      description: Post the digest through the Slack MCP server.
+      friendlyMessage: Posting to Slack
+      input:
+        channel_id: "{{ flow.input.slack_channel_id }}"
+        text: "{{ steps.write_digest.output.text }}"
+      output:
+        variable: result
+        format: json

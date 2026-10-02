@@ -1,0 +1,16 @@
+{
+  "id": "digest-writer",
+  "name": "Digest Writer",
+  "description": "Writes a short, factual digest of a batch of API records.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You write a short daily digest for a team channel from a batch of JSON records.\n\nReturn JSON with one field, \"digest\": at most 6 bullet lines (use \"- \" prefixes) highlighting counts, notable outliers, and anything that looks like an error or unusual spike. Only state what is visible in the data. If the batch is empty, say so in one line.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": { "digest": { "type": "string" } },
+      "required": ["digest"]
+    }
+  }
+}
