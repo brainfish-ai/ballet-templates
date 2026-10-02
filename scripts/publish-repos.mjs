@@ -21,7 +21,7 @@ const outArg = process.argv.indexOf('--out');
 const out = resolve(outArg === -1 ? join(root, '..') : process.argv[outArg + 1]);
 
 const { site, repos } = loadConfig();
-const names = [site.hubRepo, ...repos.themed.map(r => r.repo), 'ballet-playbook-starter', 'awesome-ballet'];
+const names = [site.hubRepo, 'ballet-playbook-starter', 'awesome-ballet'];
 
 function run(cmd, args, cwd) {
   const printable = `${cmd} ${args.map(a => (/\s/.test(a) ? JSON.stringify(a) : a)).join(' ')}`;

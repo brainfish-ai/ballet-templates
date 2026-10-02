@@ -12,7 +12,6 @@ A curated list of templates, integrations, guides and examples for [Ballet](http
 ## Template collections
 
 - [ballet-templates]({{HUB_URL}}): every official template, with one-click import.
-{{COLLECTION_LINES}}
 - [ballet-playbook-starter]({{STARTER_URL}}): GitHub template repository for publishing your own templates.
 
 ## All templates

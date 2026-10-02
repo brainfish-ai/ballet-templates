@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Publishes the themed collection repos, the starter repo and awesome-ballet
- * into sibling folders from this hub, so they never drift.
+ * Publishes the starter repo and awesome-ballet into sibling folders from this hub, so they never
+ * drift. All templates live in this hub; there are no per-topic copies.
  *
  *   node scripts/sync-repos.mjs [--out <dir>] [--ref <branch|tag>] [--mode import|remix]
  *
@@ -85,13 +85,6 @@ function runBuild(dest) {
   if (res.status !== 0) throw new Error(`build failed in ${dest}`);
 }
 
-function copyTemplates(dest, list) {
-  for (const t of list) {
-    cpSync(t.folder, join(dest, 'templates', t.id), { recursive: true });
-    rmSync(join(dest, 'templates', t.id, 'README.md'), { force: true });
-  }
-}
-
 const starterName = 'ballet-playbook-starter';
 const awesomeName = 'awesome-ballet';
 
@@ -104,44 +97,6 @@ function baseTokens(extra = {}) {
     APP_URL: hubSite.appUrl,
     ...extra,
   };
-}
-
-for (const def of repos.themed) {
-  const dest = join(out, def.repo);
-  const list = templates.filter(t => def.categories.includes(t.meta.category));
-  if (list.length === 0) {
-    console.warn(`skip ${def.repo}: no templates in categories ${def.categories.join(', ')}`);
-    continue;
-  }
-  console.log(`\n== ${def.repo} (${list.length} templates)`);
-  resetDest(dest);
-  copyCommon(dest, def.repo);
-  copyTemplates(dest, list);
-
-  const site = { ...hubSite, hubRepo: def.repo, branch: ref, importMode };
-  writeFileSync(join(dest, 'site.config.json'), JSON.stringify(site, null, 2) + '\n');
-  const subset = Object.fromEntries(list.filter(t => shares[t.id]).map(t => [t.id, shares[t.id]]));
-  writeFileSync(join(dest, 'shares.json'), JSON.stringify(subset, null, 2) + '\n');
-
-  const others = repos.themed
-    .filter(r => r.repo !== def.repo)
-    .map(r => `- [${r.repo}](${repoUrl(hubSite, r.repo)}): ${r.tagline}`)
-    .join('\n');
-  const tokens = baseTokens({
-    REPO: def.repo,
-    TITLE: def.title,
-    TAGLINE: def.tagline,
-    AUDIENCE: def.audience,
-    OTHER_COLLECTIONS: others,
-  });
-  writeFileSync(join(dest, 'README.md'), fill(readFileSync(join(root, 'starters/themed/README.md'), 'utf8'), tokens));
-  writeFileSync(
-    join(dest, 'CONTRIBUTING.md'),
-    fill(readFileSync(join(root, 'starters/themed/CONTRIBUTING.md'), 'utf8'), tokens),
-  );
-  writeSettings(dest, { description: def.tagline, topics: def.topics });
-  writeSocialPreview(join(dest, 'assets', 'social-preview'), { title: def.title, tagline: def.tagline });
-  runBuild(dest);
 }
 
 {
@@ -180,8 +135,7 @@ for (const def of repos.themed) {
     ref,
     pathPrefix: `${repoUrl(hubSite, hubSite.hubRepo)}/tree/${ref}/templates`,
   });
-  const collectionLines = repos.themed.map(r => `- [${r.repo}](${repoUrl(hubSite, r.repo)}): ${r.tagline}`).join('\n');
-  const tokens = baseTokens({ ALL_TEMPLATES: rows, COLLECTION_LINES: collectionLines });
+  const tokens = baseTokens({ ALL_TEMPLATES: rows });
   writeFileSync(join(dest, 'README.md'), fill(readFileSync(join(root, 'starters', awesomeName, 'README.md'), 'utf8'), tokens));
   cpSync(join(root, 'starters', awesomeName, 'LICENSE'), join(dest, 'LICENSE'));
   writeFileSync(join(dest, '.gitignore'), '.DS_Store\n');
@@ -199,4 +153,4 @@ writeSocialPreview(join(root, 'assets', 'social-preview'), {
   tagline: 'Importable playbook templates for support, sales, ops and MCP workflows.',
 });
 
-console.log(`\nSynced ${repos.themed.length + 2} repos into ${out} (import mode: ${importMode}, ref: ${ref}).`);
+console.log(`\nSynced 2 repos into ${out} (import mode: ${importMode}, ref: ${ref}).`);

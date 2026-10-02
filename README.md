@@ -50,14 +50,9 @@ Imported playbooks always start unpublished with triggers off, and secrets are n
 
 <!-- templates:end -->
 
-## Focused collections
+## Related repositories
 
-Looking for one area only? The same templates are also published as smaller repositories:
-
-- [ballet-support-playbooks](https://github.com/brainfish-ai/ballet-support-playbooks): helpdesk triage, summaries and reply drafting
-- [ballet-sales-playbooks](https://github.com/brainfish-ai/ballet-sales-playbooks): lead enrichment, scoring and alerts
-- [ballet-ops-playbooks](https://github.com/brainfish-ai/ballet-ops-playbooks): signed webhooks, scheduled digests, issue triage
-- [ballet-mcp-playbooks](https://github.com/brainfish-ai/ballet-mcp-playbooks): workflows built on MCP servers
+- [ballet-playbook-starter](https://github.com/brainfish-ai/ballet-playbook-starter): GitHub template repository for publishing your own templates
 - [awesome-ballet](https://github.com/brainfish-ai/awesome-ballet): a curated list of templates, integrations and write-ups
 
 ## Template format
@@ -94,7 +89,7 @@ Open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for the checklist.
 | `npm run validate` | Validates every template |
 | `npm run build` | Regenerates template READMEs, `catalog.json` and the tables above |
 | `npm run check` | Validates and fails if generated files are stale (CI) |
-| `npm run sync` | Publishes the themed collection repos and `awesome-ballet` into a sibling folder |
+| `npm run sync` | Regenerates the starter repo and `awesome-ballet` into sibling folders |
 | `npm run publish:shares` | Publishes each template as a public Ballet share and records the slugs in `shares.json` |
 
 ## License

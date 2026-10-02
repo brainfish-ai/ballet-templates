@@ -43,10 +43,6 @@ Anyone who clicks it can review and import your template. Ballet shows an "unver
 
 Open a pull request against [{{ORG}}/{{HUB}}](https://github.com/{{ORG}}/{{HUB}}).
 
-## Export from Studio
-
-Built a playbook in Ballet already? Use **Export as template folder** in the playbook menu in Studio. It downloads a zip containing `playbook.yaml`, `steps/` and `agents/`; unzip it into `templates/<id>/` and add a `template.json`.
-
 ## License
 
 [MIT](LICENSE)

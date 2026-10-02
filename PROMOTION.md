@@ -9,16 +9,18 @@ How we get the template repos in front of the people who would use them. Every p
 - Every claim is something the reader can verify: the code is in the repo, and the import preview shows all steps before anything is created.
 - Never post to a community whose rules forbid self-promotion. Read the rules first, and answer questions before sharing a link.
 
-## Channels and repos
+## Channels
 
-| Audience                    | Repo                                | Where to share                                              |
-| --------------------------- | ----------------------------------- | ----------------------------------------------------------- |
-| Support and CX ops          | `ballet-support-playbooks`          | Support Driven, r/CustomerSuccess, Zendesk/Freshdesk groups |
-| RevOps, sales ops, founders | `ballet-sales-playbooks`            | RevOps Co-op, r/salesforce, LinkedIn                        |
-| Platform and DevOps         | `ballet-ops-playbooks`              | Hacker News, r/devops, dev.to                               |
-| MCP builders                | `ballet-mcp-playbooks`              | MCP Discord/GitHub discussions, r/mcp                       |
-| Anyone writing a template   | `ballet-playbook-starter`           | Show HN, dev.to "build your first playbook"                 |
-| Curators                    | `awesome-ballet`                    | Awesome-list submissions (below)                            |
+Every template lives in `ballet-templates`. Link the individual template folder for the audience you are posting to.
+
+| Audience                    | Templates (category)    | Where to share                                              |
+| --------------------------- | ----------------------- | ----------------------------------------------------------- |
+| Support and CX ops          | support                 | Support Driven, r/CustomerSuccess, Zendesk/Freshdesk groups |
+| RevOps, sales ops, founders | sales                   | RevOps Co-op, r/salesforce, LinkedIn                        |
+| Platform and DevOps         | ops                     | Hacker News, r/devops, dev.to                               |
+| MCP builders                | mcp                     | MCP Discord/GitHub discussions, r/mcp                       |
+| Anyone writing a template   | `ballet-playbook-starter` | Show HN, dev.to "build your first playbook"              |
+| Curators                    | `awesome-ballet`        | Awesome-list submissions (below)                            |
 
 ## Weekly cadence (10 templates, 10 weeks)
 
@@ -54,8 +56,6 @@ One template per week, in this order (easiest to verify first). Each week:
 
 - `CONTRIBUTING.md` explains how to add a template; CI validates the folder format and secret hygiene on every PR.
 - Credit contributors in the README table and in the post that features their template.
-- Users can export any playbook with **Export as template folder** in Studio or `metaphor export <playbook-id>`, then open a PR.
-
 ## What to measure
 
 Use only numbers GitHub and the Ballet app already give us:
