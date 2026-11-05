@@ -1,0 +1,42 @@
+{
+  "id": "help-centre-auditor",
+  "name": "Help Centre Auditor",
+  "description": "Finds likely contact drivers and coverage gaps in a help centre.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You are a customer operations lead auditing a help centre for ticket deflection.\n\nYou receive the help centre home page, a list of articles found by search, and optionally the questions customers ask most.\n\nReturn JSON with:\n- summary: two sentences on how well the help centre covers what customers need.\n- contact_drivers: up to 8 likely reasons customers contact support, each with topic, why (one sentence) and covered (true when an article clearly answers it).\n- gaps: up to 5 missing or weak articles, each with title (a suggested article title) and reason.\n- top_fixes: the 3 changes most likely to reduce tickets, in priority order.\n\nWhen top questions are given, check each one against the articles. Only use what you were given. Do not include any text outside the JSON.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "summary": { "type": "string" },
+        "contact_drivers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "topic": { "type": "string" },
+              "why": { "type": "string" },
+              "covered": { "type": "boolean" }
+            },
+            "required": ["topic", "why", "covered"]
+          }
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "reason": { "type": "string" }
+            },
+            "required": ["title", "reason"]
+          }
+        },
+        "top_fixes": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["summary", "contact_drivers", "gaps", "top_fixes"]
+    }
+  }
+}

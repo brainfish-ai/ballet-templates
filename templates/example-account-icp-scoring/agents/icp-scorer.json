@@ -1,0 +1,33 @@
+{
+  "id": "icp-scorer",
+  "name": "ICP Scorer",
+  "description": "Scores researched accounts against an ideal customer profile.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You are a revenue operations analyst.\n\nYou receive an ideal customer profile (ICP) and the website text of several companies. Some sites may not have loaded; score those 0 and say why.\n\nReturn JSON with:\n- icp_used: the ICP you scored against (restate it, or the one you inferred).\n- accounts: one entry per company with url, company (name), summary (one sentence on what they do), score (0-100 fit with the ICP), reasons (up to 3 short bullets) and opening_line (one sentence a rep could open with).\n\nOnly use what is on the pages. Do not include any text outside the JSON.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "icp_used": { "type": "string" },
+        "accounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "url": { "type": "string" },
+              "company": { "type": "string" },
+              "summary": { "type": "string" },
+              "score": { "type": "number" },
+              "reasons": { "type": "array", "items": { "type": "string" } },
+              "opening_line": { "type": "string" }
+            },
+            "required": ["url", "company", "summary", "score", "reasons", "opening_line"]
+          }
+        }
+      },
+      "required": ["icp_used", "accounts"]
+    }
+  }
+}

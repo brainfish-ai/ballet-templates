@@ -1,0 +1,45 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: example-competitor-teardown
+  name: Competitor pricing & positioning teardown
+  description: Paste a competitor's website and get a teardown of their pricing, positioning and messaging, with angles to counter them.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      competitor_url:
+        type: string
+        description: The competitor's website, for example https://competitor.com
+      your_product:
+        type: string
+        description: Optional one-line description of your own product, so the teardown can suggest counter-positioning.
+    required:
+      - competitor_url
+  steps:
+    - id: read_site
+      type: code
+      language: typescript
+      codeFile: steps/read_site.ts
+      description: Read the competitor's homepage and pricing page.
+      friendlyMessage: Reading the competitor's site
+      input:
+        competitor_url: "{{ flow.input.competitor_url }}"
+      output:
+        variable: result
+        format: json
+    - id: teardown
+      type: code
+      language: typescript
+      codeFile: steps/teardown.ts
+      description: Summarise pricing, positioning, target audience and messaging, and suggest how to counter them.
+      friendlyMessage: Writing the teardown
+      input:
+        competitor_url: "{{ flow.input.competitor_url }}"
+        your_product: "{{ flow.input.your_product }}"
+        pages: "{{ steps.read_site.output.pages }}"
+      output:
+        variable: result
+        format: json

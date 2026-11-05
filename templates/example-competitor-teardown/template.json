@@ -1,0 +1,17 @@
+{
+  "id": "example-competitor-teardown",
+  "title": "Competitor pricing & positioning teardown",
+  "summary": "Paste a competitor's website and get their pricing, positioning, key messages and the angles to counter them.",
+  "category": "sales",
+  "persona": "marketing-ops",
+  "tags": ["marketing", "competitive", "pricing", "manual", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Manual run (competitor URL)",
+  "integrations": [],
+  "secrets": [],
+  "setup": [
+    "Import the template. No apps or secrets are required.",
+    "Run it with a competitor's website, and optionally a one-line description of your product.",
+    "Edit the `competitor-analyst` agent to focus on the angles your team cares about."
+  ]
+}

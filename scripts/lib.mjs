@@ -10,6 +10,8 @@ export const API_VERSION = 'metaphor.run/v1';
 export const KIND = 'Playbook';
 export const CATEGORIES = ['support', 'sales', 'ops', 'mcp'];
 export const DIFFICULTIES = ['beginner', 'intermediate', 'advanced'];
+/** Onboarding personas a template can be seeded for as an example playbook. Mirrors `EXAMPLE_PERSONAS` in Ballet. */
+export const PERSONAS = ['marketing-ops', 'revops', 'customer-ops'];
 export const MAX_YAML_BYTES = 256 * 1024;
 export const MAX_CODE_BYTES = 1024 * 1024;
 
@@ -165,6 +167,9 @@ export function validateTemplate(t) {
     if (typeof meta.summary === 'string' && meta.summary.length > 200) errors.push('template.json: summary must be 200 characters or fewer');
     if (!CATEGORIES.includes(meta.category)) errors.push(`template.json: category must be one of ${CATEGORIES.join(', ')}`);
     if (!DIFFICULTIES.includes(meta.difficulty)) errors.push(`template.json: difficulty must be one of ${DIFFICULTIES.join(', ')}`);
+    if (meta.persona !== undefined && !PERSONAS.includes(meta.persona)) {
+      errors.push(`template.json: persona must be one of ${PERSONAS.join(', ')}`);
+    }
     if (!Array.isArray(meta.tags) || meta.tags.length === 0) errors.push('template.json: tags must be a non-empty array');
     if (!Array.isArray(meta.secrets)) errors.push('template.json: secrets must be an array');
     if (!Array.isArray(meta.setup) || meta.setup.length === 0) errors.push('template.json: setup must be a non-empty array');
@@ -306,6 +311,7 @@ export function catalogEntry(t) {
     title: t.meta.title,
     summary: t.meta.summary,
     category: t.meta.category,
+    ...(t.meta.persona ? { persona: t.meta.persona } : {}),
     tags: t.meta.tags,
     difficulty: t.meta.difficulty,
     trigger: t.meta.trigger,

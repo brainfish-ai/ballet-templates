@@ -1,0 +1,34 @@
+{
+  "id": "competitor-analyst",
+  "name": "Competitor Analyst",
+  "description": "Turns a competitor's website into a pricing and positioning teardown.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You are a product marketing analyst.\n\nYou receive the text of a competitor's homepage and pricing page. Some pages may be missing; say so rather than guessing.\n\nReturn JSON with:\n- positioning: one or two sentences on how they describe themselves.\n- target_audience: who they sell to.\n- pricing: a list of plans with name, price and the main limits or inclusions. Use \"not public\" when pricing is hidden.\n- key_messages: up to 5 claims they lean on most.\n- weaknesses: up to 5 gaps or soft spots you can see from the site.\n- counter_angles: up to 5 ways to position against them. If our product is described, tailor these to it.\n\nOnly use what is on the pages. Do not include any text outside the JSON.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "positioning": { "type": "string" },
+        "target_audience": { "type": "string" },
+        "pricing": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "plan": { "type": "string" },
+              "price": { "type": "string" },
+              "notes": { "type": "string" }
+            },
+            "required": ["plan", "price"]
+          }
+        },
+        "key_messages": { "type": "array", "items": { "type": "string" } },
+        "weaknesses": { "type": "array", "items": { "type": "string" } },
+        "counter_angles": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["positioning", "target_audience", "pricing", "key_messages", "weaknesses", "counter_angles"]
+    }
+  }
+}
