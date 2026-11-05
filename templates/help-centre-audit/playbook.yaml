@@ -1,0 +1,46 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: help-centre-audit
+  name: Contact-driver & help-centre audit
+  description: Paste your help centre URL and get the likely reasons customers contact support, the gaps in your articles and what to fix first.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      help_centre_url:
+        type: string
+        description: Your help centre or docs home page, for example https://help.acme.com
+      top_questions:
+        type: string
+        description: Optional list of questions customers ask most, one per line. Improves the gap analysis.
+    required:
+      - help_centre_url
+  steps:
+    - id: read_help_centre
+      type: code
+      language: typescript
+      codeFile: steps/read_help_centre.ts
+      description: Read the help centre home page and search for its most visible articles.
+      friendlyMessage: Reading your help centre
+      input:
+        help_centre_url: "{{ flow.input.help_centre_url }}"
+      output:
+        variable: result
+        format: json
+    - id: audit
+      type: code
+      language: typescript
+      codeFile: steps/audit.ts
+      description: Identify likely contact drivers, coverage gaps and the top fixes to deflect tickets.
+      friendlyMessage: Auditing coverage
+      input:
+        help_centre_url: "{{ flow.input.help_centre_url }}"
+        top_questions: "{{ flow.input.top_questions }}"
+        home: "{{ steps.read_help_centre.output.home }}"
+        articles: "{{ steps.read_help_centre.output.articles }}"
+      output:
+        variable: result
+        format: json

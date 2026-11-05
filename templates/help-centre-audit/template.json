@@ -1,0 +1,17 @@
+{
+  "id": "help-centre-audit",
+  "title": "Contact-driver & help-centre audit",
+  "summary": "Paste your help centre URL and get the likely reasons customers contact support, the article gaps and the top 3 fixes.",
+  "category": "support",
+  "persona": "customer-ops",
+  "tags": ["customer-ops", "support", "help-centre", "deflection", "manual", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Manual run (help centre URL)",
+  "integrations": [],
+  "secrets": [],
+  "setup": [
+    "Import the template. No apps or secrets are required.",
+    "Run it with your help centre URL, and optionally the questions customers ask most.",
+    "Edit the `help-centre-auditor` agent to match your product and support policies."
+  ]
+}

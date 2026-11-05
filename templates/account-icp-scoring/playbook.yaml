@@ -1,0 +1,44 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: account-icp-scoring
+  name: Account list research & ICP scoring
+  description: Paste a list of company websites and get each one researched and scored against your ideal customer profile.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      account_urls:
+        type: string
+        description: Company websites, one per line or comma-separated (up to 10).
+      icp:
+        type: string
+        description: Optional description of your ideal customer, for example "B2B SaaS, 50-500 employees, sells to support teams".
+    required:
+      - account_urls
+  steps:
+    - id: research_accounts
+      type: code
+      language: typescript
+      codeFile: steps/research_accounts.ts
+      description: Read each company's website.
+      friendlyMessage: Researching the accounts
+      input:
+        account_urls: "{{ flow.input.account_urls }}"
+      output:
+        variable: result
+        format: json
+    - id: score_accounts
+      type: code
+      language: typescript
+      codeFile: steps/score_accounts.ts
+      description: Score every account against the ICP and rank them, with the reasons and a suggested opening line.
+      friendlyMessage: Scoring against your ICP
+      input:
+        icp: "{{ flow.input.icp }}"
+        accounts: "{{ steps.research_accounts.output.accounts }}"
+      output:
+        variable: result
+        format: json

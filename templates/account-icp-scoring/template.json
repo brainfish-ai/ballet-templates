@@ -1,0 +1,17 @@
+{
+  "id": "account-icp-scoring",
+  "title": "Account list research & ICP scoring",
+  "summary": "Paste up to 10 company websites and get each one researched, scored against your ICP and ranked with an opening line.",
+  "category": "sales",
+  "persona": "revops",
+  "tags": ["revops", "sales", "icp", "research", "manual", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Manual run (list of company URLs)",
+  "integrations": [],
+  "secrets": [],
+  "setup": [
+    "Import the template. No apps or secrets are required.",
+    "Run it with up to 10 company websites, and optionally a description of your ideal customer.",
+    "Edit the `icp-scorer` agent to bake in your own ICP and scoring rules."
+  ]
+}
