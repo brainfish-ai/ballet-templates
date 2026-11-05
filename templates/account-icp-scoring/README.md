@@ -2,7 +2,7 @@
 
 Paste up to 10 company websites and get each one researched, scored against your ICP and ranked with an opening line.
 
-[![Import to Ballet](../../assets/import-to-ballet.svg)](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/example-account-icp-scoring&ref=main)
+[![Import to Ballet](../../assets/import-to-ballet.svg)](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/account-icp-scoring&ref=main)
 
 | | |
 |---|---|
@@ -39,4 +39,4 @@ Agents (created for you on import; edit them in Studio):
 
 Imported playbooks arrive unpublished with triggers off. Read the step code, add your secrets, then publish.
 
-Template example-account-icp-scoring is MIT licensed.
+Template account-icp-scoring is MIT licensed.

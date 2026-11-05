@@ -1,7 +1,7 @@
 apiVersion: metaphor.run/v1
 kind: Playbook
 metadata:
-  id: example-account-icp-scoring
+  id: account-icp-scoring
   name: Account list research & ICP scoring
   description: Paste a list of company websites and get each one researched and scored against your ideal customer profile.
 spec:

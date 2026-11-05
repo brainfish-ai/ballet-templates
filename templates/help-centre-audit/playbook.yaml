@@ -1,7 +1,7 @@
 apiVersion: metaphor.run/v1
 kind: Playbook
 metadata:
-  id: example-help-centre-audit
+  id: help-centre-audit
   name: Contact-driver & help-centre audit
   description: Paste your help centre URL and get the likely reasons customers contact support, the gaps in your articles and what to fix first.
 spec:

@@ -4,6 +4,55 @@
   "ref": "main",
   "templates": [
     {
+      "id": "account-icp-scoring",
+      "title": "Account list research & ICP scoring",
+      "summary": "Paste up to 10 company websites and get each one researched, scored against your ICP and ranked with an opening line.",
+      "category": "sales",
+      "persona": "revops",
+      "tags": [
+        "revops",
+        "sales",
+        "icp",
+        "research",
+        "manual",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Manual run (list of company URLs)",
+      "integrations": [],
+      "mcpServers": [],
+      "secrets": [],
+      "agents": [
+        "icp-scorer"
+      ],
+      "steps": 2,
+      "path": "templates/account-icp-scoring"
+    },
+    {
+      "id": "competitor-teardown",
+      "title": "Competitor pricing & positioning teardown",
+      "summary": "Paste a competitor's website and get their pricing, positioning, key messages and the angles to counter them.",
+      "category": "sales",
+      "persona": "marketing-ops",
+      "tags": [
+        "marketing",
+        "competitive",
+        "pricing",
+        "manual",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Manual run (competitor URL)",
+      "integrations": [],
+      "mcpServers": [],
+      "secrets": [],
+      "agents": [
+        "competitor-analyst"
+      ],
+      "steps": 2,
+      "path": "templates/competitor-teardown"
+    },
+    {
       "id": "daily-api-digest-slack",
       "title": "Daily API Digest to Slack",
       "summary": "Pull records from any JSON API, summarise them, and post a digest to Slack on a schedule.",
@@ -32,80 +81,6 @@
       ],
       "steps": 3,
       "path": "templates/daily-api-digest-slack"
-    },
-    {
-      "id": "example-account-icp-scoring",
-      "title": "Account list research & ICP scoring",
-      "summary": "Paste up to 10 company websites and get each one researched, scored against your ICP and ranked with an opening line.",
-      "category": "sales",
-      "persona": "revops",
-      "tags": [
-        "revops",
-        "sales",
-        "icp",
-        "research",
-        "manual",
-        "llm"
-      ],
-      "difficulty": "beginner",
-      "trigger": "Manual run (list of company URLs)",
-      "integrations": [],
-      "mcpServers": [],
-      "secrets": [],
-      "agents": [
-        "icp-scorer"
-      ],
-      "steps": 2,
-      "path": "templates/example-account-icp-scoring"
-    },
-    {
-      "id": "example-competitor-teardown",
-      "title": "Competitor pricing & positioning teardown",
-      "summary": "Paste a competitor's website and get their pricing, positioning, key messages and the angles to counter them.",
-      "category": "sales",
-      "persona": "marketing-ops",
-      "tags": [
-        "marketing",
-        "competitive",
-        "pricing",
-        "manual",
-        "llm"
-      ],
-      "difficulty": "beginner",
-      "trigger": "Manual run (competitor URL)",
-      "integrations": [],
-      "mcpServers": [],
-      "secrets": [],
-      "agents": [
-        "competitor-analyst"
-      ],
-      "steps": 2,
-      "path": "templates/example-competitor-teardown"
-    },
-    {
-      "id": "example-help-centre-audit",
-      "title": "Contact-driver & help-centre audit",
-      "summary": "Paste your help centre URL and get the likely reasons customers contact support, the article gaps and the top 3 fixes.",
-      "category": "support",
-      "persona": "customer-ops",
-      "tags": [
-        "customer-ops",
-        "support",
-        "help-centre",
-        "deflection",
-        "manual",
-        "llm"
-      ],
-      "difficulty": "beginner",
-      "trigger": "Manual run (help centre URL)",
-      "integrations": [],
-      "mcpServers": [],
-      "secrets": [],
-      "agents": [
-        "help-centre-auditor"
-      ],
-      "steps": 2,
-      "path": "templates/example-help-centre-audit"
     },
     {
       "id": "freshdesk-ticket-summary",
@@ -189,6 +164,31 @@
       ],
       "steps": 2,
       "path": "templates/github-issue-triage"
+    },
+    {
+      "id": "help-centre-audit",
+      "title": "Contact-driver & help-centre audit",
+      "summary": "Paste your help centre URL and get the likely reasons customers contact support, the article gaps and the top 3 fixes.",
+      "category": "support",
+      "persona": "customer-ops",
+      "tags": [
+        "customer-ops",
+        "support",
+        "help-centre",
+        "deflection",
+        "manual",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Manual run (help centre URL)",
+      "integrations": [],
+      "mcpServers": [],
+      "secrets": [],
+      "agents": [
+        "help-centre-auditor"
+      ],
+      "steps": 2,
+      "path": "templates/help-centre-audit"
     },
     {
       "id": "inbound-lead-slack-alert",

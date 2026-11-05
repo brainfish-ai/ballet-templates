@@ -2,7 +2,7 @@
 
 Paste your help centre URL and get the likely reasons customers contact support, the article gaps and the top 3 fixes.
 
-[![Import to Ballet](../../assets/import-to-ballet.svg)](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/example-help-centre-audit&ref=main)
+[![Import to Ballet](../../assets/import-to-ballet.svg)](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/help-centre-audit&ref=main)
 
 | | |
 |---|---|
@@ -39,4 +39,4 @@ Agents (created for you on import; edit them in Studio):
 
 Imported playbooks arrive unpublished with triggers off. Read the step code, add your secrets, then publish.
 
-Template example-help-centre-audit is MIT licensed.
+Template help-centre-audit is MIT licensed.

@@ -1,7 +1,7 @@
 apiVersion: metaphor.run/v1
 kind: Playbook
 metadata:
-  id: example-competitor-teardown
+  id: competitor-teardown
   name: Competitor pricing & positioning teardown
   description: Paste a competitor's website and get a teardown of their pricing, positioning and messaging, with angles to counter them.
 spec:

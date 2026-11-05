@@ -22,8 +22,8 @@ Imported playbooks always start unpublished with triggers off, and secrets are n
 
 | Template | What it does | Trigger | Import |
 |---|---|---|---|
-| [Contact-driver & help-centre audit](templates/example-help-centre-audit) | Paste your help centre URL and get the likely reasons customers contact support, the article gaps and the top 3 fixes. | Manual run (help centre URL) | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/example-help-centre-audit&ref=main) |
 | [Freshdesk Ticket Summary](templates/freshdesk-ticket-summary) | Summarise each new Freshdesk ticket in three bullets and add it as a private note for the agent who picks it up. | Freshdesk webhook (ticket created) | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/freshdesk-ticket-summary&ref=main) |
+| [Contact-driver & help-centre audit](templates/help-centre-audit) | Paste your help centre URL and get the likely reasons customers contact support, the article gaps and the top 3 fixes. | Manual run (help centre URL) | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/help-centre-audit&ref=main) |
 | [Support Reply Drafter](templates/support-reply-drafter) | Paste a customer message and get a polite, source-aware draft reply to review and send. | Manual run | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/support-reply-drafter&ref=main) |
 | [Zendesk Ticket Triage](templates/zendesk-ticket-triage) | Classify every new Zendesk ticket with an LLM and write the priority and tags back as an internal note. | Zendesk webhook (ticket created) | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/zendesk-ticket-triage&ref=main) |
 
@@ -31,8 +31,8 @@ Imported playbooks always start unpublished with triggers off, and secrets are n
 
 | Template | What it does | Trigger | Import |
 |---|---|---|---|
-| [Account list research & ICP scoring](templates/example-account-icp-scoring) | Paste up to 10 company websites and get each one researched, scored against your ICP and ranked with an opening line. | Manual run (list of company URLs) | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/example-account-icp-scoring&ref=main) |
-| [Competitor pricing & positioning teardown](templates/example-competitor-teardown) | Paste a competitor's website and get their pricing, positioning, key messages and the angles to counter them. | Manual run (competitor URL) | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/example-competitor-teardown&ref=main) |
+| [Account list research & ICP scoring](templates/account-icp-scoring) | Paste up to 10 company websites and get each one researched, scored against your ICP and ranked with an opening line. | Manual run (list of company URLs) | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/account-icp-scoring&ref=main) |
+| [Competitor pricing & positioning teardown](templates/competitor-teardown) | Paste a competitor's website and get their pricing, positioning, key messages and the angles to counter them. | Manual run (competitor URL) | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/competitor-teardown&ref=main) |
 | [Inbound Lead Slack Alert](templates/inbound-lead-slack-alert) | Score every form submission that hits a webhook and post it to Slack, flagging hot leads. | Generic HMAC webhook | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/inbound-lead-slack-alert&ref=main) |
 | [Salesforce Lead Enrichment](templates/salesforce-lead-enrichment) | Research each new Salesforce Lead on the web and write a short brief and rating back to the record. | Salesforce webhook (Lead created) | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/salesforce-lead-enrichment&ref=main) |
 

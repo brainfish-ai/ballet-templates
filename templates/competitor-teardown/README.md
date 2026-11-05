@@ -2,7 +2,7 @@
 
 Paste a competitor's website and get their pricing, positioning, key messages and the angles to counter them.
 
-[![Import to Ballet](../../assets/import-to-ballet.svg)](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/example-competitor-teardown&ref=main)
+[![Import to Ballet](../../assets/import-to-ballet.svg)](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/competitor-teardown&ref=main)
 
 | | |
 |---|---|
@@ -39,4 +39,4 @@ Agents (created for you on import; edit them in Studio):
 
 Imported playbooks arrive unpublished with triggers off. Read the step code, add your secrets, then publish.
 
-Template example-competitor-teardown is MIT licensed.
+Template competitor-teardown is MIT licensed.
