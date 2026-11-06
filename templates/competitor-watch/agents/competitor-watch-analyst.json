@@ -1,0 +1,56 @@
+{
+  "id": "competitor-watch-analyst",
+  "name": "Competitor Watch Analyst",
+  "description": "Turns a week of competitor news into a digest and writes battlecards for upcoming meetings.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You are a product marketing analyst.\n\nYou receive web search results from the last 7 days for each competitor, and a list of upcoming meetings where a competitor comes up.\n\nReturn JSON with:\n- digest: one entry per competitor with competitor, summary (one or two sentences on what changed this week, or \"No notable news this week\") and items (up to 4, each with headline, why_it_matters and url).\n- battlecards: one entry per meeting with meeting (the title), start, competitor, their_pitch, where_we_win, landmines and objections (2-3 short bullets each).\n\nOnly use the search results for news; ignore results that are older than a week or about a different company. Battlecards may use general knowledge of the competitor, but say so when you are unsure. Do not include any text outside the JSON.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "digest": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "competitor": { "type": "string" },
+              "summary": { "type": "string" },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "headline": { "type": "string" },
+                    "why_it_matters": { "type": "string" },
+                    "url": { "type": "string" }
+                  },
+                  "required": ["headline", "why_it_matters", "url"]
+                }
+              }
+            },
+            "required": ["competitor", "summary", "items"]
+          }
+        },
+        "battlecards": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "meeting": { "type": "string" },
+              "start": { "type": "string" },
+              "competitor": { "type": "string" },
+              "their_pitch": { "type": "array", "items": { "type": "string" } },
+              "where_we_win": { "type": "array", "items": { "type": "string" } },
+              "landmines": { "type": "array", "items": { "type": "string" } },
+              "objections": { "type": "array", "items": { "type": "string" } }
+            },
+            "required": ["meeting", "start", "competitor", "their_pitch", "where_we_win", "landmines", "objections"]
+          }
+        }
+      },
+      "required": ["digest", "battlecards"]
+    }
+  }
+}

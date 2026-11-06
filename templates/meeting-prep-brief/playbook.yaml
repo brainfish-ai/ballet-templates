@@ -1,0 +1,49 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: meeting-prep-brief
+  name: Meeting prep briefs for tomorrow
+  description: Researches every company you meet tomorrow and writes a brief per external meeting.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      context:
+        type: string
+        description: Optional one or two sentences on what you sell, so talking points are relevant.
+  steps:
+    - id: find_meetings
+      type: code
+      language: typescript
+      codeFile: steps/find_meetings.ts
+      description: Read tomorrow's events from Google Calendar and keep meetings with at least one external attendee.
+      friendlyMessage: Checking tomorrow's calendar
+      output:
+        variable: result
+        format: json
+    - id: research_companies
+      type: code
+      language: typescript
+      codeFile: steps/research_companies.ts
+      description: Read each attendee company's website and recent news.
+      friendlyMessage: Researching the companies you're meeting
+      input:
+        meetings: "{{ steps.find_meetings.output.meetings }}"
+      output:
+        variable: result
+        format: json
+    - id: write_briefs
+      type: code
+      language: typescript
+      codeFile: steps/write_briefs.ts
+      description: Write one brief per meeting with who is attending, company context and talking points.
+      friendlyMessage: Writing your briefs
+      input:
+        context: "{{ flow.input.context }}"
+        date: "{{ steps.find_meetings.output.date }}"
+        meetings: "{{ steps.research_companies.output.meetings }}"
+      output:
+        variable: result
+        format: json

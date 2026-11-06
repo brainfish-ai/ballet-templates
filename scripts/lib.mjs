@@ -92,6 +92,8 @@ const SECRET_CALL = /metaphor\.secret\(\s*['"]([A-Za-z0-9_]+)['"]/g;
 const AGENT_CALL = /metaphor\.agent\(\s*['"]([^'"]+)['"]/g;
 const MCP_CALL = /metaphor\.mcp\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]/g;
 const TOOL_CALL = /metaphor\.tool\(\s*['"]([^'"]+)['"]/g;
+/** Same rule as `extractMetaphorIntegrationCalls` in Ballet: only literal ids count toward "Connect X to run". */
+const INTEGRATION_CALL = /metaphor\.integration\s*\(\s*['"]([^'"]+)['"]/g;
 const FLOW_CALL = /metaphor\.flow\(/;
 
 function matchAll(re, text) {
@@ -111,8 +113,9 @@ export function scanDependencies(t) {
   const agents = new Set();
   const tools = new Set();
   const mcp = new Map();
+  const integrations = new Set();
   const doc = t.doc;
-  if (!doc) return { secrets, agents, tools, mcp, usesFlow: false };
+  if (!doc) return { secrets, agents, tools, mcp, integrations, usesFlow: false };
 
   for (const s of collectStrings(doc)) {
     for (const m of matchAll(SECRET_TEMPLATE, s)) secrets.add(m[1]);
@@ -133,13 +136,14 @@ export function scanDependencies(t) {
     for (const m of matchAll(SECRET_CALL, code)) secrets.add(m[1]);
     for (const m of matchAll(AGENT_CALL, code)) agents.add(m[1]);
     for (const m of matchAll(TOOL_CALL, code)) tools.add(m[1]);
+    for (const m of matchAll(INTEGRATION_CALL, code)) integrations.add(m[1]);
     for (const m of matchAll(MCP_CALL, code)) {
       if (!mcp.has(m[1])) mcp.set(m[1], new Set());
       mcp.get(m[1]).add(m[2]);
     }
     if (FLOW_CALL.test(code)) usesFlow = true;
   }
-  return { secrets, agents, tools, mcp, usesFlow };
+  return { secrets, agents, tools, mcp, integrations, usesFlow };
 }
 
 const SECRET_LITERALS = [
@@ -173,6 +177,9 @@ export function validateTemplate(t) {
     if (!Array.isArray(meta.tags) || meta.tags.length === 0) errors.push('template.json: tags must be a non-empty array');
     if (!Array.isArray(meta.secrets)) errors.push('template.json: secrets must be an array');
     if (!Array.isArray(meta.setup) || meta.setup.length === 0) errors.push('template.json: setup must be a non-empty array');
+    if (meta.notes !== undefined && (!Array.isArray(meta.notes) || meta.notes.some(n => typeof n !== 'string'))) {
+      errors.push('template.json: notes must be an array of strings');
+    }
     for (const s of meta.secrets ?? []) {
       if (!/^[A-Z][A-Z0-9_]*$/.test(s.name ?? '')) errors.push(`template.json: secret "${s.name}" must be UPPER_SNAKE_CASE`);
       if (!s.description) errors.push(`template.json: secret "${s.name}" needs a description`);
@@ -235,6 +242,25 @@ export function validateTemplate(t) {
     for (const name of declared) {
       if (!deps.secrets.has(name)) errors.push(`secret ${name} is declared in template.json but never used`);
     }
+  }
+
+  // Ballet derives a playbook's required connections from literal `metaphor.integration('<id>', ...)` calls, so the
+  // catalog's `integrations` list must match them exactly; a mismatch would show the wrong "Connect X to run" state.
+  // Every template must declare what it calls. Persona (example) templates must match exactly; older catalog
+  // templates may also list apps they reach through webhooks or HTTP (e.g. a Slack incoming webhook).
+  if (meta) {
+    const declared = new Set(Array.isArray(meta.integrations) ? meta.integrations : []);
+    for (const id of deps.integrations) {
+      if (!declared.has(id)) errors.push(`integration ${id} is called from a step but not declared in template.json`);
+    }
+    for (const id of meta.persona !== undefined ? declared : []) {
+      if (!deps.integrations.has(id)) {
+        errors.push(`integration ${id} is declared in template.json but no step calls metaphor.integration('${id}', ...)`);
+      }
+    }
+  }
+  if (meta?.persona !== undefined && doc && doc.spec?.trigger?.type !== 'manual') {
+    errors.push('persona (example) templates must use a manual trigger so they can run from the playbook page');
   }
 
   const agentIds = new Map();
@@ -374,6 +400,11 @@ export function renderTemplateReadme(t, ctx) {
   lines.push('## Setup', '');
   t.meta.setup.forEach((s, i) => lines.push(`${i + 1}. ${s}`));
   lines.push('');
+  if (Array.isArray(t.meta.notes) && t.meta.notes.length > 0) {
+    lines.push('## Simplifications', '');
+    for (const n of t.meta.notes) lines.push(`- ${n}`);
+    lines.push('');
+  }
   lines.push('## Files', '');
   lines.push('- `playbook.yaml`: the playbook definition (`metaphor.run/v1`)');
   lines.push('- `steps/`: code for each code step');

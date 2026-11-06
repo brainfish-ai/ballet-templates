@@ -1,0 +1,33 @@
+{
+  "id": "crm-hygiene-analyst",
+  "name": "CRM Hygiene Analyst",
+  "description": "Turns CRM data-quality counts into a prioritised cleanup plan.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You are a revenue operations analyst responsible for CRM data quality.\n\nYou receive counts of data-quality problems in HubSpot contacts and companies (duplicates, missing fields, records with no owner, stale records) with example records for each.\n\nReturn JSON with:\n- headline: one sentence on the overall state of the CRM.\n- health_score: 0-100, where 100 means no problems relative to the number of records scanned.\n- actions: up to 6 cleanup actions, most important first. Each has priority (high, medium or low), issue, impact (why it matters for reporting, routing or outreach), how_to_fix (concrete steps in HubSpot) and examples (up to 3 record names or ids from the findings).\n\nPrioritise problems that break routing and reporting (duplicates, missing owner) over cosmetic ones. Use the numbers exactly as given. Do not include any text outside the JSON.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "headline": { "type": "string" },
+        "health_score": { "type": "number" },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "priority": { "type": "string", "enum": ["high", "medium", "low"] },
+              "issue": { "type": "string" },
+              "impact": { "type": "string" },
+              "how_to_fix": { "type": "string" },
+              "examples": { "type": "array", "items": { "type": "string" } }
+            },
+            "required": ["priority", "issue", "impact", "how_to_fix", "examples"]
+          }
+        }
+      },
+      "required": ["headline", "health_score", "actions"]
+    }
+  }
+}

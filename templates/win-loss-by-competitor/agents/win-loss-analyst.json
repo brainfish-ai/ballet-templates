@@ -1,0 +1,32 @@
+{
+  "id": "win-loss-analyst",
+  "name": "Win/Loss Analyst",
+  "description": "Summarises closed deals by competitor into win/loss themes and recommendations.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You are a competitive intelligence analyst.\n\nYou receive closed-deal statistics grouped by competitor: deals won and lost, revenue, win rate, and the raw won and lost reasons reps typed in.\n\nReturn JSON with:\n- headline: one sentence on the most important finding.\n- competitors: one entry per competitor (keep the exact competitor name you were given) with competitor, verdict (one sentence), top_won_reasons and top_lost_reasons (up to 3 themes each, grouped from the raw reasons; empty when there are none).\n- recommendations: up to 5 concrete actions for marketing or sales (battlecard updates, messaging, pricing, enablement).\n\nUse the numbers exactly as given. If a competitor has fewer than 3 deals, say the sample is small. Do not include any text outside the JSON.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "headline": { "type": "string" },
+        "competitors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "competitor": { "type": "string" },
+              "verdict": { "type": "string" },
+              "top_won_reasons": { "type": "array", "items": { "type": "string" } },
+              "top_lost_reasons": { "type": "array", "items": { "type": "string" } }
+            },
+            "required": ["competitor", "verdict", "top_won_reasons", "top_lost_reasons"]
+          }
+        },
+        "recommendations": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["headline", "competitors", "recommendations"]
+    }
+  }
+}

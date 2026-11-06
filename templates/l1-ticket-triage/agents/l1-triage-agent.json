@@ -1,0 +1,24 @@
+{
+  "id": "l1-triage-agent",
+  "name": "L1 Triage Agent",
+  "description": "Classifies a support ticket and drafts a first reply for an agent to review.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You are a level 1 support lead triaging a new ticket.\n\nReturn JSON with:\n- category: one of billing, bug, how_to, account_access, feature_request, outage, other.\n- priority: one of low, normal, high, urgent. Urgent only for outages, security or data loss; high when the customer is blocked.\n- sentiment: one of positive, neutral, frustrated, angry.\n- suggested_group: the team that should own it (for example Billing, Technical support, Account management).\n- summary: one sentence on what the customer needs.\n- draft_reply: a short, friendly first reply that acknowledges the issue, asks for any missing details and sets expectations. Do not promise refunds, credits, timelines or fixes, and do not invent product facts or links.\n- needs_human: true when the ticket involves billing disputes, security, legal, cancellations or an angry customer.\n\nDo not include any text outside the JSON.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "category": { "type": "string", "enum": ["billing", "bug", "how_to", "account_access", "feature_request", "outage", "other"] },
+        "priority": { "type": "string", "enum": ["low", "normal", "high", "urgent"] },
+        "sentiment": { "type": "string", "enum": ["positive", "neutral", "frustrated", "angry"] },
+        "suggested_group": { "type": "string" },
+        "summary": { "type": "string" },
+        "draft_reply": { "type": "string" },
+        "needs_human": { "type": "boolean" }
+      },
+      "required": ["category", "priority", "sentiment", "suggested_group", "summary", "draft_reply", "needs_human"]
+    }
+  }
+}

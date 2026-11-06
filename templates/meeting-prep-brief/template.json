@@ -1,0 +1,23 @@
+{
+  "id": "meeting-prep-brief",
+  "title": "Meeting prep briefs for tomorrow",
+  "summary": "Researches every company you meet tomorrow and writes a one-page brief per external meeting from your Google Calendar.",
+  "category": "sales",
+  "persona": "revops",
+  "tags": ["revops", "sales", "meeting-prep", "research", "google-calendar", "manual", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Manual run; schedule it daily before your first meeting",
+  "integrations": ["google-calendar"],
+  "secrets": [],
+  "setup": [
+    "Import the template and connect Google Calendar.",
+    "Run it. It reads tomorrow's events in your calendar's time zone and skips internal meetings.",
+    "To have briefs ready by 7am, add a daily schedule to the playbook for early morning.",
+    "Optionally describe what you sell in `context` so talking points are relevant. Edit the `meeting-prep-researcher` agent to change the brief format."
+  ],
+  "notes": [
+    "A meeting counts as external when at least one attendee's email domain differs from yours. Meetings with only free-mail attendees (gmail.com, outlook.com and similar) are researched by person, not company.",
+    "Research uses each company's website and a web search; it does not read your CRM.",
+    "Up to 8 meetings per run."
+  ]
+}

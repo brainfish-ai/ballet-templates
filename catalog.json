@@ -53,6 +53,62 @@
       "path": "templates/competitor-teardown"
     },
     {
+      "id": "competitor-watch",
+      "title": "Competitor watch: weekly digest & battlecards",
+      "summary": "Emails you this week's competitor news, plus a battlecard for every upcoming meeting where a competitor comes up.",
+      "category": "sales",
+      "persona": "marketing-ops",
+      "tags": [
+        "marketing-ops",
+        "competitive-intel",
+        "battlecards",
+        "google-calendar",
+        "gmail",
+        "manual",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Manual run (list of competitors); schedule it weekly",
+      "integrations": [
+        "google-calendar",
+        "gmail"
+      ],
+      "mcpServers": [],
+      "secrets": [],
+      "agents": [
+        "competitor-watch-analyst"
+      ],
+      "steps": 3,
+      "path": "templates/competitor-watch"
+    },
+    {
+      "id": "crm-hygiene",
+      "title": "HubSpot CRM hygiene report",
+      "summary": "Scans HubSpot contacts and companies for duplicates, missing fields, unowned and stale records, and writes a prioritised cleanup plan.",
+      "category": "ops",
+      "persona": "revops",
+      "tags": [
+        "revops",
+        "crm",
+        "data-quality",
+        "hubspot",
+        "manual",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Manual run; schedule it weekly",
+      "integrations": [
+        "hubspot"
+      ],
+      "mcpServers": [],
+      "secrets": [],
+      "agents": [
+        "crm-hygiene-analyst"
+      ],
+      "steps": 2,
+      "path": "templates/crm-hygiene"
+    },
+    {
       "id": "daily-api-digest-slack",
       "title": "Daily API Digest to Slack",
       "summary": "Pull records from any JSON API, summarise them, and post a digest to Slack on a schedule.",
@@ -220,6 +276,33 @@
       "path": "templates/inbound-lead-slack-alert"
     },
     {
+      "id": "l1-ticket-triage",
+      "title": "L1 ticket triage sweep",
+      "summary": "Sweeps your open, unassigned Zendesk tickets, classifies each one and drafts a first reply as an internal note for an agent to review.",
+      "category": "support",
+      "persona": "customer-ops",
+      "tags": [
+        "customer-ops",
+        "support",
+        "triage",
+        "zendesk",
+        "manual",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Manual run; schedule it every hour or at the start of each shift",
+      "integrations": [
+        "zendesk"
+      ],
+      "mcpServers": [],
+      "secrets": [],
+      "agents": [
+        "l1-triage-agent"
+      ],
+      "steps": 3,
+      "path": "templates/l1-ticket-triage"
+    },
+    {
       "id": "mcp-linear-weekly-digest",
       "title": "Linear Weekly Digest via MCP",
       "summary": "Read recent Linear issues and post a weekly digest to Slack, using the Linear and Slack MCP servers.",
@@ -270,6 +353,64 @@
       ],
       "steps": 3,
       "path": "templates/mcp-slack-thread-to-linear"
+    },
+    {
+      "id": "meeting-prep-brief",
+      "title": "Meeting prep briefs for tomorrow",
+      "summary": "Researches every company you meet tomorrow and writes a one-page brief per external meeting from your Google Calendar.",
+      "category": "sales",
+      "persona": "revops",
+      "tags": [
+        "revops",
+        "sales",
+        "meeting-prep",
+        "research",
+        "google-calendar",
+        "manual",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Manual run; schedule it daily before your first meeting",
+      "integrations": [
+        "google-calendar"
+      ],
+      "mcpServers": [],
+      "secrets": [],
+      "agents": [
+        "meeting-prep-researcher"
+      ],
+      "steps": 3,
+      "path": "templates/meeting-prep-brief"
+    },
+    {
+      "id": "renewal-radar",
+      "title": "Renewal radar",
+      "summary": "Paste your upcoming renewals and get each account risk-scored, with a pre-call brief for any customer call this week, emailed to you.",
+      "category": "support",
+      "persona": "customer-ops",
+      "tags": [
+        "customer-ops",
+        "customer-success",
+        "renewals",
+        "churn-risk",
+        "google-calendar",
+        "gmail",
+        "manual",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Manual run (pasted list or CSV of renewals); schedule it weekly",
+      "integrations": [
+        "google-calendar",
+        "gmail"
+      ],
+      "mcpServers": [],
+      "secrets": [],
+      "agents": [
+        "renewal-risk-analyst"
+      ],
+      "steps": 3,
+      "path": "templates/renewal-radar"
     },
     {
       "id": "salesforce-lead-enrichment",
@@ -323,6 +464,33 @@
       ],
       "steps": 2,
       "path": "templates/support-reply-drafter"
+    },
+    {
+      "id": "win-loss-by-competitor",
+      "title": "Win/loss by competitor",
+      "summary": "Reads your closed HubSpot deals and reports win rate, revenue and the top won and lost reasons against each competitor.",
+      "category": "sales",
+      "persona": "marketing-ops",
+      "tags": [
+        "marketing-ops",
+        "competitive-intel",
+        "win-loss",
+        "hubspot",
+        "manual",
+        "llm"
+      ],
+      "difficulty": "intermediate",
+      "trigger": "Manual run (deal property name, lookback in days)",
+      "integrations": [
+        "hubspot"
+      ],
+      "mcpServers": [],
+      "secrets": [],
+      "agents": [
+        "win-loss-analyst"
+      ],
+      "steps": 2,
+      "path": "templates/win-loss-by-competitor"
     },
     {
       "id": "zendesk-ticket-triage",

@@ -1,0 +1,32 @@
+{
+  "id": "renewal-risk-analyst",
+  "name": "Renewal Risk Analyst",
+  "description": "Scores upcoming renewals for churn risk and writes pre-call briefs.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You are a customer success lead reviewing upcoming renewals.\n\nYou receive renewals with account, renewal date, days to renewal, ARR, the account team's notes and any customer calls booked this week.\n\nReturn JSON with:\n- summary: one or two sentences on the renewal book (how much is at risk and where to focus).\n- accounts: one entry per renewal (keep the exact account name) with risk (high, medium or low), reasons (up to 3 short bullets based on the notes, timing and ARR), next_action (one concrete action for this week) and call_brief (only when calls_this_week is not empty: goal of the call, what to confirm, risks to raise, and the ask; otherwise an empty string).\n\nRenewals within 30 days with no call booked and negative notes are high risk. Missing notes mean unknown, not safe; say so. Do not invent usage data. Do not include any text outside the JSON.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "summary": { "type": "string" },
+        "accounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "account": { "type": "string" },
+              "risk": { "type": "string", "enum": ["high", "medium", "low"] },
+              "reasons": { "type": "array", "items": { "type": "string" } },
+              "next_action": { "type": "string" },
+              "call_brief": { "type": "string" }
+            },
+            "required": ["account", "risk", "reasons", "next_action", "call_brief"]
+          }
+        }
+      },
+      "required": ["summary", "accounts"]
+    }
+  }
+}
