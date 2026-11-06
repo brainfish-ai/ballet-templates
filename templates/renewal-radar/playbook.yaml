@@ -1,0 +1,61 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: renewal-radar
+  name: Renewal radar
+  description: Risk-scores upcoming renewals, writes a pre-call brief for this week's customer calls and emails the radar.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      renewals:
+        type: string
+        description: "CSV with a header row: account, domain, renewal_date, arr, notes. For example: Acme, acme.com, 2026-12-01, 24000, Champion left in Q3"
+      window_days:
+        type: number
+        description: Only include renewals in the next this-many days. Defaults to 90.
+      recipients:
+        type: string
+        description: Optional comma-separated email addresses. Defaults to your connected Gmail address.
+    required:
+      - renewals
+  steps:
+    - id: match_calls
+      type: code
+      language: typescript
+      codeFile: steps/match_calls.ts
+      description: Parse the renewal list, keep renewals in the window and match customer calls in the next 7 days by attendee email domain.
+      friendlyMessage: Matching renewals to your calendar
+      input:
+        renewals: "{{ flow.input.renewals }}"
+        window_days: "{{ flow.input.window_days }}"
+      output:
+        variable: result
+        format: json
+    - id: score_risk
+      type: code
+      language: typescript
+      codeFile: steps/score_risk.ts
+      description: Score each renewal's risk, suggest the next action and write a pre-call brief for matched calls.
+      friendlyMessage: Scoring renewal risk
+      input:
+        renewals: "{{ steps.match_calls.output.renewals }}"
+        window_days: "{{ steps.match_calls.output.window_days }}"
+      output:
+        variable: result
+        format: json
+    - id: send_radar
+      type: code
+      language: typescript
+      codeFile: steps/send_radar.ts
+      description: Email the radar to you (or the recipients you set) from your connected Gmail.
+      friendlyMessage: Emailing the radar
+      input:
+        recipients: "{{ flow.input.recipients }}"
+        subject: "{{ steps.score_risk.output.subject }}"
+        body: "{{ steps.score_risk.output.body }}"
+      output:
+        variable: result
+        format: json

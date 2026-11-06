@@ -1,0 +1,24 @@
+{
+  "id": "l1-ticket-triage",
+  "title": "L1 ticket triage sweep",
+  "summary": "Sweeps your open, unassigned Zendesk tickets, classifies each one and drafts a first reply as an internal note for an agent to review.",
+  "category": "support",
+  "persona": "customer-ops",
+  "tags": ["customer-ops", "support", "triage", "zendesk", "manual", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Manual run; schedule it every hour or at the start of each shift",
+  "integrations": ["zendesk"],
+  "secrets": [],
+  "setup": [
+    "Import the template and connect Zendesk.",
+    "Run it. It reads your most recent new and open tickets that have no assignee.",
+    "Each ticket gets one internal note with category, priority, sentiment, suggested group and a draft reply. Customers never see these notes.",
+    "Set `max_tickets` (default 20) to process more or fewer per run, and `dry_run` to preview without writing notes.",
+    "Edit the `l1-triage-agent` agent to match your categories, groups and tone."
+  ],
+  "notes": [
+    "Writes an internal note and adds the `l1_triaged` tag. It does not change status, priority, assignee or other tags, and never sends a public reply.",
+    "Tickets tagged `l1_triaged` are skipped, so re-running is safe. Remove the tag to triage a ticket again.",
+    "Checks the 100 most recently created tickets per run. For triage on every new ticket as it arrives, use the webhook-based Zendesk Ticket Triage template."
+  ]
+}

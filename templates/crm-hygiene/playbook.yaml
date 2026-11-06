@@ -1,0 +1,39 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: crm-hygiene
+  name: HubSpot CRM hygiene report
+  description: Finds duplicate, incomplete, unowned and stale HubSpot records and writes a prioritised cleanup plan. Read only.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      stale_days:
+        type: number
+        description: Records not modified for this many days count as stale. Defaults to 180.
+  steps:
+    - id: scan_records
+      type: code
+      language: typescript
+      codeFile: steps/scan_records.ts
+      description: Read contacts and companies from HubSpot and count duplicates, missing fields, unowned and stale records.
+      friendlyMessage: Scanning your HubSpot records
+      input:
+        stale_days: "{{ flow.input.stale_days }}"
+      output:
+        variable: result
+        format: json
+    - id: write_report
+      type: code
+      language: typescript
+      codeFile: steps/write_report.ts
+      description: Turn the findings into a prioritised cleanup report with example records to fix first.
+      friendlyMessage: Writing the cleanup report
+      input:
+        findings: "{{ steps.scan_records.output.findings }}"
+        totals: "{{ steps.scan_records.output.totals }}"
+      output:
+        variable: result
+        format: json

@@ -1,0 +1,23 @@
+{
+  "id": "win-loss-by-competitor",
+  "title": "Win/loss by competitor",
+  "summary": "Reads your closed HubSpot deals and reports win rate, revenue and the top won and lost reasons against each competitor.",
+  "category": "sales",
+  "persona": "marketing-ops",
+  "tags": ["marketing-ops", "competitive-intel", "win-loss", "hubspot", "manual", "llm"],
+  "difficulty": "intermediate",
+  "trigger": "Manual run (deal property name, lookback in days)",
+  "integrations": ["hubspot"],
+  "secrets": [],
+  "setup": [
+    "Import the template and connect HubSpot.",
+    "Find the deal property that records the competitor (for example `competitor`). Use its internal name from HubSpot Settings > Properties.",
+    "Run it with that property name and how many days to look back (default 90).",
+    "Edit the `win-loss-analyst` agent to change how the findings are written up."
+  ],
+  "notes": [
+    "The competitor comes from one deal property you name. Deals where it is empty are counted under \"No competitor recorded\"; if it is empty on every deal, the report says so instead of guessing.",
+    "Won and lost reasons come from HubSpot's `closed_won_reason` and `closed_lost_reason` properties.",
+    "Reads up to 1,000 closed deals per run."
+  ]
+}

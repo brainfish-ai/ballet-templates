@@ -1,0 +1,24 @@
+{
+  "id": "competitor-watch",
+  "title": "Competitor watch: weekly digest & battlecards",
+  "summary": "Emails you this week's competitor news, plus a battlecard for every upcoming meeting where a competitor comes up.",
+  "category": "sales",
+  "persona": "marketing-ops",
+  "tags": ["marketing-ops", "competitive-intel", "battlecards", "google-calendar", "gmail", "manual", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Manual run (list of competitors); schedule it weekly",
+  "integrations": ["google-calendar", "gmail"],
+  "secrets": [],
+  "setup": [
+    "Import the template and connect Google Calendar and Gmail.",
+    "Run it with up to 5 competitors (names or websites, one per line or comma-separated).",
+    "The digest is emailed to your connected Gmail address. Set `recipients` to send it to a team list instead.",
+    "To get it every Monday, add a weekly schedule to the playbook and save your competitors as the default input.",
+    "Edit the `competitor-watch-analyst` agent to change the digest format or battlecard sections."
+  ],
+  "notes": [
+    "Reports the last 7 days of news on every run. Templates can't keep state between runs yet, so it can't show only what changed since the last digest.",
+    "A meeting gets a battlecard when an attendee's email domain or the meeting title matches a competitor. Matching on names is simple and can miss meetings or flag the wrong ones.",
+    "Up to 5 competitors and 10 battlecards per run, to keep the run fast."
+  ]
+}

@@ -1,0 +1,53 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: l1-ticket-triage
+  name: L1 ticket triage sweep
+  description: Classifies open, unassigned Zendesk tickets and drafts a first reply as an internal note.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      max_tickets:
+        type: number
+        description: How many tickets to triage per run (1-50). Defaults to 20.
+      dry_run:
+        type: boolean
+        description: When true, shows the triage without writing notes to Zendesk.
+  steps:
+    - id: load_tickets
+      type: code
+      language: typescript
+      codeFile: steps/load_tickets.ts
+      description: Load recent new and open tickets with no assignee that have not been triaged yet.
+      friendlyMessage: Finding tickets to triage
+      input:
+        max_tickets: "{{ flow.input.max_tickets }}"
+      output:
+        variable: result
+        format: json
+    - id: triage
+      type: code
+      language: typescript
+      codeFile: steps/triage.ts
+      description: Classify each ticket and draft a first reply.
+      friendlyMessage: Triaging tickets
+      input:
+        tickets: "{{ steps.load_tickets.output.tickets }}"
+      output:
+        variable: result
+        format: json
+    - id: write_notes
+      type: code
+      language: typescript
+      codeFile: steps/write_notes.ts
+      description: Add the triage to each ticket as an internal note (skipped on a dry run).
+      friendlyMessage: Adding internal notes in Zendesk
+      input:
+        triaged: "{{ steps.triage.output.triaged }}"
+        dry_run: "{{ flow.input.dry_run }}"
+      output:
+        variable: result
+        format: json

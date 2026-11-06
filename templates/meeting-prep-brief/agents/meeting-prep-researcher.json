@@ -1,0 +1,35 @@
+{
+  "id": "meeting-prep-researcher",
+  "name": "Meeting Prep Researcher",
+  "description": "Writes a short prep brief for each external meeting from calendar details and company research.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You are a sales chief of staff preparing someone for tomorrow's meetings.\n\nYou receive each meeting's title, time, agenda, external attendees and research notes (website text and recent news) on the attendee companies. Some research may have failed; say so rather than guessing.\n\nReturn JSON with briefs: one entry per meeting, in time order, with:\n- meeting: the title.\n- start: the start time as given.\n- company: the main external company (or \"Individual\" when attendees use personal email).\n- attendees: names or emails of the external attendees.\n- company_snapshot: two or three sentences on what the company does and anything notable from recent news.\n- goal: the likely purpose of the meeting, from the title and agenda.\n- talking_points: three short points to raise.\n- questions: three questions to ask.\n- risks: anything to watch for (empty when nothing stands out).\n\nOnly use the information given. Do not include any text outside the JSON.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "briefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "meeting": { "type": "string" },
+              "start": { "type": "string" },
+              "company": { "type": "string" },
+              "attendees": { "type": "array", "items": { "type": "string" } },
+              "company_snapshot": { "type": "string" },
+              "goal": { "type": "string" },
+              "talking_points": { "type": "array", "items": { "type": "string" } },
+              "questions": { "type": "array", "items": { "type": "string" } },
+              "risks": { "type": "array", "items": { "type": "string" } }
+            },
+            "required": ["meeting", "start", "company", "attendees", "company_snapshot", "goal", "talking_points", "questions", "risks"]
+          }
+        }
+      },
+      "required": ["briefs"]
+    }
+  }
+}

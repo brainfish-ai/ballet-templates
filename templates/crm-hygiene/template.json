@@ -1,0 +1,23 @@
+{
+  "id": "crm-hygiene",
+  "title": "HubSpot CRM hygiene report",
+  "summary": "Scans HubSpot contacts and companies for duplicates, missing fields, unowned and stale records, and writes a prioritised cleanup plan.",
+  "category": "ops",
+  "persona": "revops",
+  "tags": ["revops", "crm", "data-quality", "hubspot", "manual", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Manual run; schedule it weekly",
+  "integrations": ["hubspot"],
+  "secrets": [],
+  "setup": [
+    "Import the template and connect HubSpot.",
+    "Run it. It only reads from HubSpot and never changes a record.",
+    "Optionally set `stale_days` (default 180) for when a record counts as stale.",
+    "To get the report every week, add a weekly schedule to the playbook."
+  ],
+  "notes": [
+    "Report only: it lists what to fix but does not merge, assign or update records.",
+    "Reads up to 2,000 contacts and 2,000 companies per run, in HubSpot's default order, so very large portals are only partly checked.",
+    "Duplicates are exact matches on email (contacts) and domain (companies), ignoring case and a leading www."
+  ]
+}

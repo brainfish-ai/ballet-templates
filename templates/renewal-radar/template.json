@@ -1,0 +1,25 @@
+{
+  "id": "renewal-radar",
+  "title": "Renewal radar",
+  "summary": "Paste your upcoming renewals and get each account risk-scored, with a pre-call brief for any customer call this week, emailed to you.",
+  "category": "support",
+  "persona": "customer-ops",
+  "tags": ["customer-ops", "customer-success", "renewals", "churn-risk", "google-calendar", "gmail", "manual", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Manual run (pasted list or CSV of renewals); schedule it weekly",
+  "integrations": ["google-calendar", "gmail"],
+  "secrets": [],
+  "setup": [
+    "Import the template and connect Google Calendar and Gmail.",
+    "Run it with your renewals pasted as CSV with a header row: account, domain, renewal_date, arr, notes. Only account and renewal_date are required; add domain so customer calls can be matched.",
+    "The radar is emailed to your connected Gmail address. Set `recipients` to send it to the team instead.",
+    "To get it every Monday, add a weekly schedule and save your renewal list as the default input.",
+    "Edit the `renewal-risk-analyst` agent to match how your team scores risk."
+  ],
+  "notes": [
+    "Renewals come from the list you paste, not from a CRM or billing system. Keep the list current, or swap the first step for your CRM integration.",
+    "Risk is scored from your notes, the renewal date, ARR and whether a call is booked. It does not read product usage or support tickets.",
+    "Customer calls are matched by attendee email domain in the next 7 days. Accounts without a domain never match a call.",
+    "Up to 50 renewals per run."
+  ]
+}

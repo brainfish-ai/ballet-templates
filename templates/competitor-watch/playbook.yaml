@@ -1,0 +1,57 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: competitor-watch
+  name: "Competitor watch: weekly digest & battlecards"
+  description: Emails this week's competitor news and a battlecard for every upcoming meeting where a competitor comes up.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      competitors:
+        type: string
+        description: Up to 5 competitors, as names or websites, one per line or comma-separated (for example "Acme, rival.io").
+      recipients:
+        type: string
+        description: Optional comma-separated email addresses. Defaults to your connected Gmail address.
+    required:
+      - competitors
+  steps:
+    - id: gather_signals
+      type: code
+      language: typescript
+      codeFile: steps/gather_signals.ts
+      description: Search the web for each competitor's news from the last 7 days and find meetings in the next 7 days where a competitor comes up.
+      friendlyMessage: Gathering competitor news and meetings
+      input:
+        competitors: "{{ flow.input.competitors }}"
+      output:
+        variable: result
+        format: json
+    - id: write_digest
+      type: code
+      language: typescript
+      codeFile: steps/write_digest.ts
+      description: Write the weekly digest and one battlecard per matched meeting.
+      friendlyMessage: Writing the digest and battlecards
+      input:
+        competitors: "{{ steps.gather_signals.output.competitors }}"
+        meetings: "{{ steps.gather_signals.output.meetings }}"
+      output:
+        variable: result
+        format: json
+    - id: send_digest
+      type: code
+      language: typescript
+      codeFile: steps/send_digest.ts
+      description: Email the digest to you (or to the recipients you set) from your connected Gmail.
+      friendlyMessage: Emailing the digest
+      input:
+        recipients: "{{ flow.input.recipients }}"
+        subject: "{{ steps.write_digest.output.subject }}"
+        body: "{{ steps.write_digest.output.body }}"
+      output:
+        variable: result
+        format: json

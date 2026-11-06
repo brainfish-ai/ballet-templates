@@ -1,0 +1,48 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: win-loss-by-competitor
+  name: Win/loss by competitor
+  description: Reports win rate, revenue and top won and lost reasons against each competitor from your closed HubSpot deals.
+spec:
+  trigger:
+    type: manual
+  inputSchema:
+    type: object
+    properties:
+      competitor_property:
+        type: string
+        description: Internal name of the HubSpot deal property that records the competitor, for example "competitor".
+      days:
+        type: number
+        description: How many days of closed deals to include. Defaults to 90.
+    required:
+      - competitor_property
+  steps:
+    - id: load_deals
+      type: code
+      language: typescript
+      codeFile: steps/load_deals.ts
+      description: Load deals closed in the lookback window from HubSpot and group them by competitor.
+      friendlyMessage: Reading closed deals from HubSpot
+      input:
+        competitor_property: "{{ flow.input.competitor_property }}"
+        days: "{{ flow.input.days }}"
+      output:
+        variable: result
+        format: json
+    - id: analyse
+      type: code
+      language: typescript
+      codeFile: steps/analyse.ts
+      description: Write the win/loss read-out per competitor, with what to change.
+      friendlyMessage: Writing the win/loss report
+      input:
+        competitor_property: "{{ steps.load_deals.output.competitor_property }}"
+        lookback_days: "{{ steps.load_deals.output.lookback_days }}"
+        deals_read: "{{ steps.load_deals.output.deals_read }}"
+        deals_with_competitor: "{{ steps.load_deals.output.deals_with_competitor }}"
+        competitors: "{{ steps.load_deals.output.competitors }}"
+      output:
+        variable: result
+        format: json
