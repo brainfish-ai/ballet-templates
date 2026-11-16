@@ -4,9 +4,11 @@ import { FormEvent, useState } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PoweredByBallet } from "@/components/powered-by-ballet";
+import { ImportPlaybookButton } from "@/components/import-playbook";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { importPlaybookUrl, ALT_TEMPLATE_ID } from "@/lib/ballet-links";
 
 type Profile = {
   name: string;
@@ -26,6 +28,7 @@ export default function Home() {
   const [mock, setMock] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [ran, setRan] = useState(false);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -49,7 +52,22 @@ export default function Home() {
       const data = await res.json();
       setMock(Boolean(data.mock));
       if (!data.success && data.error) setError(data.error);
-      setProfile(data.output?.profile ?? data.output);
+      const nextProfile = (data.output?.profile ?? data.output) as Profile | null;
+      if (nextProfile && typeof nextProfile === "object" && nextProfile.company) {
+        setProfile(nextProfile);
+      } else if (data.success) {
+        setProfile({
+          name: payload.name,
+          email: payload.email,
+          title: payload.title,
+          company: payload.company || "Unknown company",
+          size: "Unknown",
+          industry: "Unknown",
+          fit_score: 50,
+          summary: typeof data.output === "string" ? data.output : "Ballet run completed. Open Studio for the full brief.",
+        });
+      }
+      setRan(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Request failed");
     } finally {
@@ -69,56 +87,81 @@ export default function Home() {
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm">
                 <span className="mb-1.5 block font-medium text-[var(--ink)]">Name</span>
-                <input name="name" required className="h-10 w-full rounded-xl border border-[var(--line)] bg-white px-3 outline-none ring-[var(--purple)] focus:ring-2" placeholder="Jordan Lee" />
+                <input
+                  name="name"
+                  required
+                  defaultValue="Jordan Lee"
+                  className="h-10 w-full rounded-xl border border-[var(--line)] bg-white px-3 outline-none ring-[var(--purple)] focus:ring-2"
+                  placeholder="Jordan Lee"
+                />
               </label>
               <label className="block text-sm">
                 <span className="mb-1.5 block font-medium text-[var(--ink)]">Work email</span>
-                <input name="email" type="email" required className="h-10 w-full rounded-xl border border-[var(--line)] bg-white px-3 outline-none ring-[var(--purple)] focus:ring-2" placeholder="jordan@acme.com" />
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  defaultValue="jordan@acmerobotics.com"
+                  className="h-10 w-full rounded-xl border border-[var(--line)] bg-white px-3 outline-none ring-[var(--purple)] focus:ring-2"
+                  placeholder="jordan@acme.com"
+                />
               </label>
               <label className="block text-sm">
                 <span className="mb-1.5 block font-medium text-[var(--ink)]">Company</span>
-                <input name="company" className="h-10 w-full rounded-xl border border-[var(--line)] bg-white px-3 outline-none ring-[var(--purple)] focus:ring-2" placeholder="Acme Robotics" />
+                <input
+                  name="company"
+                  defaultValue="Acme Robotics"
+                  className="h-10 w-full rounded-xl border border-[var(--line)] bg-white px-3 outline-none ring-[var(--purple)] focus:ring-2"
+                  placeholder="Acme Robotics"
+                />
               </label>
               <label className="block text-sm">
                 <span className="mb-1.5 block font-medium text-[var(--ink)]">Title</span>
-                <input name="title" className="h-10 w-full rounded-xl border border-[var(--line)] bg-white px-3 outline-none ring-[var(--purple)] focus:ring-2" placeholder="Head of RevOps" />
+                <input
+                  name="title"
+                  defaultValue="Head of RevOps"
+                  className="h-10 w-full rounded-xl border border-[var(--line)] bg-white px-3 outline-none ring-[var(--purple)] focus:ring-2"
+                  placeholder="Head of RevOps"
+                />
               </label>
             </div>
             <label className="block text-sm">
               <span className="mb-1.5 block font-medium text-[var(--ink)]">Website</span>
-              <input name="website" className="h-10 w-full rounded-xl border border-[var(--line)] bg-white px-3 outline-none ring-[var(--purple)] focus:ring-2" placeholder="https://acme.com" />
+              <input
+                name="website"
+                defaultValue="https://acmerobotics.com"
+                className="h-10 w-full rounded-xl border border-[var(--line)] bg-white px-3 outline-none ring-[var(--purple)] focus:ring-2"
+                placeholder="https://acme.com"
+              />
             </label>
             <label className="block text-sm">
               <span className="mb-1.5 block font-medium text-[var(--ink)]">What do you need?</span>
-              <textarea name="message" rows={4} className="w-full rounded-xl border border-[var(--line)] bg-white px-3 py-2 outline-none ring-[var(--purple)] focus:ring-2" placeholder="Looking to automate inbound routing before our next launch." />
+              <textarea
+                name="message"
+                rows={4}
+                defaultValue="Looking to automate inbound routing before our next launch."
+                className="w-full rounded-xl border border-[var(--line)] bg-white px-3 py-2 outline-none ring-[var(--purple)] focus:ring-2"
+                placeholder="Looking to automate inbound routing before our next launch."
+              />
             </label>
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Button type="submit" variant="brand" disabled={busy}>
-                {busy ? "Enriching…" : "Enrich and route with Ballet"}
+                {busy ? "Enriching..." : "Enrich and route with Ballet"}
               </Button>
               <PoweredByBallet />
             </div>
             {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
           </form>
-          <p className="mt-5 text-xs text-[var(--ink-3)]">
-            Import{" "}
-            <a className="text-[var(--purple-ink)] underline-offset-2 hover:underline" href="https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/inbound-lead-slack-alert&ref=main">
-              inbound-lead-slack-alert
-            </a>
-            {" "}or{" "}
-            <a className="text-[var(--purple-ink)] underline-offset-2 hover:underline" href="https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/salesforce-lead-enrichment&ref=main">
-              salesforce-lead-enrichment
-            </a>
-            .
-          </p>
         </Card>
 
         <Card className={`animate-[rise_0.75s_ease-out] ${profile ? "bg-[var(--lilac)]/35" : ""}`}>
           <h2 className="text-lg font-semibold text-[var(--ink)]">Enriched profile</h2>
-          <p className="mt-1 text-sm text-[var(--ink-2)]">Company, size, industry and fit score from Ballet.</p>
+          <p className="mt-1 text-sm text-[var(--ink-2)]">
+            Company, size, industry and fit score from Ballet.
+          </p>
           {!profile ? (
             <p className="mt-8 text-sm text-[var(--ink-3)] animate-[pulse-soft_2.4s_ease-in-out_infinite]">
-              Submit a lead to see the enriched card.
+              Submit a lead to see the enriched card. No API keys needed for the demo.
             </p>
           ) : (
             <div className="mt-6 space-y-4">
@@ -148,8 +191,39 @@ export default function Home() {
               <p className="text-sm text-[var(--ink-2)]">{profile.summary}</p>
               {profile.routing && (
                 <p className="text-sm text-[var(--ink)]">
-                  Route to <span className="font-semibold">{profile.routing.owner}</span> ({profile.routing.queue})
+                  Route to <span className="font-semibold">{profile.routing.owner}</span> (
+                  {profile.routing.queue})
                 </p>
+              )}
+
+              {ran && (
+                <div className="space-y-3 rounded-2xl border border-[var(--line)] bg-white/80 p-4">
+                  <p className="text-sm text-[var(--ink)]">
+                    This ran on sample data. Import the real playbook into Ballet and run it on your
+                    CRM.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <ImportPlaybookButton />
+                    <PoweredByBallet />
+                  </div>
+                  <p className="text-xs text-[var(--ink-3)]">
+                    Primary:{" "}
+                    <a
+                      className="text-[var(--purple-ink)] underline-offset-2 hover:underline"
+                      href={importPlaybookUrl()}
+                    >
+                      salesforce-lead-enrichment
+                    </a>
+                    . Alternative:{" "}
+                    <a
+                      className="text-[var(--purple-ink)] underline-offset-2 hover:underline"
+                      href={importPlaybookUrl(ALT_TEMPLATE_ID)}
+                    >
+                      inbound-lead-slack-alert
+                    </a>
+                    .
+                  </p>
+                </div>
               )}
             </div>
           )}

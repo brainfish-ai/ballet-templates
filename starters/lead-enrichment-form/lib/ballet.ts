@@ -1,14 +1,27 @@
 /**
  * Triggers a Ballet playbook from a Next.js route handler.
  *
- * Auth and payload follow Ballet's public REST docs:
- * - Authorization: Bearer <workspace API token>
- * - Execute body: { input: {...} }
- * - Webhook body: the event payload itself (URL contains /webhooks/)
+ * Verified against Ballet public docs and live API error responses:
+ * - Docs: https://ballet.dev/docs/articles/how-do-i-authenticate-with-the-ballet-api-tWaqCPLyGT
+ * - Docs: https://ballet.dev/docs/articles/how-do-i-run-a-playbook-over-the-rest-api-KQIz0apagm
+ * - Live probe without token → 401 {"error":"Authentication required"}
+ * - Live probe with invalid Bearer → 401 {"error":"Invalid or revoked API token"}
  *
- * Set BALLET_API_KEY (workspace token) and BALLET_WORKFLOW_URL
- * (execute URL or webhook URL). When either is missing, mockFn runs
- * so the demo works without credentials.
+ * Real mode (both env vars set):
+ *   POST BALLET_WORKFLOW_URL
+ *   Authorization: Bearer <BALLET_API_KEY>   // workspace token, mt_live_…
+ *   Content-Type: application/json
+ *   Body for execute/run URLs: { "input": { …lead fields } }
+ *   Body for webhook URLs (/webhooks/): the lead fields object itself
+ *
+ * Prefer:
+ *   BALLET_WORKFLOW_URL=https://api.ballet.dev/api/playbooks/<PLAYBOOK_ID>/execute
+ * which streams SSE and ends with a run_stop event containing output.
+ *
+ * Mock mode (either env var missing): returns mockFn() so the demo works offline.
+ *
+ * Note: Ballet docs name the token BALLET_API_TOKEN. This starter uses BALLET_API_KEY
+ * as the env var name for the same Bearer token value.
  */
 export type BalletTriggerResult<T> = {
   mock: boolean;
@@ -31,7 +44,9 @@ async function readExecuteStream(res: Response): Promise<{
   if (!contentType.includes("text/event-stream")) {
     const json = (await res.json().catch(() => ({}))) as Record<string, unknown>;
     if (!res.ok) {
-      throw new Error(String(json.error ?? json.message ?? `Ballet request failed (${res.status})`));
+      throw new Error(
+        String(json.error ?? json.message ?? `Ballet request failed (${res.status})`),
+      );
     }
     return {
       success: true,
