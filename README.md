@@ -49,6 +49,7 @@ Imported playbooks always start unpublished with triggers off, and secrets are n
 | [Daily API Digest to Slack](templates/daily-api-digest-slack) | Pull records from any JSON API, summarise them, and post a digest to Slack on a schedule. | Manual run, or attach a daily schedule in Studio | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/daily-api-digest-slack&ref=main) |
 | [Generic Webhook Relay](templates/generic-webhook-relay) | Verify any signed incoming webhook, reshape it, and forward it to a downstream service with retries. | Generic HMAC webhook | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/generic-webhook-relay&ref=main) |
 | [GitHub Issue Triage](templates/github-issue-triage) | Label every newly opened GitHub issue with an LLM through a signed webhook. | GitHub webhook (issues) | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/github-issue-triage&ref=main) |
+| [Invoice approval workflow](templates/invoice-approval) | Record an approve or reject decision on an invoice, notify finance, and keep an audit trail of the run. | Generic HMAC webhook (approve or reject) | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/invoice-approval&ref=main) |
 
 ### MCP
 
@@ -58,6 +59,18 @@ Imported playbooks always start unpublished with triggers off, and secrets are n
 | [Slack Thread to Linear Issue via MCP](templates/mcp-slack-thread-to-linear) | Turn a Slack thread into a well-formed Linear issue using the Slack and Linear MCP servers. | Manual run | [Import](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/mcp-slack-thread-to-linear&ref=main) |
 
 <!-- templates:end -->
+
+## Next.js starters
+
+Demo apps under `starters/` that call Ballet workflows. Each one is a backlink and acquisition asset for [ballet.dev](https://ballet.dev).
+
+| Starter | What it does | Matching playbook | Deploy | Open in v0 |
+|---|---|---|---|---|
+| [revops-pipeline-dashboard](starters/revops-pipeline-dashboard) | Stage funnel, deal table, win rate and forecast cards, plus pipeline hygiene via Ballet | [crm-hygiene](templates/crm-hygiene) (related: [win-loss-by-competitor](templates/win-loss-by-competitor)) | [Deploy with Vercel](https://vercel.com/new/clone?repository-url=https://github.com/brainfish-ai/ballet-templates&root-directory=starters/revops-pipeline-dashboard&env=BALLET_API_KEY,BALLET_WORKFLOW_URL) | [Open in v0](https://v0.app/chat/api/open?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbrainfish-ai%2Fballet-templates%2Fmain%2Fstarters%2Frevops-pipeline-dashboard%2FREADME.md) |
+| [lead-enrichment-form](starters/lead-enrichment-form) | Lead capture form that enriches and routes through Ballet, then shows a profile card | [inbound-lead-slack-alert](templates/inbound-lead-slack-alert) (related: [salesforce-lead-enrichment](templates/salesforce-lead-enrichment)) | [Deploy with Vercel](https://vercel.com/new/clone?repository-url=https://github.com/brainfish-ai/ballet-templates&root-directory=starters/lead-enrichment-form&env=BALLET_API_KEY,BALLET_WORKFLOW_URL) | [Open in v0](https://v0.app/chat/api/open?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbrainfish-ai%2Fballet-templates%2Fmain%2Fstarters%2Flead-enrichment-form%2FREADME.md) |
+| [invoice-approval-inbox](starters/invoice-approval-inbox) | Invoice list with status filters and a detail panel; approve or reject through Ballet | [invoice-approval](templates/invoice-approval) | [Deploy with Vercel](https://vercel.com/new/clone?repository-url=https://github.com/brainfish-ai/ballet-templates&root-directory=starters/invoice-approval-inbox&env=BALLET_API_KEY,BALLET_WORKFLOW_URL) | [Open in v0](https://v0.app/chat/api/open?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbrainfish-ai%2Fballet-templates%2Fmain%2Fstarters%2Finvoice-approval-inbox%2FREADME.md) |
+
+Each starter uses `BALLET_API_KEY` and `BALLET_WORKFLOW_URL`, falls back to mock responses when those are unset, and includes a Deploy with Vercel button plus an Open in v0 button in its own README.
 
 ## Related repositories
 

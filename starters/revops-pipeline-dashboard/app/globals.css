@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f7f4ef;
+  --paper-2: #f0ebe3;
+  --ink: #1b1631;
+  --ink-2: #4a4460;
+  --ink-3: #635c7a;
+  --line: #1b16311a;
+  --purple: #8a5bd1;
+  --purple-ink: #6b3fc0;
+  --deep: #2a1f5e;
+  --lilac: #efe7fb;
+  --mint: #24965c;
+  --amber: #b8701c;
+  --danger: #a8331d;
+  --dots: radial-gradient(#1b16311c 1px, transparent 1.4px) 0 0 / 22px 22px;
+  --background: var(--paper);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.72; }
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), "Geist Variable", system-ui, sans-serif;
+}

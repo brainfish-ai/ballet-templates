@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7f4ef"/>
+      <stop offset="100%" stop-color="#efe7fb"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#g)"/>
+  <rect x="48" y="48" width="1184" height="624" rx="28" fill="#ffffff" fill-opacity="0.85" stroke="#1b16311a"/>
+  <rect x="80" y="88" width="48" height="48" rx="12" fill="#2a1f5e"/>
+  <text x="148" y="120" font-family="Geist, Helvetica, Arial, sans-serif" font-size="28" font-weight="700" fill="#1b1631">BALLET</text>
+  <text x="80" y="210" font-family="Geist, Helvetica, Arial, sans-serif" font-size="42" font-weight="700" fill="#1b1631">Invoice Approval Inbox</text>
+  <text x="80" y="260" font-family="Geist, Helvetica, Arial, sans-serif" font-size="22" fill="#4a4460">Filter invoices by status, inspect a detail panel, and approve or reject through a Ballet </text>
+  <rect x="80" y="320" width="280" height="48" rx="14" fill="#6b3fc0"/>
+  <text x="220" y="351" text-anchor="middle" font-family="Geist, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#ffffff">Send decision to Ballet</text>
+</svg>

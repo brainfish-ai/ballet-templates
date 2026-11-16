@@ -1,0 +1,30 @@
+{
+  "id": "invoice-approval",
+  "title": "Invoice approval workflow",
+  "summary": "Record an approve or reject decision on an invoice, notify finance, and keep an audit trail of the run.",
+  "category": "ops",
+  "tags": ["ops", "finance", "approvals", "invoices", "webhook", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Generic HMAC webhook (approve or reject)",
+  "integrations": [],
+  "secrets": [
+    {
+      "name": "INBOUND_HMAC_SECRET",
+      "description": "HMAC-SHA256 secret your approval UI uses to sign webhook bodies."
+    },
+    {
+      "name": "FINANCE_WEBHOOK_URL",
+      "description": "HTTPS endpoint that receives the approval outcome JSON for your finance system or Slack incoming webhook."
+    }
+  ],
+  "setup": [
+    "Add the two secrets above.",
+    "Publish the playbook and copy its webhook URL from Studio.",
+    "Point the invoice-approval-inbox starter at that URL with BALLET_WORKFLOW_URL, or use the REST execute endpoint with BALLET_API_KEY.",
+    "Approve or reject a sample invoice and confirm the finance webhook receives the outcome."
+  ],
+  "notes": [
+    "This template records the human decision from your UI. It does not auto-approve invoices.",
+    "Replace FINANCE_WEBHOOK_URL with Slack, email, or your AP system as needed."
+  ]
+}

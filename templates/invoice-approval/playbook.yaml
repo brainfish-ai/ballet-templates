@@ -1,0 +1,78 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: invoice-approval
+  name: Invoice approval workflow
+  description: Records an approve or reject decision on an invoice, notifies finance, and keeps a short audit summary of the run.
+spec:
+  trigger:
+    type: webhook
+    webhook:
+      provider: generic
+      token: ""
+      responseMode: immediate
+      credentialRef: INBOUND_HMAC_SECRET
+      idempotencyHeader: X-Event-Id
+  inputSchema:
+    type: object
+    properties:
+      invoice_id:
+        type: string
+      vendor:
+        type: string
+      amount:
+        type: number
+      currency:
+        type: string
+      decision:
+        type: string
+        description: approve or reject
+      decided_by:
+        type: string
+      reason:
+        type: string
+      due_date:
+        type: string
+      memo:
+        type: string
+    required:
+      - invoice_id
+      - decision
+  steps:
+    - id: validate_decision
+      type: code
+      language: typescript
+      codeFile: steps/validate_decision.ts
+      description: Normalise the decision and write a short audit summary for finance.
+      friendlyMessage: Validating the approval
+      input:
+        invoice_id: "{{ flow.input.invoice_id }}"
+        vendor: "{{ flow.input.vendor }}"
+        amount: "{{ flow.input.amount }}"
+        currency: "{{ flow.input.currency }}"
+        decision: "{{ flow.input.decision }}"
+        decided_by: "{{ flow.input.decided_by }}"
+        reason: "{{ flow.input.reason }}"
+        due_date: "{{ flow.input.due_date }}"
+        memo: "{{ flow.input.memo }}"
+      output:
+        variable: result
+        format: json
+    - id: notify_finance
+      type: http
+      description: POST the approval outcome to your finance webhook.
+      friendlyMessage: Notifying finance
+      method: POST
+      url: "{{ secret.FINANCE_WEBHOOK_URL }}"
+      headers:
+        Content-Type: application/json
+      body: "{{ steps.validate_decision.output }}"
+      input: {}
+      output:
+        variable: result
+        format: json
+      timeoutMs: 15000
+      retry:
+        maxAttempts: 3
+        backoff: exponential
+        delayMs: 250

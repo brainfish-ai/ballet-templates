@@ -1,0 +1,16 @@
+{
+  "id": "invoice-approval-scribe",
+  "name": "Invoice Approval Scribe",
+  "description": "Writes a short audit summary for an invoice approve or reject decision.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You write one-sentence audit summaries for invoice approval decisions.\n\nRules:\n- State the decision, invoice id, vendor and amount when present.\n- Include the reason when one is given.\n- Do not invent policy violations or fraud claims.\n- Keep the summary under 40 words.\n\nReturn JSON with one field, \"summary\".",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": { "summary": { "type": "string" } },
+      "required": ["summary"]
+    }
+  }
+}
