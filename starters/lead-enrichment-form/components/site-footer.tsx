@@ -1,4 +1,4 @@
-import { SIGNUP_URL } from "@/lib/ballet-links";
+import { SIGNUP_URL } from "@/lib/types";
 
 export function SiteFooter({ slug }: { slug: string }) {
   const href = `https://ballet.dev?utm_source=github&utm_medium=template&utm_campaign=${slug}`;
@@ -24,7 +24,7 @@ export function SiteFooter({ slug }: { slug: string }) {
             Sign up free
           </a>
           <p className="text-xs text-[var(--ink-3)]">
-            Demo works with no env vars. Set BALLET_API_KEY and BALLET_WORKFLOW_URL for live runs.
+            Demo streams from Ballet. Falls back to labelled sample data if the live endpoint is unreachable.
           </p>
         </div>
       </div>

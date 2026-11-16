@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { SIGNUP_URL } from "@/lib/ballet-links";
+import { SIGNUP_URL } from "@/lib/types";
 
 export function SiteHeader({
   title,
@@ -14,7 +14,7 @@ export function SiteHeader({
       <div className="relative mx-auto flex max-w-6xl flex-col gap-6 px-6 py-10 sm:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <a
-            href="https://ballet.dev?utm_source=v0&utm_medium=template&utm_campaign=lead-enrichment-form"
+            href="https://ballet.dev?utm_source=v0&utm_medium=template&utm_campaign=lead-enrichment"
             className="inline-flex w-fit items-center gap-3"
           >
             <Image

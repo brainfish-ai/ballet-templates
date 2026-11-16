@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Lead Enrichment Form | Ballet",
-  description: "Capture a lead, send it to a Ballet enrichment and routing workflow, and show the enriched profile card.",
+  description:
+    "Watch Ballet enrich a lead live: people data, website crawl, ICP score, and a ready-to-send opener.",
 };
 
 export default function RootLayout({
