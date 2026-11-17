@@ -1,6 +1,6 @@
 {
   "name": "@brainfish-ai/ballet-templates",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Importable Ballet playbook templates for support, sales, ops and MCP workflows.",
   "type": "module",
   "license": "MIT",
