@@ -1,10 +1,22 @@
 {
-  "name": "ballet-templates",
+  "name": "@brainfish-ai/ballet-templates",
   "version": "0.1.0",
-  "private": true,
   "description": "Importable Ballet playbook templates for support, sales, ops and MCP workflows.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brainfish-ai/ballet-templates.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "templates/",
+    "catalog.json",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
     "node": ">=20"
   },
