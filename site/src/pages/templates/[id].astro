@@ -1,0 +1,863 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import Icon from '../../components/Icon.astro';
+import AppGlyph from '../../components/AppGlyph.astro';
+import {
+  formatIntegration,
+  getAllTemplates,
+  type TemplateDetail,
+} from '../../lib/templates';
+
+export function getStaticPaths() {
+  return getAllTemplates().map(t => ({
+    params: { id: t.id },
+    props: { template: t },
+  }));
+}
+
+interface Props {
+  template: TemplateDetail;
+}
+
+const { template } = Astro.props;
+const shareUrl = `https://templates.ballet.dev/templates/${template.id}/`;
+
+function humanizeStepId(id: string): string {
+  return id
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function formatCallTitle(call: { kind: string; title: string }): string {
+  if (call.kind === 'agents') return humanizeStepId(call.title);
+  return call.title;
+}
+
+const primaryIntegration = template.integrations[0];
+const triggerTitle = primaryIntegration
+  ? formatIntegration(primaryIntegration)
+  : template.triggerKind === 'webhook'
+    ? 'Webhook'
+    : template.triggerKind === 'schedule'
+      ? 'Schedule'
+      : 'Manual run';
+
+const triggerSubtitle = primaryIntegration && template.triggerKind === 'webhook'
+  ? `Runs when ${formatIntegration(primaryIntegration)} sends an event`
+  : template.trigger;
+
+const hasNeeds = template.secretSpecs.length > 0 || template.mcpServerSpecs.length > 0;
+---
+
+<Base
+  title={`${template.title} | Ballet Templates`}
+  description={template.summary}
+>
+  <SiteHeader showBackToCatalog />
+
+  <main id="main" class="detail-main">
+    <div class="wrap detail-wrap">
+      <header class="detail-header">
+        <p class="detail-eyebrow">
+          <a href={`/?category=${template.useCase}#catalog`} class="eyebrow-link">
+            {template.useCaseLabel}
+          </a>
+          <span class="eyebrow-sep">/</span>
+          <span>Import template</span>
+        </p>
+
+        <h1 class="detail-h1">{template.title}</h1>
+        <p class="detail-summary">{template.summary}</p>
+      </header>
+
+      <div class="detail-grid">
+        <!-- Left Column: How it works -->
+        <section class="detail-left">
+          <div class="section-head">
+            <h2>How it works</h2>
+          </div>
+
+          <div class="flow-canvas">
+            <div class="flow-node trigger-node">
+              <div class="node-head">
+                <span class="node-icon" aria-hidden="true">
+                  {primaryIntegration ? (
+                    <AppGlyph app={primaryIntegration} size={16} />
+                  ) : (
+                    <Icon
+                      name={
+                        template.triggerKind === 'webhook'
+                          ? 'webhooks-logo'
+                          : template.triggerKind === 'schedule'
+                            ? 'clock'
+                            : 'play'
+                      }
+                      size={15}
+                    />
+                  )}
+                </span>
+                <div class="node-copy">
+                  <div class="node-title-row">
+                    <strong class="node-title">{triggerTitle}</strong>
+                  </div>
+                  <p class="node-desc">{triggerSubtitle}</p>
+                </div>
+              </div>
+            </div>
+
+            {template.workflowSteps.map(step => {
+              const visibleCalls = step.calls.filter(c => c.kind !== 'http' && c.kind !== 'secret');
+              return (
+                <div class="node-connector-wrap">
+                  <div class="node-connector" aria-hidden="true">
+                    <span class="node-dot"></span>
+                  </div>
+                  <article class="flow-node">
+                    <div class="node-head">
+                      <span class="node-circle" aria-hidden="true"></span>
+                      <div class="node-copy">
+                        <div class="node-title-row">
+                          <strong class="node-title">{humanizeStepId(step.id)}</strong>
+                        </div>
+                        <p class="node-desc">{step.description}</p>
+                        {visibleCalls.length > 0 && (
+                          <div class="node-chips">
+                            {visibleCalls.map(call => (
+                              <span class="node-chip">
+                                <Icon
+                                  name={
+                                    call.kind === 'agents'
+                                      ? 'sparkle'
+                                      : call.kind === 'mcp'
+                                        ? 'plugs-connected'
+                                        : 'wrench'
+                                  }
+                                  size={12}
+                                />
+                                {formatCallTitle(call)}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <!-- Right Column: Integrations, Models, What you will need, Setup -->
+        <aside class="detail-aside">
+          {template.integrations.length > 0 && (
+            <section class="aside-section">
+              <h2 class="aside-heading">Integrations required</h2>
+              <ul class="chip-list">
+                {template.integrations.map(intg => (
+                  <li class="spec-chip">
+                    <AppGlyph app={intg} size={14} />
+                    <span>{formatIntegration(intg)}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {template.modelLabel && (
+            <section class="aside-section">
+              <h2 class="aside-heading">Models used</h2>
+              <ul class="chip-list">
+                <li class="spec-chip">
+                  {template.modelProvider ? (
+                    <img
+                      src={`/assets/models/${template.modelProvider}.avif`}
+                      alt=""
+                      width="14"
+                      height="14"
+                      class="model-provider-icon"
+                    />
+                  ) : (
+                    <Icon name="sparkle" size={14} />
+                  )}
+                  <span>{template.modelLabel}</span>
+                </li>
+              </ul>
+            </section>
+          )}
+
+          {hasNeeds && (
+            <section class="aside-section">
+              <h2 class="aside-heading">What you will need</h2>
+              <ul class="grouped-list">
+                {template.secretSpecs.map(secret => (
+                  <li class="req-row">
+                    <span class="req-icon" aria-hidden="true">
+                      <Icon name="key" size={14} />
+                    </span>
+                    <div class="req-body">
+                      <p class="req-name is-mono">{secret.name}</p>
+                      {secret.description && <p class="req-detail">{secret.description}</p>}
+                    </div>
+                    <button
+                      type="button"
+                      class="req-status js-copy-text"
+                      data-copy={secret.name}
+                      data-toast={`Copied ${secret.name}`}
+                      title={`Copy ${secret.name}`}
+                    >
+                      <Icon name="circle-dashed" size={13} />
+                      <span>Add after import</span>
+                    </button>
+                  </li>
+                ))}
+                {template.mcpServerSpecs.map(mcp => (
+                  <li class="req-row">
+                    <span class="req-icon" aria-hidden="true">
+                      <Icon name="plugs-connected" size={14} />
+                    </span>
+                    <div class="req-body">
+                      <p class="req-name">{mcp.name ?? mcp.id}</p>
+                      <p class="req-detail">{mcp.transport ? `MCP server (${mcp.transport})` : 'MCP server'}</p>
+                    </div>
+                    <span class="req-status">
+                      <Icon name="circle-dashed" size={13} />
+                      <span>Connect after import</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p class="aside-footnote">
+                Secret values never leave your workspace. Importing does not publish the playbook or turn on any webhook.
+              </p>
+            </section>
+          )}
+
+          {template.setup.length > 0 && (
+            <section class="aside-section">
+              <h2 class="aside-heading">Setup</h2>
+              <ol class="grouped-list setup-ol">
+                {template.setup.map((line, index) => (
+                  <li class="setup-row">
+                    <span class="setup-num">{index + 1}</span>
+                    <span class="setup-text">{line}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
+          {template.notes.length > 0 && (
+            <section class="aside-section">
+              <h2 class="aside-heading">Notes</h2>
+              <ul class="notes-list">
+                {template.notes.map(note => (
+                  <li>{note}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- Sticky Bottom Action Bar matching app.ballet.dev/import -->
+  <div class="sticky-bar">
+    <div class="wrap sticky-bar-inner">
+      <p class="sticky-note">
+        Create a free account to add this to your workspace.
+        <a href={template.githubUrl} target="_blank" rel="noopener" class="sticky-source-link">
+          <Icon name="github-logo" size={14} />
+          <span>View source (brainfish-ai/ballet-templates)</span>
+        </a>
+      </p>
+
+      <div class="sticky-actions">
+        <button
+          type="button"
+          class="btn-outline js-copy-current"
+          data-copy={shareUrl}
+          data-toast="Share link copied"
+        >
+          <Icon name="link" size={15} />
+          Copy link
+        </button>
+        <a href={template.primaryCtaUrl} target="_blank" rel="noopener" class="btn-ink">
+          <Icon name="download-simple" size={15} />
+          Import this template
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <SiteFooter compact />
+</Base>
+
+<style>
+  .detail-main {
+    position: relative;
+    padding-bottom: 48px;
+  }
+
+  .detail-wrap {
+    padding-top: 12px;
+  }
+
+  .detail-header {
+    max-width: 820px;
+    margin-bottom: 28px;
+  }
+
+  .detail-eyebrow {
+    margin: 0 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted-2);
+  }
+
+  .eyebrow-link {
+    color: var(--brand-soft);
+  }
+
+  .eyebrow-link:hover {
+    text-decoration: underline;
+  }
+
+  .detail-h1 {
+    margin: 0 0 8px;
+    font-size: clamp(1.75rem, 2.8vw, 2.25rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.18;
+    color: var(--ink);
+  }
+
+  .detail-summary {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  /* Two-column layout matching app.ballet.dev/import */
+  .detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 960px) {
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .section-head h2,
+  .aside-heading {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .aside-heading {
+    margin-bottom: 8px;
+  }
+
+  .view-toggle {
+    display: inline-flex;
+    padding: 2px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .toggle-btn {
+    padding: 4px 11px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .toggle-btn.is-active {
+    background: var(--ink);
+    color: #ffffff;
+  }
+
+  /* Dot-grid flow canvas */
+  .flow-canvas {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background-color: var(--paper-2);
+    background-image: radial-gradient(rgba(27, 22, 49, 0.08) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  .flow-node {
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    padding: 16px 18px;
+    box-shadow: 0 1px 2px rgba(27, 22, 49, 0.03);
+  }
+
+  .node-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .node-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--ink);
+  }
+
+  .node-circle {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    border: 1.5px solid var(--muted-2);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .node-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .node-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+
+  .node-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .node-kind-tag {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted-2);
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 6px;
+    text-transform: lowercase;
+  }
+
+  .node-desc {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .node-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .node-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .node-connector-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .node-connector {
+    position: relative;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .node-connector::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    border-left: 1.5px dashed var(--line-strong);
+  }
+
+  .node-dot {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--muted-2);
+    border: 2px solid var(--paper-2);
+  }
+
+  .step-code-details {
+    margin-top: 12px;
+    border-top: 1px solid var(--line);
+    padding-top: 8px;
+  }
+
+  .step-code-details summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted-2);
+    cursor: pointer;
+  }
+
+  .step-code-details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .step-code-details summary:hover {
+    color: var(--ink);
+  }
+
+  .code-block {
+    margin: 10px 0 0;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: #1b1631;
+    color: #efeafd;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.55;
+    overflow-x: auto;
+  }
+
+  .yaml-panel {
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: #1b1631;
+    overflow: hidden;
+  }
+
+  .yaml-panel .code-block {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .yaml-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #d7d0ee;
+    font-family: var(--mono);
+    font-size: 12.5px;
+  }
+
+  .yaml-bar .btn-outline {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+  /* Right Column */
+  .detail-aside {
+    display: grid;
+    gap: 20px;
+  }
+
+  .aside-section {
+    display: grid;
+    gap: 8px;
+  }
+
+  .chip-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .spec-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 11px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .model-provider-icon {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .grouped-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .grouped-list > li + li {
+    border-top: 1px solid var(--line);
+  }
+
+  .req-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+  }
+
+  .req-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--paper-2);
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .req-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .req-name {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .req-name.is-mono {
+    font-family: var(--mono);
+    font-size: 12.5px;
+  }
+
+  .req-detail {
+    margin: 1px 0 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .req-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-size: 12.5px;
+    color: var(--muted-2);
+    cursor: pointer;
+  }
+
+  .req-status:hover {
+    color: var(--ink);
+  }
+
+  .aside-footnote {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--muted-2);
+  }
+
+  .setup-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+  }
+
+  .setup-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    color: var(--muted);
+    font-size: 11.5px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .setup-text {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .notes-list {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+    display: grid;
+    gap: 4px;
+  }
+
+  /* Sticky Bottom Bar */
+  .sticky-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 40;
+    border-top: 1px solid var(--line);
+    background: rgba(247, 244, 239, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 12px 0;
+  }
+
+  .sticky-bar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .sticky-note {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .sticky-source-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 8px;
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    vertical-align: -2px;
+  }
+
+  .sticky-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 720px) {
+    .sticky-note {
+      display: none;
+    }
+    .sticky-bar-inner {
+      justify-content: flex-end;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const toggleBtns = Array.from(document.querySelectorAll('.toggle-btn'));
+    const stepsEl = document.getElementById('view-steps');
+    const yamlEl = document.getElementById('view-yaml');
+
+    toggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const view = btn.getAttribute('data-view');
+        toggleBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+        if (stepsEl) stepsEl.hidden = view !== 'steps';
+        if (yamlEl) yamlEl.hidden = view !== 'yaml';
+      });
+    });
+
+    document.querySelectorAll('.js-copy-current').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          window.balletToast?.(btn.getAttribute('data-toast') || 'Link copied');
+        } catch {
+          window.balletToast?.('Could not copy link');
+        }
+      });
+    });
+
+    document.querySelectorAll('.js-copy-text').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const text = btn.getAttribute('data-copy') || '';
+        try {
+          await navigator.clipboard.writeText(text);
+          window.balletToast?.(btn.getAttribute('data-toast') || 'Copied');
+        } catch {
+          window.balletToast?.('Could not copy');
+        }
+      });
+    });
+  })();
+</script>

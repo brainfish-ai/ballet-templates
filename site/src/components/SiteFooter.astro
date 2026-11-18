@@ -1,0 +1,60 @@
+---
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<footer class:list={['ft', { 'ft-compact': compact }]}>
+  <div class="wrap">
+    <div class="ft-grid">
+      <div class="ft-brand">
+        <a href="/">
+          <img src="/assets/ballet-logo-v2.svg" alt="Ballet" width="132" height="24" />
+        </a>
+        <p>
+          Open, reviewable workflow templates for support, sales, RevOps, and MCP.
+          Import into Ballet Studio or remix any playbook in one click.
+        </p>
+      </div>
+
+      <div class="ft-cols">
+        <div class="ft-col">
+          <h3>Categories</h3>
+          <ul>
+            <li><a href="/?category=lead-management#catalog">Lead management</a></li>
+            <li><a href="/?category=sales-pipeline#catalog">Sales pipeline</a></li>
+            <li><a href="/?category=marketing-campaigns#catalog">Marketing campaigns</a></li>
+            <li><a href="/?category=customer-support#catalog">Customer support</a></li>
+            <li><a href="/?category=data-management#catalog">Data management</a></li>
+            <li><a href="/?category=project-management#catalog">Project management</a></li>
+            <li><a href="/?category=tickets-incidents#catalog">Tickets &amp; incidents</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h3>Platform</h3>
+          <ul>
+            <li><a href="https://ballet.dev" target="_blank" rel="noopener">ballet.dev</a></li>
+            <li><a href="https://ballet.dev/playbooks" target="_blank" rel="noopener">Playbooks</a></li>
+            <li><a href="https://ballet.dev/mcp" target="_blank" rel="noopener">MCP Integrations</a></li>
+            <li><a href="https://app.ballet.dev" target="_blank" rel="noopener">Ballet Studio</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h3>Community</h3>
+          <ul>
+            <li><a href="https://github.com/brainfish-ai/ballet-templates" target="_blank" rel="noopener">GitHub Repo</a></li>
+            <li><a href="https://github.com/brainfish-ai/ballet-templates/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing Guide</a></li>
+            <li><a href="https://ballet.dev/signup" target="_blank" rel="noopener">Get a demo</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="ft-bottom">
+      <span>MIT Licensed Templates · Built by Ballet</span>
+      <span>Every imported playbook arrives unpublished with triggers off.</span>
+    </div>
+  </div>
+</footer>

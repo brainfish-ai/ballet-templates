@@ -1,0 +1,356 @@
+/* ============================================================================
+   Ballet Templates Hub — Design System
+   Matches ballet-website (warm paper #f7f4ef, ink #1b1631, purple #6b3fc0,
+   Geist Variable, dot-grid sky hero) + Ballet SharedPlaybookPage two-column
+   remix & share UX.
+   ========================================================================== */
+
+:root {
+  --paper: #f7f4ef;
+  --paper-deep: #efeae1;
+  --surface: #ffffff;
+  --surface-subtle: #fcfaf6;
+  --ink: #1b1631;
+  --muted: #463f5c;
+  --muted-2: #6a6380;
+  --brand: #8a5bd1;
+  --brand-soft: #6b3fc0;
+  --brand-wash: rgba(107, 63, 192, 0.08);
+  --brand-border: rgba(107, 63, 192, 0.24);
+  --green: #1b7a49;
+  --green-wash: rgba(27, 122, 73, 0.09);
+  --amber: #8a6100;
+  --amber-wash: rgba(254, 209, 83, 0.25);
+  --line: rgba(27, 22, 49, 0.1);
+  --line-strong: rgba(27, 22, 49, 0.18);
+  --sky: var(--paper);
+  --sky-glow: none;
+  --display: "Geist Variable", "Geist Fallback", system-ui, -apple-system, sans-serif;
+  --body: "Geist Variable", "Geist Fallback", system-ui, -apple-system, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --glow-x: 50%;
+    --glow-y: 38%;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: clip;
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+@media (max-width: 640px) {
+  .wrap {
+    padding: 0 18px;
+  }
+}
+
+.serif-title {
+  font-family: var(--display);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.serif-title em {
+  font-style: normal;
+  background: linear-gradient(96deg, #6b3fc0 0%, #8a5bd1 60%, #6b3fc0 130%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-soft);
+}
+
+/* Primary ink pill button — matches ballet-website light.css */
+.btn-ink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--ink);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px -10px rgba(27, 22, 49, 0.7);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn-ink:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -12px rgba(27, 22, 49, 0.75);
+}
+
+.btn-ink:active {
+  transform: translateY(0);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.btn-outline:hover {
+  border-color: var(--ink);
+  background: var(--surface-subtle);
+}
+
+.btn-sm {
+  height: 34px;
+  padding: 0 13px;
+  font-size: 13px;
+}
+
+/* ---------- Header (glass pill matching ballet-website) ---------- */
+.shd {
+  position: fixed;
+  top: 14px;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+  pointer-events: none;
+}
+
+.shd-inner {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 1200px;
+  height: 58px;
+  padding: 0 10px 0 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(27, 22, 49, 0.09);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 12px 32px -18px rgba(27, 22, 49, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.shd-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.shd-logo-badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--brand-wash);
+  color: var(--brand-soft);
+  border: 1px solid var(--brand-border);
+}
+
+.shd-nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  min-width: 0;
+}
+
+.shd-nav a {
+  white-space: nowrap;
+}
+
+.shd-nav a:hover {
+  color: var(--ink);
+}
+
+.shd-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.shd-github {
+  width: 34px;
+  padding: 0;
+}
+
+.shd-spacer {
+  height: 86px;
+}
+
+@media (max-width: 1060px) {
+  .shd-nav {
+    display: none;
+  }
+}
+
+/* ---------- Footer (warm ink dark band matching ballet-website) ---------- */
+.ft {
+  position: relative;
+  overflow: hidden;
+  background: #1b1631;
+  color: #e9e4f5;
+  padding: 56px 0 44px;
+  margin-top: 72px;
+}
+
+.ft.ft-compact {
+  margin-top: 0;
+}
+
+.ft-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.ft-brand {
+  max-width: 320px;
+}
+
+.ft-brand p {
+  margin: 14px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(233, 228, 245, 0.72);
+}
+
+.ft-cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px;
+}
+
+.ft-col h3 {
+  margin: 0 0 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #b79bec;
+}
+
+.ft-col ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(233, 228, 245, 0.8);
+}
+
+.ft-col a:hover {
+  color: #ffffff;
+}
+
+.ft-bottom {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12.5px;
+  color: rgba(233, 228, 245, 0.58);
+}
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translate(-50%, 16px);
+  z-index: 120;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 14px 32px -10px rgba(27, 22, 49, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
