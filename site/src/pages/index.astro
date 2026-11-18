@@ -380,7 +380,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
     z-index: 10;
     isolation: isolate;
     margin-top: 0;
-    padding: 196px 0 88px;
+    padding: 228px 0 88px;
     background: var(--sky);
     color: var(--ink);
     overflow-x: clip;
@@ -748,7 +748,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
   .cx-stage {
     position: absolute;
     left: 50%;
-    top: -68px;
+    top: -120px;
     bottom: auto;
     transform: translateX(-50%);
     width: min(1100px, 100%);
@@ -790,10 +790,11 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
   }
   @media (max-width: 640px) {
     .cx-stage-puzzle {
-      width: 100%;
+      top: -68px;
+      width: min(440px, 100%);
       aspect-ratio: var(--phone, 2000 / 860);
-      -webkit-mask-image: radial-gradient(76% 72% at 50% 52%, #000 58%, transparent 100%);
-      mask-image: radial-gradient(76% 72% at 50% 52%, #000 58%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 68% 62% at 50% 48%, #000 28%, transparent 88%);
+      mask-image: radial-gradient(ellipse 68% 62% at 50% 48%, #000 28%, transparent 88%);
     }
   }
 
@@ -1724,7 +1725,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
 
   @media (max-width: 720px) {
     .stage {
-      padding: 132px 0 80px;
+      padding: 215px 0 72px;
       border-radius: 0 0 24px 24px;
     }
     .stage.is-searched {
