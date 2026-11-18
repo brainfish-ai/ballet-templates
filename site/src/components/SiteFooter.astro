@@ -3,58 +3,81 @@ interface Props {
   compact?: boolean;
 }
 
-const { compact = false } = Astro.props;
+const { compact = true } = Astro.props;
+
+const USE_CASES = [
+  { slug: 'competitor-pricing-positioning', shortName: 'Competitor Pricing & Positioning Teardown' },
+  { slug: 'competitor-watch-meeting-prep', shortName: 'Competitor Watch & Meeting Prep' },
+  { slug: 'win-loss-safe-crm-writeback', shortName: 'Win/Loss Analysis & Safe CRM Write-Back' },
+  { slug: 'lead-enrichment', shortName: 'Lead Enrichment' },
+  { slug: 'weekly-reports', shortName: 'Weekly Reports' },
+  { slug: 'crm-hygiene', shortName: 'CRM Hygiene & Continuous Cleanup' },
+  { slug: 'support-triage-draft-reply', shortName: 'L1 Support Triage & Draft Reply' },
+  { slug: 'contact-driver-help-center-audit', shortName: 'Contact Driver & Help Center Audit' },
+  { slug: 'renewal-radar', shortName: 'Renewal Radar' },
+  { slug: 'invoice-approvals', shortName: 'Invoice Approvals' },
+  { slug: 'ar-collections', shortName: 'AR & Collections Latency' },
+];
 ---
 
 <footer class:list={['ft', { 'ft-compact': compact }]}>
-  <div class="wrap">
-    <div class="ft-grid">
-      <div class="ft-brand">
-        <a href="/">
-          <img src="/assets/ballet-logo-v2.svg" alt="Ballet" width="132" height="24" />
-        </a>
-        <p>
-          Open, reviewable workflow templates for support, sales, RevOps, and MCP.
-          Import into Ballet Studio or remix any playbook in one click.
-        </p>
-      </div>
-
-      <div class="ft-cols">
-        <div class="ft-col">
-          <h3>Categories</h3>
-          <ul>
-            <li><a href="/?category=lead-management#catalog">Lead management</a></li>
-            <li><a href="/?category=sales-pipeline#catalog">Sales pipeline</a></li>
-            <li><a href="/?category=marketing-campaigns#catalog">Marketing campaigns</a></li>
-            <li><a href="/?category=customer-support#catalog">Customer support</a></li>
-            <li><a href="/?category=data-management#catalog">Data management</a></li>
-            <li><a href="/?category=project-management#catalog">Project management</a></li>
-            <li><a href="/?category=tickets-incidents#catalog">Tickets &amp; incidents</a></li>
-          </ul>
-        </div>
-        <div class="ft-col">
-          <h3>Platform</h3>
-          <ul>
-            <li><a href="https://ballet.dev" target="_blank" rel="noopener">ballet.dev</a></li>
-            <li><a href="https://ballet.dev/playbooks" target="_blank" rel="noopener">Playbooks</a></li>
-            <li><a href="https://ballet.dev/mcp" target="_blank" rel="noopener">MCP Integrations</a></li>
-            <li><a href="https://app.ballet.dev" target="_blank" rel="noopener">Ballet Studio</a></li>
-          </ul>
-        </div>
-        <div class="ft-col">
-          <h3>Community</h3>
-          <ul>
-            <li><a href="https://github.com/brainfish-ai/ballet-templates" target="_blank" rel="noopener">GitHub Repo</a></li>
-            <li><a href="https://github.com/brainfish-ai/ballet-templates/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing Guide</a></li>
-            <li><a href="https://ballet.dev/signup" target="_blank" rel="noopener">Get a demo</a></li>
-          </ul>
-        </div>
-      </div>
+  <div class="ft-wrap ft-info">
+    <div class="ft-meta">
+      <img class="ft-logo" src="/assets/brainfish-logo-sm.svg" alt="Brainfish" width="109" height="17" />
+      <p class="ft-tag">Built by the team behind Brainfish</p>
+      <p class="ft-fine">
+        Sydney | San Francisco | Bengaluru | © 2026 Brainfish Pty Ltd
+      </p>
     </div>
-
-    <div class="ft-bottom">
-      <span>MIT Licensed Templates · Built by Ballet</span>
-      <span>Every imported playbook arrives unpublished with triggers off.</span>
+    <div class="ft-navs">
+      <div class="ft-cols">
+        <nav class="ft-col" aria-label="Product">
+          <p class="ft-col-head">Product</p>
+          <a href="https://ballet.dev/product">Overview</a>
+          <a href="https://ballet.dev/chrome-extension">Chrome extension</a>
+          <a href="https://ballet.dev/claude">Claude connector</a>
+          <a href="https://ballet.dev/mcp">MCP endpoint</a>
+          <a href="https://ballet.dev/slack">Slack agent</a>
+          <a href="https://ballet.dev/pricing">Pricing</a>
+        </nav>
+        <nav class="ft-col" aria-label="Solutions">
+          <p class="ft-col-head">Solutions</p>
+          <a href="https://ballet.dev/playbooks">Playbooks</a>
+          <a href="https://ballet.dev/revops-automation/">RevOps automation</a>
+          <a href="https://ballet.dev/engineering-leaders/">Engineering leaders</a>
+          <a href="https://ballet.dev/forward-deployed-engineer/">Forward-deployed engineer</a>
+          <a href="https://ballet.dev/zapier-alternative/">Zapier alternative</a>
+        </nav>
+        <nav class="ft-col" aria-label="Compare">
+          <p class="ft-col-head">Compare</p>
+          <a href="https://ballet.dev/vs/">All comparisons</a>
+          <a href="https://ballet.dev/vs/zapier/">vs Zapier</a>
+          <a href="https://ballet.dev/vs/make/">vs Make</a>
+          <a href="https://ballet.dev/vs/n8n/">vs n8n</a>
+          <a href="https://ballet.dev/vs/workato/">vs Workato</a>
+          <a href="https://ballet.dev/ballet-vs-power-automate/">vs Power Automate</a>
+          <a href="https://ballet.dev/ballet-vs-uipath/">vs UiPath</a>
+        </nav>
+        <nav class="ft-col ft-col-wide" aria-label="Use cases">
+          <p class="ft-col-head">Use cases</p>
+          {USE_CASES.map(p => (
+            <a href={`https://ballet.dev/playbooks/${p.slug}`}>{p.shortName}</a>
+          ))}
+          <a class="ft-col-all" href="https://ballet.dev/playbooks">All use cases</a>
+        </nav>
+        <nav class="ft-col" aria-label="Trust">
+          <p class="ft-col-head">Trust</p>
+          <a href="https://ballet.dev/security">Security</a>
+          <a href="https://trust.brainfi.sh" target="_blank" rel="noopener">Trust Center</a>
+          <a href="https://www.brainfishai.com/privacy-policy" target="_blank" rel="noopener">Privacy</a>
+          <a href="https://ballet.dev/terms">Terms</a>
+        </nav>
+      </div>
+      <nav class="ft-nav ft-nav-fine">
+        <a href="https://ballet.dev/events">Events</a>
+        <a href="https://ballet.dev/webinars">Webinars</a>
+        <a href="https://www.brainfishai.com" target="_blank" rel="noopener">brainfishai.com</a>
+      </nav>
     </div>
   </div>
 </footer>

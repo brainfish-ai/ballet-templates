@@ -257,78 +257,234 @@ input {
   }
 }
 
-/* ---------- Footer (warm ink dark band matching ballet-website) ---------- */
+/* ---------- Footer (exact match to ballet-website SiteFooter.astro) ---------- */
 .ft {
   position: relative;
   overflow: hidden;
-  background: #1b1631;
-  color: #e9e4f5;
-  padding: 56px 0 44px;
+  overflow: clip;
+  background: #000000;
+  color: #ffffff;
   margin-top: 72px;
 }
 
-.ft.ft-compact {
-  margin-top: 0;
+.ft-wrap {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 40px;
 }
 
-.ft-grid {
+.ft-info {
+  position: relative;
+  z-index: 2;
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 40px;
+  flex-wrap: wrap;
 }
 
-.ft-brand {
-  max-width: 320px;
+.ft-logo {
+  height: 17px;
+  width: auto;
+  display: block;
+  margin-bottom: 12px;
 }
 
-.ft-brand p {
-  margin: 14px 0 0;
-  font-size: 14px;
-  line-height: 1.55;
-  color: rgba(233, 228, 245, 0.72);
+.ft-tag {
+  margin: 0 0 8px;
+  color: #f4f1ff;
+  font-family: "Geist Variable", "Geist Fallback", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.ft-fine {
+  margin: 0;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.ft-navs {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 24px;
+  padding-top: 12px;
 }
 
 .ft-cols {
   display: flex;
+  gap: 40px;
   flex-wrap: wrap;
-  gap: 48px;
+  justify-content: flex-end;
 }
 
-.ft-col h3 {
-  margin: 0 0 12px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.13em;
+.ft-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.ft-col-head {
+  margin: 0 0 2px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #b79bec;
+  color: #f4f1ff;
 }
 
-.ft-col ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 8px;
-  font-size: 14px;
-  color: rgba(233, 228, 245, 0.8);
+.ft a {
+  text-decoration: none;
+}
+
+.ft-col a {
+  font-size: 12px;
+  color: #ffffff;
 }
 
 .ft-col a:hover {
   color: #ffffff;
+  text-decoration: underline;
 }
 
-.ft-bottom {
-  margin-top: 40px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+.ft-nav {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 12.5px;
-  color: rgba(233, 228, 245, 0.58);
+  gap: 32px;
+}
+
+.ft-nav a {
+  font-size: 12px;
+}
+
+.ft-nav-fine a {
+  color: #ffffff;
+}
+
+.ft-nav a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.ft-col-wide {
+  flex: 0 1 196px;
+  max-width: 196px;
+}
+
+.ft-col-all {
+  margin-top: 16px;
+  color: #b79bec !important;
+}
+
+.ft.ft-compact {
+  height: auto;
+  min-height: 0;
+  padding: 44px 0 36px;
+  margin-top: 0;
+}
+
+.ft-compact .ft-cols {
+  flex-wrap: nowrap;
+  gap: 36px;
+}
+
+.ft-compact .ft-col {
+  gap: 8px;
+}
+
+.ft-compact .ft-col-wide {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 168px));
+  justify-content: end;
+  gap: 8px 24px;
+  flex: none;
+  max-width: none;
+}
+
+.ft-compact .ft-col-wide .ft-col-head,
+.ft-compact .ft-col-wide .ft-col-all {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 1100px) {
+  .ft-compact .ft-info {
+    flex-wrap: nowrap;
+  }
+}
+
+@media (max-width: 900px) {
+  .ft-col-wide {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .ft-wrap {
+    padding: 0 20px;
+  }
+  .ft.ft-compact {
+    height: auto;
+    min-height: 0;
+    padding: 28px 0 24px;
+  }
+  .ft-compact .ft-info {
+    flex-direction: column;
+    gap: 18px;
+  }
+  .ft-compact .ft-logo {
+    margin-bottom: 8px;
+  }
+  .ft-compact .ft-tag {
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .ft-compact .ft-fine {
+    font-size: 11px;
+  }
+  .ft-compact .ft-navs {
+    align-self: stretch;
+    align-items: stretch;
+    gap: 14px;
+    padding-top: 0;
+  }
+  .ft-compact .ft-cols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .ft-compact .ft-col-wide {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+    gap: 6px 14px;
+  }
+  .ft-compact .ft-col {
+    gap: 6px;
+    font-size: 13px;
+  }
+  .ft-compact .ft-col a {
+    font-size: 13px;
+  }
+  .ft-compact .ft-nav-fine {
+    justify-content: flex-start;
+    gap: 16px;
+  }
+  .ft-col a,
+  .ft-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
+  .ft-nav {
+    flex-wrap: wrap;
+    gap: 4px 24px;
+  }
 }
 
 /* ---------- Toast ---------- */

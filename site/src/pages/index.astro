@@ -4,6 +4,7 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import Icon from '../components/Icon.astro';
 import AppGlyph from '../components/AppGlyph.astro';
+import PuzzleStage from '../components/PuzzleStage.astro';
 import {
   USE_CASES,
   appLabel,
@@ -25,6 +26,20 @@ const IDEAS = [
   'Score a list of accounts against our ICP',
   'Send a daily digest to Slack',
   'Sync Notion pages to Jira issues',
+];
+
+const AGENT_REPO_URL = 'https://github.com/brainfish-ai/ballet-agent-plugins';
+const AGENT_PROMPT = {
+  title: 'Paste in your coding agent',
+  lead: 'Set up the Ballet plugin by following the steps in',
+};
+const AGENT_MARKS: { name: string; src?: string; icon?: string }[] = [
+  { name: 'Claude Code', src: '/assets/claude-mark.svg' },
+  { name: 'Codex', icon: 'open-ai-logo' },
+  {
+    name: 'Cursor',
+    src: 'https://img.logo.dev/cursor.com?token=pk_VcdT-XyYRzOEIrXi_56dWA&size=32&format=webp&theme=light&retina=true&fallback=404',
+  },
 ];
 
 const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.accent ?? '#c9b8f5';
@@ -74,7 +89,49 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
           <button type="button" class="ask-idea" data-idea={idea}>{idea}</button>
         ))}
       </div>
+
+      <div class="cx-agent" data-agent>
+        <button
+          type="button"
+          class="cx-agent-row"
+          data-agent-trigger
+          aria-expanded="false"
+          aria-controls="cx-agent-pop"
+          aria-label={`or install directly with ${AGENT_MARKS.map(a => a.name).join(', ')}`}
+        >
+          <span>or install directly with</span>
+          <span class="cx-agent-marks">
+            {AGENT_MARKS.map(a => (
+              <span>
+                {a.icon ? (
+                  <Icon name={a.icon} size={16} />
+                ) : (
+                  <img
+                    src={a.src}
+                    alt=""
+                    width="16"
+                    height="16"
+                    onerror="this.parentElement.remove()"
+                  />
+                )}
+              </span>
+            ))}
+          </span>
+        </button>
+        <div class="cx-agent-pop" id="cx-agent-pop">
+          <div class="cx-agent-box">
+            <div class="cx-agent-head">
+              <p>{AGENT_PROMPT.title}</p>
+              <button type="button" class="cx-agent-copy" data-agent-copy hidden>
+                <span>Copy</span> <Icon name="copy" size={15} />
+              </button>
+            </div>
+            <p class="cx-agent-text" data-agent-text>{AGENT_PROMPT.lead} <span>{AGENT_REPO_URL}</span></p>
+          </div>
+        </div>
+      </div>
     </div>
+    <PuzzleStage />
   </section>
 
   <section id="answer" class="answer" hidden aria-live="polite">
@@ -320,17 +377,21 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
   /* ---------- Stage (hero — clean light studio canvas) ---------- */
   .stage {
     position: relative;
+    z-index: 10;
     isolation: isolate;
     margin-top: 0;
-    padding: 132px 0 88px;
+    padding: 196px 0 88px;
     background: var(--sky);
     color: var(--ink);
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
     border-bottom: 1px solid var(--line);
     transition: padding 0.22s ease, background 0.22s ease;
   }
 
   .stage-inner {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -341,7 +402,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
     margin: 0;
     font-family: var(--display);
     font-weight: 600;
-    font-size: clamp(2.5rem, 6.4vw, 5.25rem);
+    font-size: clamp(2.25rem, 5.2vw, 4.35rem);
     line-height: 0.98;
     letter-spacing: -0.045em;
     color: var(--ink);
@@ -441,6 +502,8 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
   .stage.is-searched .stage-h1,
   .stage.is-searched .stage-sub,
   .stage.is-searched .ask-ideas,
+  .stage.is-searched .cx-agent,
+  .stage.is-searched .cx-stage-puzzle,
   .stage.is-searched .ask-hint {
     display: none;
   }
@@ -552,6 +615,186 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
 
   .stage :focus-visible {
     outline-color: var(--brand-soft);
+  }
+
+  /* ---------- Install directly with coding agent ---------- */
+  .cx-agent {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    margin-top: 14px;
+  }
+  .cx-agent-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px 6px 14px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: #635c7a;
+    font: inherit;
+    font-size: 14.5px;
+    cursor: pointer;
+  }
+  .cx-agent-marks {
+    display: inline-flex;
+    gap: 6px;
+  }
+  .cx-agent-marks > span {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(27, 22, 49, 0.1);
+    border-radius: 9px;
+    background: #ffffff;
+    color: var(--ink);
+    transition: border-color 0.15s ease;
+  }
+  .cx-agent-row:hover .cx-agent-marks > span,
+  .cx-agent.is-open .cx-agent-marks > span {
+    border-color: rgba(138, 91, 209, 0.55);
+  }
+  .cx-agent-pop {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    z-index: 30;
+    width: min(460px, calc(100vw - 32px));
+    padding-top: 8px;
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 6px);
+    transition:
+      opacity 0.16s ease,
+      transform 0.16s ease,
+      visibility 0s linear 0.16s;
+  }
+  .cx-agent.is-open .cx-agent-pop,
+  .cx-agent:not([data-ready]):is(:hover, :focus-within) .cx-agent-pop {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+    transition-delay: 0s;
+  }
+  .cx-agent-box {
+    padding: 8px;
+    border: 1px solid rgba(27, 22, 49, 0.1);
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 30px 60px -28px rgba(42, 31, 94, 0.45);
+  }
+  .cx-agent-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 42px;
+    padding: 0 0 8px 14px;
+  }
+  .cx-agent-head p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 560;
+    color: var(--ink);
+  }
+  .cx-agent-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--ink);
+    color: #ffffff;
+    font: inherit;
+    font-size: 14.5px;
+    font-weight: 560;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .cx-agent-copy[hidden] {
+    display: none;
+  }
+  .cx-agent-text {
+    margin: 0;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: #f0ebe3;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .cx-agent-text span {
+    color: #635c7a;
+  }
+  .cx-agent-row:focus-visible,
+  .cx-agent-copy:focus-visible {
+    outline: 3px solid #8a5bd1;
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cx-agent-pop {
+      transform: translate(-50%, 0);
+      transition: none;
+    }
+  }
+
+  /* ---------- 3D Puzzle Stage (subtle blended banner layer) ---------- */
+  .cx-stage {
+    position: absolute;
+    left: 50%;
+    top: -68px;
+    bottom: auto;
+    transform: translateX(-50%);
+    width: min(1100px, 100%);
+    aspect-ratio: 2000 / 860;
+    margin: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.45;
+    background: none;
+    -webkit-mask-image: radial-gradient(ellipse 56% 58% at 50% 50%, #000 35%, transparent 92%);
+    mask-image: radial-gradient(ellipse 56% 58% at 50% 50%, #000 35%, transparent 92%);
+  }
+  .cx-still,
+  .cx-stage canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .cx-still {
+    object-fit: contain;
+    transition: opacity 0.6s ease;
+  }
+  .cx-stage canvas {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .cx-stage.is-live > canvas {
+    opacity: 1;
+  }
+  .cx-stage.is-live .cx-still {
+    opacity: 0;
+  }
+  @media (pointer: fine) and (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+    .cx-stage-puzzle:not(.is-still) .cx-still {
+      opacity: 0;
+      transition: none;
+    }
+  }
+  @media (max-width: 640px) {
+    .cx-stage-puzzle {
+      width: 100%;
+      aspect-ratio: var(--phone, 2000 / 860);
+      -webkit-mask-image: radial-gradient(76% 72% at 50% 52%, #000 58%, transparent 100%);
+      mask-image: radial-gradient(76% 72% at 50% 52%, #000 58%, transparent 100%);
+    }
   }
 
   /* ---------- Answer ---------- */
@@ -2204,6 +2447,73 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
       history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
     }
 
+    /* ---------- Coding-agent install popover ---------- */
+    var agent = document.querySelector('[data-agent]');
+    var agentTrigger = agent && agent.querySelector('[data-agent-trigger]');
+    var agentText = agent && agent.querySelector('[data-agent-text]');
+    if (agent && agentTrigger && agentText) {
+      var on = { hover: false, focus: false, pinned: false };
+      var renderAgent = function () {
+        var open = on.hover || on.focus || on.pinned;
+        agent.classList.toggle('is-open', open);
+        agentTrigger.setAttribute('aria-expanded', String(open));
+      };
+      agent.dataset.ready = '';
+
+      document.addEventListener('pointermove', function (e) {
+        if (e.pointerType !== 'mouse') return;
+        var over = agent.contains(e.target);
+        if (over === on.hover) return;
+        on.hover = over;
+        renderAgent();
+      });
+      document.documentElement.addEventListener('pointerleave', function () {
+        if (!on.hover) return;
+        on.hover = false;
+        renderAgent();
+      });
+      var byPointer = false;
+      document.addEventListener('pointerdown', function () { byPointer = true; }, true);
+      document.addEventListener('keydown', function () { byPointer = false; }, true);
+      agent.addEventListener('focusin', function () {
+        on.focus = !byPointer;
+        renderAgent();
+      });
+      agent.addEventListener('focusout', function (e) {
+        if (agent.contains(e.relatedTarget)) return;
+        on.focus = false;
+        renderAgent();
+      });
+      agentTrigger.addEventListener('click', function () {
+        on.pinned = !on.pinned;
+        renderAgent();
+      });
+      document.addEventListener('click', function (e) {
+        if (agent.contains(e.target)) return;
+        if (!on.pinned && !on.focus) return;
+        on.pinned = on.focus = false;
+        renderAgent();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape' || !agent.classList.contains('is-open')) return;
+        on.hover = on.focus = on.pinned = false;
+        renderAgent();
+      });
+
+      var agentCopy = agent.querySelector('[data-agent-copy]');
+      var agentCopyLabel = agentCopy && agentCopy.querySelector('span');
+      if (agentCopy && agentCopyLabel && navigator.clipboard) {
+        agentCopy.hidden = false;
+        agentCopy.addEventListener('click', function () {
+          navigator.clipboard.writeText((agentText.textContent || '').trim()).then(
+            function () { agentCopyLabel.textContent = 'Copied'; },
+            function () { agentCopyLabel.textContent = 'Select and copy'; }
+          );
+          setTimeout(function () { agentCopyLabel.textContent = 'Copy'; }, 2200);
+        });
+      }
+    }
+
     var initial = new URLSearchParams(window.location.search);
     searchEl.value = initial.get('q') || '';
     activeCat = initial.get('category') || '';
@@ -2214,4 +2524,9 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
     applyFilters();
     if (currentAsk) runAsk(currentAsk, false);
   })();
+</script>
+
+<script>
+  import { mountPieces } from '../scripts/pieces/boot';
+  mountPieces();
 </script>
