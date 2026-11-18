@@ -21,7 +21,7 @@ export function mountPieces(root: ParentNode = document) {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const capable = matchMedia("(pointer: fine) and (min-width: 900px)").matches;
   const els = [...root.querySelectorAll<HTMLElement>("[data-pieces]")];
-  if (!els.length || !capable) return;
+  if (!els.length) return;
   // fetched once, as soon as the page has painted, whether or not a scene is in view yet
   const sceneModule = painted.then(() => import("./scene"));
 
@@ -55,7 +55,16 @@ export function mountPieces(root: ParentNode = document) {
           loading = true;
           try {
             const { createPieces } = await sceneModule;
-            scene = createPieces({ canvas, variant, steps, reduced, settle, greyPieces, onFrame, still: import.meta.env.DEV });
+            scene = createPieces({
+              canvas,
+              variant,
+              steps,
+              reduced: reduced || !capable,
+              settle,
+              greyPieces,
+              onFrame,
+              still: import.meta.env.DEV,
+            });
             el.classList.add("is-live");
             if (import.meta.env.DEV) (el as unknown as { __pieces: unknown }).__pieces = scene;
           } catch (err) {
