@@ -1,0 +1,31 @@
+---
+import { HERO_PHONE_SRCSET, PUZZLE_STEPS } from '../lib/puzzle';
+
+interface Props {
+  settle?: boolean;
+}
+
+const { settle = true } = Astro.props;
+
+const STILL = { w: 2000, h: 860 };
+const CROP = { x: 520, y: 60, w: 960, h: 800 };
+---
+
+<div
+  class="cx-stage cx-stage-puzzle"
+  data-pieces="puzzle"
+  data-settle={settle ? 'true' : undefined}
+  data-steps={JSON.stringify(PUZZLE_STEPS)}
+  style={`--phone: ${CROP.w} / ${CROP.h}`}
+>
+  <picture>
+    <source media="(max-width: 640px)" srcset={HERO_PHONE_SRCSET} sizes="100vw" width={CROP.w} height={CROP.h} />
+    <img class="cx-still" src="/assets/pieces-puzzle-v15.webp" alt="" width={STILL.w} height={STILL.h} fetchpriority="high" />
+  </picture>
+  <canvas aria-hidden="true"></canvas>
+  <noscript><style>.cx-stage-puzzle .cx-still { opacity: 1 !important; }</style></noscript>
+  <p class="sr-only">
+    A jigsaw of the tools a team runs on, Salesforce, Slack, HubSpot, Gong, Zendesk, Notion and more, in grey, until the
+    Ballet logo clicks into the middle and every tool turns green, connected.
+  </p>
+</div>
