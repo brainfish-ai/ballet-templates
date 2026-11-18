@@ -1,0 +1,41 @@
+---
+// Phosphor icon, inlined at build time from @phosphor-icons/core.
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+
+export type IconWeight = 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone';
+
+interface Props {
+  name: string;
+  size?: number;
+  weight?: IconWeight;
+  class?: string;
+}
+
+const { name, size = 20, weight = 'regular', class: className } = Astro.props;
+const require = createRequire(import.meta.url);
+
+let inner = '';
+try {
+  const file = weight === 'regular' ? name : `${name}-${weight}`;
+  const path = require.resolve(`@phosphor-icons/core/assets/${weight}/${file}.svg`);
+  inner = readFileSync(path, 'utf8')
+    .replace(/^[\s\S]*?<svg[^>]*>/, '')
+    .replace(/<\/svg>\s*$/, '');
+} catch {
+  throw new Error(
+    `Icon "${name}" (${weight}) not found in @phosphor-icons/core. Check https://phosphoricons.com.`,
+  );
+}
+---
+
+<svg
+  class={className}
+  width={size}
+  height={size}
+  viewBox="0 0 256 256"
+  fill="currentColor"
+  aria-hidden="true"
+  focusable="false"
+  set:html={inner}
+/>

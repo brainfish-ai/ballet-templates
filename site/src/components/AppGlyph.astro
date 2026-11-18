@@ -1,0 +1,21 @@
+---
+import Icon from './Icon.astro';
+import { SOURCE_ICONS, appLogo } from '../lib/templates';
+
+interface Props {
+  /** Integration or MCP server id, or one of `web`, `webhook`, `api`, `paste`. */
+  app: string;
+  size?: number;
+}
+
+const { app, size = 18 } = Astro.props;
+const logo = appLogo(app);
+---
+
+{
+  logo ? (
+    <img src={logo} alt="" width={size} height={size} class="app-glyph" loading="lazy" decoding="async" />
+  ) : (
+    <Icon name={SOURCE_ICONS[app] ?? 'plugs-connected'} size={size} />
+  )
+}

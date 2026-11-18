@@ -1,0 +1,109 @@
+---
+import '../styles/theme.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImagePath?: string;
+}
+
+const {
+  title,
+  description = 'Search, preview, and remix production-ready Ballet playbook templates for support, sales, RevOps, and MCP workflows.',
+  ogImagePath = '/apple-touch-icon-v2.png',
+} = Astro.props;
+
+const canonicalPath = Astro.url.pathname.startsWith('/')
+  ? Astro.url.pathname
+  : `/${Astro.url.pathname}`;
+const siteOrigin = Astro.site?.href ?? 'https://templates.ballet.dev';
+const canonical = new URL(canonicalPath, siteOrigin).href;
+const ogImage = new URL(ogImagePath, siteOrigin).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#1B1631" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/assets/ballet-mark-v2.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon-v2.png" />
+    <meta property="og:site_name" content="Ballet Templates" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <title>{title}</title>
+    <link
+      rel="preload"
+      href="/fonts/geist-variable-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <style is:global>
+      @font-face {
+        font-family: "Geist Variable";
+        font-style: normal;
+        font-display: swap;
+        font-weight: 100 900;
+        src: url("/fonts/geist-variable-latin.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Fallback";
+        src: local("Arial"), local("ArialMT");
+        size-adjust: 102.87%;
+        ascent-override: 98.2%;
+        descent-override: 28.2%;
+        line-gap-override: 0%;
+      }
+      .skip-link {
+        position: fixed;
+        left: 16px;
+        top: 12px;
+        z-index: 1000;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: #1b1631;
+        color: #ffffff;
+        font: 600 14px/1 "Geist Variable", "Geist Fallback", system-ui, sans-serif;
+        text-decoration: none;
+        transform: translateY(-160%);
+        transition: transform 0.15s ease;
+      }
+      .skip-link:focus {
+        transform: none;
+      }
+      :focus-visible {
+        outline: 2px solid #6b3fc0;
+        outline-offset: 2px;
+      }
+    </style>
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+    <div id="ballet-toast" class="toast" role="status" aria-live="polite"></div>
+    <script is:inline>
+      window.balletToast = function (msg) {
+        const el = document.getElementById('ballet-toast');
+        if (!el) return;
+        el.textContent = msg;
+        el.classList.add('is-visible');
+        clearTimeout(window.__balletToastTimer);
+        window.__balletToastTimer = setTimeout(() => el.classList.remove('is-visible'), 2200);
+      };
+    </script>
+  </body>
+</html>

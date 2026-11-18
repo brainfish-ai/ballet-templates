@@ -1,0 +1,56 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  showBackToCatalog?: boolean;
+}
+
+const { showBackToCatalog = false } = Astro.props;
+---
+
+<header class="shd">
+  <div class="shd-inner">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a class="shd-logo" href="/">
+        <img src="/assets/ballet-logo-ink.svg" alt="Ballet" width="112" height="21" />
+        <span class="shd-logo-badge">Templates</span>
+      </a>
+      {showBackToCatalog && (
+        <a
+          href="/"
+          class="btn-outline btn-sm"
+          style="height:30px;padding:0 11px;font-size:12.5px;"
+        >
+          <Icon name="arrow-left" size={13} />
+          All templates
+        </a>
+      )}
+    </div>
+
+    <nav class="shd-nav" aria-label="Main">
+      <a href="/#catalog">Browse</a>
+      <a href="/?category=lead-management#catalog">Leads</a>
+      <a href="/?category=sales-pipeline#catalog">Sales</a>
+      <a href="/?category=customer-support#catalog">Support</a>
+      <a href="/?category=tickets-incidents#catalog">Tickets</a>
+      <a href="https://ballet.dev/playbooks" target="_blank" rel="noopener">Use cases</a>
+    </nav>
+
+    <div class="shd-actions">
+      <a
+        class="btn-outline btn-sm shd-github"
+        href="https://github.com/brainfish-ai/ballet-templates"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub repository"
+        title="GitHub repository"
+      >
+        <Icon name="github-logo" size={16} />
+      </a>
+      <a class="btn-ink btn-sm" href="https://app.ballet.dev" target="_blank" rel="noopener">
+        Open Studio
+      </a>
+    </div>
+  </div>
+</header>
+<div class="shd-spacer" aria-hidden="true"></div>

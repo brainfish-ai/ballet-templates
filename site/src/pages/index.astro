@@ -1,0 +1,2217 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Icon from '../components/Icon.astro';
+import AppGlyph from '../components/AppGlyph.astro';
+import {
+  USE_CASES,
+  appLabel,
+  formatIntegration,
+  getAllTemplates,
+  getCatalogFacets,
+} from '../lib/templates';
+
+const templates = getAllTemplates();
+const facets = getCatalogFacets(templates);
+const signupUrl = 'https://app.ballet.dev/signup';
+const useCases = USE_CASES.map(u => ({
+  ...u,
+  count: templates.filter(t => t.useCase === u.id).length,
+})).filter(u => u.count > 0);
+
+const IDEAS = [
+  'Triage new Zendesk tickets and flag the urgent ones',
+  'Score a list of accounts against our ICP',
+  'Send a daily digest to Slack',
+  'Sync Notion pages to Jira issues',
+];
+
+const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.accent ?? '#c9b8f5';
+---
+
+<Base
+  title="Templates | Ballet"
+  description="Describe the work you want done and find a ready Ballet playbook template for leads, sales, marketing, support, data, projects and tickets, or get a prompt to build it."
+>
+  <SiteHeader />
+
+  <section id="stage" class="stage">
+    <div class="wrap stage-inner">
+      <h1 class="stage-h1">Describe the work.<br />Get the playbook.</h1>
+      <p class="stage-sub">
+        Ask in plain words. We search {templates.length} open-source Ballet templates, and when
+        none fits, write you the prompt to build it.
+      </p>
+
+      <form id="ask-form" class="ask" role="search">
+        <label class="sr-only" for="ask-input">What do you want to automate?</label>
+        <textarea
+          id="ask-input"
+          class="ask-input"
+          rows="2"
+          placeholder="Triage new Zendesk tickets and post the urgent ones to Slack"
+          autocomplete="off"
+          spellcheck="false"></textarea>
+        <div class="ask-bar">
+          <span class="ask-hint">
+            <Icon name="sparkle" size={14} />
+            Searches {templates.length} templates
+          </span>
+          <div class="ask-bar-actions">
+            <button type="button" id="ask-clear" class="ask-clear" hidden>Clear</button>
+            <button type="submit" class="ask-send">
+              Find a template
+              <Icon name="arrow-up" size={15} weight="bold" />
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="ask-ideas">
+        <span class="ask-ideas-label">Try</span>
+        {IDEAS.map(idea => (
+          <button type="button" class="ask-idea" data-idea={idea}>{idea}</button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="answer" class="answer" hidden aria-live="polite">
+    <div class="wrap">
+      <div class="answer-card">
+        <div id="answer-body" class="answer-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <main id="main" class="catalog-main">
+    <div id="catalog" class="wrap">
+      <div class="cat-tiles" aria-label="Filter by category">
+        <button type="button" class="ct" data-cat="" aria-pressed="true">
+          <span class="ct-ico"><Icon name="squares-four" size={16} /></span>
+          <span class="ct-name">All</span>
+          <span class="ct-count">{templates.length}</span>
+        </button>
+        {useCases.map(u => (
+          <button type="button" class="ct" data-cat={u.id} aria-pressed="false" style={`--accent:${u.accent}`}>
+            <span class="ct-ico"><Icon name={u.icon} size={16} /></span>
+            <span class="ct-name">{u.label}</span>
+            <span class="ct-count">{u.count}</span>
+          </button>
+        ))}
+      </div>
+
+      <div class="grid-head">
+        <h2 class="grid-title">
+          <span id="tpl-heading">All templates</span>
+          <span id="tpl-count" class="grid-count">{templates.length}</span>
+        </h2>
+        <div class="grid-tools">
+          <label class="mini-search">
+            <Icon name="magnifying-glass" size={15} />
+            <span class="sr-only">Filter templates by keyword</span>
+            <input id="tpl-search" type="search" placeholder="Filter by keyword" autocomplete="off" />
+          </label>
+          <label class="mini-select">
+            <span class="sr-only">Filter by app</span>
+            <select id="tpl-integration">
+              <option value="">Any app</option>
+              {facets.integrations.map(i => (
+                <option value={i}>{formatIntegration(i)}</option>
+              ))}
+            </select>
+          </label>
+          <button type="button" id="tpl-reset" class="btn-outline btn-sm" hidden>Clear filters</button>
+        </div>
+      </div>
+
+      <div id="tpl-grid" class="cards">
+        {templates.map(t => {
+          const apps = [...t.integrations, ...t.mcpServers];
+          return (
+            <article
+              class="tc"
+              data-id={t.id}
+              data-category={t.useCase}
+              data-title={t.title}
+              data-summary={t.summary}
+              data-tags={t.tags.join(' ')}
+              data-apps={apps.join(' ')}
+              data-app-labels={apps.map(formatIntegration).join(' ')}
+              data-group={[t.useCaseLabel, t.category, t.persona ?? '', t.difficulty].join(' ')}
+              data-extra={[t.trigger, ...t.agents, ...t.workflowSteps.map(s => s.id)].join(' ')}
+            >
+              <a href={`/templates/${t.id}/`} class="tc-link">
+                <div class="tc-cover" data-source={t.scene.source} style={`--accent:${accentOf(t.useCase)}`} aria-hidden="true">
+                  <span class="tc-cat-pill">{t.useCaseLabel}</span>
+                  <div class="sc-flow">
+                    <div class="sc-win">
+                      <div class="sc-win-bar">
+                        <span class="sc-dots"><i></i><i></i><i></i></span>
+                        <span class="sc-win-app">
+                          <AppGlyph app={t.scene.source} size={13} />
+                          <span>{appLabel(t.scene.source)}</span>
+                        </span>
+                        <span class="sc-win-place">{t.scene.place}</span>
+                      </div>
+                      <div class="sc-win-body">
+                        <p class="sc-subject">{t.scene.subject}</p>
+                        <p class="sc-meta">{t.scene.meta}</p>
+                        {t.scene.chips && t.scene.chips.length > 0 && (
+                          <div class="sc-chips">
+                            {t.scene.chips.slice(0, 2).map(chip => (
+                              <span class="sc-chip">{chip}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div class="sc-bridge">
+                      <span class="sc-wire"></span>
+                      <span class="sc-node">
+                        {t.modelLabel ? (
+                          <>
+                            <img src="/assets/ballet-mark-v2.svg" alt="" width="13" height="13" />
+                            <span>Ballet AI</span>
+                          </>
+                        ) : (
+                          <>
+                            <Icon name="code" size={12} />
+                            <span>Relay</span>
+                          </>
+                        )}
+                      </span>
+                      <span class="sc-wire"></span>
+                    </div>
+
+                    <div class="sc-out">
+                      <span class="sc-out-ico">
+                        {t.scene.out.app ? (
+                          <AppGlyph app={t.scene.out.app} size={15} />
+                        ) : (
+                          <Icon name="file-text" size={15} />
+                        )}
+                      </span>
+                      <div class="sc-out-text">
+                        <div class="sc-out-head">
+                          <p class="sc-out-label">{t.scene.out.label}</p>
+                          {t.scene.out.chips && t.scene.out.chips[0] && (
+                            <span class="sc-out-chip">{t.scene.out.chips[0]}</span>
+                          )}
+                        </div>
+                        <p class="sc-meta">{t.scene.out.text}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="tc-body">
+                  <h3 class="tc-title">{t.title}</h3>
+                  <p class="tc-summary">{t.summary}</p>
+                </div>
+              </a>
+              <div class="tc-foot">
+                <div class="tc-apps">
+                  {(apps.length ? apps : [t.scene.source]).slice(0, 4).map(a => (
+                    <span class="tc-app" title={appLabel(a)}>
+                      <AppGlyph app={a} size={16} />
+                      <span class="sr-only">{appLabel(a)}</span>
+                    </span>
+                  ))}
+                  {t.modelLabel ? (
+                    <span class="tc-model" title={`Model: ${t.modelLabel}`}>
+                      {t.modelProvider ? (
+                        <img
+                          src={`/assets/models/${t.modelProvider}.avif`}
+                          alt=""
+                          width="15"
+                          height="15"
+                          class="tc-model-icon"
+                        />
+                      ) : (
+                        <Icon name="sparkle" size={13} />
+                      )}
+                      <span>{t.modelLabel}</span>
+                    </span>
+                  ) : (
+                    <span class="tc-model tc-model-none">
+                      <Icon name="code" size={13} />
+                      <span>No model</span>
+                    </span>
+                  )}
+                </div>
+                <div class="tc-actions">
+                  <button
+                    type="button"
+                    class="icon-btn js-copy-link"
+                    data-share-path={`/templates/${t.id}/`}
+                    aria-label={`Copy share link for ${t.title}`}
+                    title="Copy share link"
+                  >
+                    <Icon name="link" size={14} />
+                  </button>
+                  <a href={t.primaryCtaUrl} target="_blank" rel="noopener" class="tc-cta">
+                    {t.remixUrl ? 'Remix' : 'Import'}
+                  </a>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <div id="tpl-empty" class="empty" hidden>
+        <h3>No template matches these filters</h3>
+        <p>Ask for it instead and we will write the prompt to build it in Ballet.</p>
+        <div class="empty-actions">
+          <button type="button" id="tpl-empty-ask" class="btn-ink btn-sm">Ask for this template</button>
+          <button type="button" id="tpl-empty-reset" class="btn-outline btn-sm">Clear filters</button>
+        </div>
+      </div>
+
+      <section class="contribute">
+        <div>
+          <h2>Built a playbook worth sharing?</h2>
+          <p>
+            Share it from Ballet Studio, or open a pull request to
+            <code>brainfish-ai/ballet-templates</code> with your <code>playbook.yaml</code> and step files.
+          </p>
+        </div>
+        <div class="contribute-actions">
+          <a
+            href="https://github.com/brainfish-ai/ballet-templates/blob/main/CONTRIBUTING.md"
+            target="_blank"
+            rel="noopener"
+            class="btn-ink"
+          >
+            Read the contributing guide
+          </a>
+          <a href="https://app.ballet.dev" target="_blank" rel="noopener" class="btn-outline">
+            Open Ballet Studio
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <SiteFooter />
+
+  <div id="page-config" data-signup={signupUrl} data-total={templates.length} hidden></div>
+</Base>
+
+<style is:global>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  /* ---------- Stage (hero — clean light studio canvas) ---------- */
+  .stage {
+    position: relative;
+    isolation: isolate;
+    margin-top: 0;
+    padding: 132px 0 88px;
+    background: var(--sky);
+    color: var(--ink);
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+    transition: padding 0.22s ease, background 0.22s ease;
+  }
+
+  .stage-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .stage-h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(2.5rem, 6.4vw, 5.25rem);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+
+  .stage-sub {
+    margin: 22px 0 0;
+    max-width: 560px;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .ask {
+    width: 100%;
+    max-width: 760px;
+    margin-top: 36px;
+    padding: 8px;
+    border-radius: 24px;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    box-shadow:
+      0 0 0 6px rgba(107, 63, 192, 0.05),
+      0 26px 60px -30px rgba(27, 22, 49, 0.22);
+    text-align: left;
+    transition: box-shadow 0.18s ease, border-color 0.18s ease, max-width 0.22s ease, border-radius 0.22s ease;
+  }
+
+  .ask:focus-within {
+    border-color: var(--brand-soft);
+    box-shadow:
+      0 0 0 6px rgba(107, 63, 192, 0.12),
+      0 26px 60px -30px rgba(27, 22, 49, 0.26);
+  }
+
+  .ask-input {
+    display: block;
+    width: 100%;
+    min-height: 68px;
+    padding: 14px 16px 6px;
+    border: 0;
+    outline: 0;
+    resize: none;
+    background: transparent;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  .ask-input::placeholder {
+    color: #8d87a1;
+  }
+
+  .ask-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px 4px 4px 14px;
+  }
+
+  .ask-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .ask-clear {
+    height: 40px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .ask-clear:hover {
+    background: rgba(27, 22, 49, 0.06);
+    color: var(--ink);
+  }
+
+  /* Compact searched state: collapses hero into an inline editable search bar */
+  .stage.is-searched {
+    padding: 96px 0 22px;
+    background: var(--paper);
+  }
+
+  .stage.is-searched .stage-h1,
+  .stage.is-searched .stage-sub,
+  .stage.is-searched .ask-ideas,
+  .stage.is-searched .ask-hint {
+    display: none;
+  }
+
+  .stage.is-searched .ask {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 1120px;
+    margin-top: 0;
+    padding: 6px 6px 6px 18px;
+    border-radius: 18px;
+    box-shadow:
+      0 0 0 4px rgba(107, 63, 192, 0.05),
+      0 14px 32px -22px rgba(27, 22, 49, 0.2);
+  }
+
+  .stage.is-searched .ask-input {
+    flex: 1;
+    min-width: 0;
+    min-height: 40px;
+    height: 40px;
+    padding: 8px 0;
+    font-size: 16px;
+    line-height: 24px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .stage.is-searched .ask-bar {
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .stage.is-searched .ask-send {
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 13px;
+  }
+
+  .ask-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted-2);
+  }
+
+  .ask-hint svg {
+    color: var(--brand-soft);
+  }
+
+  .ask-send {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 16px;
+    background: var(--ink);
+    color: #ffffff;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+  }
+
+  .ask-send:hover {
+    background: #2f2752;
+  }
+
+  .ask-ideas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    max-width: 860px;
+    margin-top: 22px;
+  }
+
+  .ask-ideas-label {
+    font-size: 13px;
+    color: var(--muted-2);
+    margin-right: 2px;
+  }
+
+  .ask-idea {
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 13.5px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px -4px rgba(27, 22, 49, 0.16);
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
+  }
+
+  .ask-idea:hover {
+    background: var(--brand-wash);
+    border-color: var(--brand-border);
+    color: var(--brand-soft);
+    transform: translateY(-1px);
+  }
+
+  .stage :focus-visible {
+    outline-color: var(--brand-soft);
+  }
+
+  /* ---------- Answer ---------- */
+  .answer {
+    position: relative;
+    z-index: 2;
+    margin-top: 22px;
+    scroll-margin-top: 96px;
+  }
+
+  .answer-card {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .answer-body {
+    margin-top: 0;
+  }
+
+  .answer-title {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .answer-note {
+    margin: 0 0 18px;
+    max-width: 68ch;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .answer-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .answer-why {
+    margin: 0;
+    padding: 0 18px 12px;
+    font-size: 12.5px;
+    color: var(--brand-soft);
+  }
+
+  .answer-more {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .prompt-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--brand-border);
+    box-shadow: 0 18px 44px -28px rgba(27, 22, 49, 0.2);
+    margin-bottom: 22px;
+  }
+
+  .prompt-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .prompt-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 22px;
+    border-bottom: 1px solid var(--line);
+    background:
+      linear-gradient(90deg, rgba(107, 63, 192, 0.06), rgba(95, 211, 160, 0.07)),
+      var(--surface-subtle);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .prompt-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .prompt-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px rgba(27, 122, 73, 0.15);
+  }
+
+  .prompt-card.is-streaming .prompt-dot {
+    animation: prompt-pulse 1.1s ease-in-out infinite;
+  }
+
+  @keyframes prompt-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .prompt-text {
+    margin: 0;
+    padding: 20px 22px 22px;
+    font-family: var(--body);
+    font-size: 14.5px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+    color: var(--ink);
+  }
+
+  .prompt-text .ballet-streamdown > *:first-child {
+    margin-top: 0;
+  }
+
+  .prompt-text .ballet-streamdown > *:last-child {
+    margin-bottom: 0;
+  }
+
+  .prompt-text .ballet-streamdown p {
+    margin: 0 0 10px;
+  }
+
+  .prompt-text .ballet-streamdown strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .prompt-text .ballet-streamdown ol,
+  .prompt-text .ballet-streamdown ul {
+    margin: 6px 0 12px;
+    padding-left: 20px;
+  }
+
+  .prompt-text .ballet-streamdown li {
+    margin: 4px 0;
+  }
+
+  .prompt-text .ballet-streamdown li::marker {
+    color: var(--brand-soft);
+    font-weight: 600;
+  }
+
+  .prompt-text .ballet-streamdown code {
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  .prompt-side {
+    padding: 18px 24px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 24px;
+    background: var(--paper);
+  }
+
+  .prompt-side-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    flex: 1 1 360px;
+  }
+
+  .prompt-side h4 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+
+  .prompt-side p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .prompt-steps {
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  .prompt-steps li {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .prompt-steps span {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(107, 63, 192, 0.12);
+    color: var(--brand-soft);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .prompt-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .btn-mint,
+  .btn-ghost-light {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .btn-mint svg,
+  .btn-ghost-light svg {
+    flex-shrink: 0;
+  }
+
+  .btn-mint {
+    border: 0;
+    background: var(--ink);
+    color: #ffffff;
+    box-shadow: 0 10px 22px -10px rgba(27, 22, 49, 0.55);
+  }
+
+  .btn-mint:hover:not(.is-loading) {
+    background: #2f2752;
+    transform: translateY(-1px);
+  }
+
+  .btn-mint.is-loading,
+  .btn-ghost-light:disabled {
+    opacity: 0.52;
+    cursor: not-allowed;
+  }
+
+  .btn-ghost-light {
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  .btn-ghost-light:hover:not(:disabled) {
+    background: var(--surface-subtle);
+    border-color: var(--ink);
+  }
+
+  .btn-ghost-light.is-copied {
+    border-color: var(--green);
+    background: var(--green-wash);
+    color: var(--green);
+  }
+
+  .prompt-card :focus-visible {
+    outline-color: var(--brand-soft);
+  }
+
+  /* ---------- Catalog ---------- */
+  .catalog-main {
+    padding-top: 56px;
+  }
+
+  .cat-tiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ct {
+    --accent: #c9b8f5;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 14px 0 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+
+  .ct:hover {
+    border-color: var(--ink);
+  }
+
+  .ct[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #ffffff;
+  }
+
+  .ct-ico {
+    display: grid;
+    place-items: center;
+    color: color-mix(in srgb, var(--accent) 50%, var(--ink));
+  }
+
+  .ct[aria-pressed="true"] .ct-ico {
+    color: var(--accent);
+  }
+
+  .ct-count {
+    font-size: 13px;
+    color: var(--muted-2);
+  }
+
+  .ct[aria-pressed="true"] .ct-count {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .grid-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 44px 0 20px;
+  }
+
+  .grid-title {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .grid-count {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--muted-2);
+    letter-spacing: 0;
+  }
+
+  .grid-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mini-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--muted-2);
+  }
+
+  .mini-search:focus-within {
+    border-color: var(--brand-soft);
+  }
+
+  .mini-search input {
+    width: 170px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink);
+    font-size: 14px;
+  }
+
+  .mini-select select {
+    height: 38px;
+    padding: 0 30px 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface)
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%236a6380' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")
+      right 12px center no-repeat;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 14px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .tc {
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .tc:hover {
+    border-color: var(--line-strong);
+    box-shadow: 0 24px 44px -30px rgba(27, 22, 49, 0.5);
+  }
+
+  .tc[hidden] {
+    display: none;
+  }
+
+  .tc-link {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  /* Banner: Zapier-style category badge + relatable integration UI preview */
+  .tc-cover {
+    --accent: #c9b8f5;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 16px 16px;
+    background: color-mix(in srgb, var(--accent) 18%, #ffffff);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tc-cat-pill {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 9px;
+    border-radius: 6px;
+    background: var(--ink);
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+
+  .sc-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .sc-win {
+    min-width: 0;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid rgba(27, 22, 49, 0.12);
+    box-shadow: 0 6px 16px -10px rgba(27, 22, 49, 0.2);
+    overflow: hidden;
+  }
+
+  .sc-win-bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    background: #f5f3f8;
+    border-bottom: 1px solid rgba(27, 22, 49, 0.08);
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  .tc-cover[data-source="zendesk"] .sc-win-bar {
+    background: #03363d;
+    color: #ffffff;
+  }
+
+  .tc-cover[data-source="freshdesk"] .sc-win-bar {
+    background: #12344d;
+    color: #ffffff;
+  }
+
+  .tc-cover[data-source="hubspot"] .sc-win-bar {
+    background: #2e475d;
+    color: #ffffff;
+  }
+
+  .tc-cover[data-source="salesforce"] .sc-win-bar {
+    background: #0b5cab;
+    color: #ffffff;
+  }
+
+  .tc-cover[data-source="slack"] .sc-win-bar {
+    background: #3f0e40;
+    color: #ffffff;
+  }
+
+  .tc-cover[data-source="github"] .sc-win-bar {
+    background: #24292f;
+    color: #ffffff;
+  }
+
+  .tc-cover[data-source="linear"] .sc-win-bar {
+    background: #222326;
+    color: #ffffff;
+  }
+
+  .tc-cover[data-source="google-calendar"] .sc-win-bar {
+    background: #eef4ff;
+    color: #1b1631;
+  }
+
+  .sc-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+
+  .sc-dots i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.32;
+  }
+
+  .sc-win-app {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .sc-win-app .app-glyph {
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.92);
+    padding: 1px;
+  }
+
+  .sc-win-place {
+    min-width: 0;
+    margin-left: auto;
+    opacity: 0.72;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sc-win-body {
+    padding: 9px 11px 10px;
+  }
+
+  .sc-subject,
+  .sc-meta,
+  .sc-out-label {
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sc-subject {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 17px;
+    color: var(--ink);
+  }
+
+  .sc-meta {
+    margin-top: 2px;
+    font-size: 11.5px;
+    line-height: 15px;
+    color: var(--muted);
+  }
+
+  .sc-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 7px;
+  }
+
+  .sc-chip {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--muted);
+    line-height: 1;
+  }
+
+  .sc-bridge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+  }
+
+  .sc-wire {
+    flex: 1;
+    height: 1px;
+    background: rgba(27, 22, 49, 0.22);
+  }
+
+  .sc-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 22px;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid rgba(27, 22, 49, 0.14);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+    box-shadow: 0 2px 6px -4px rgba(27, 22, 49, 0.25);
+  }
+
+  .sc-node img {
+    border-radius: 4px;
+  }
+
+  .sc-out {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    padding: 8px 11px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid rgba(27, 22, 49, 0.12);
+    box-shadow: 0 6px 16px -10px rgba(27, 22, 49, 0.18);
+  }
+
+  .sc-out-ico {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+
+  .sc-out-text {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .sc-out-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .sc-out-label {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    color: var(--ink);
+  }
+
+  .sc-out-chip {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    height: 17px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--green-wash);
+    color: var(--green);
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .tc-body {
+    padding: 16px 18px 12px;
+    flex: 1;
+  }
+
+  .tc-title {
+    margin: 0;
+    font-size: 17.5px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+
+  .tc-summary {
+    margin: 8px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .tc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px 14px 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  .tc-apps {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .tc-app {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+  }
+
+  .tc-model {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 10px 0 8px;
+    border-radius: 999px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .tc-model-icon {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .tc-model-none {
+    padding: 0 10px;
+    gap: 5px;
+  }
+
+  .tc-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .icon-btn {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .icon-btn:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .tc-cta {
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .tc-cta:hover {
+    background: #2f2752;
+  }
+
+  .empty {
+    padding: 56px 24px;
+    border-radius: 20px;
+    border: 1px dashed var(--line-strong);
+    text-align: center;
+  }
+
+  .empty h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .empty p {
+    margin: 8px 0 18px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  .empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .contribute {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 64px;
+    padding: 32px;
+    border-radius: 24px;
+    background: var(--paper-deep);
+  }
+
+  .contribute h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  .contribute p {
+    margin: 8px 0 0;
+    max-width: 58ch;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  .contribute code {
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: rgba(27, 22, 49, 0.07);
+  }
+
+  .contribute-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  @media (max-width: 1080px) {
+    .cards,
+    .answer-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 720px) {
+    .stage {
+      padding: 132px 0 80px;
+      border-radius: 0 0 24px 24px;
+    }
+    .stage.is-searched {
+      padding: 96px 0 18px;
+    }
+    .stage.is-searched .ask {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      padding: 8px 12px;
+    }
+    .stage.is-searched .ask-bar {
+      justify-content: flex-end;
+    }
+    .ask-input {
+      font-size: 16px;
+    }
+    .ask-hint {
+      display: none;
+    }
+    .ask-bar {
+      justify-content: flex-end;
+    }
+    .cards,
+    .answer-cards {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .prompt-side {
+      padding: 18px;
+    }
+    .mini-search input {
+      width: 120px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ct,
+    .tc {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import '../lib/streamdown-mount';
+</script>
+
+<script is:inline>
+  (function () {
+    var config = document.getElementById('page-config');
+    var signupUrl = config.getAttribute('data-signup');
+    var total = Number(config.getAttribute('data-total'));
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var grid = document.getElementById('tpl-grid');
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('.tc'));
+    var items = cards.map(function (el) {
+      var d = el.dataset;
+      return {
+        el: el,
+        id: d.id,
+        name: d.title,
+        category: d.category,
+        appIds: d.apps ? d.apps.split(' ') : [],
+        title: d.title.toLowerCase(),
+        summary: d.summary.toLowerCase(),
+        tags: d.tags.toLowerCase(),
+        apps: (d.apps + ' ' + d.appLabels).toLowerCase(),
+        group: d.group.toLowerCase(),
+        extra: d.extra.toLowerCase(),
+      };
+    });
+    var everything = items
+      .map(function (i) {
+        return [i.title, i.summary, i.tags, i.apps, i.group, i.extra].join(' ');
+      })
+      .join(' ');
+
+    /* ---------- Catalog filters ---------- */
+    var searchEl = document.getElementById('tpl-search');
+    var appEl = document.getElementById('tpl-integration');
+    var countEl = document.getElementById('tpl-count');
+    var headingEl = document.getElementById('tpl-heading');
+    var resetEl = document.getElementById('tpl-reset');
+    var emptyEl = document.getElementById('tpl-empty');
+    var tiles = Array.prototype.slice.call(document.querySelectorAll('.ct'));
+    var activeCat = '';
+
+    function applyFilters() {
+      var q = searchEl.value.trim().toLowerCase();
+      var app = appEl.value;
+      var shown = 0;
+      items.forEach(function (i) {
+        var hay = [i.title, i.summary, i.tags, i.apps, i.group, i.extra].join(' ');
+        var ok =
+          (!activeCat || i.category === activeCat) &&
+          (!app || i.appIds.indexOf(app) !== -1) &&
+          (!q ||
+            q.split(/\s+/).every(function (w) {
+              return hay.indexOf(w) !== -1;
+            }));
+        i.el.hidden = !ok;
+        if (ok) shown += 1;
+      });
+      tiles.forEach(function (t) {
+        t.setAttribute('aria-pressed', String(t.dataset.cat === activeCat));
+      });
+      var activeTile = tiles.filter(function (t) {
+        return t.dataset.cat === activeCat;
+      })[0];
+      headingEl.textContent =
+        activeCat && activeTile ? activeTile.querySelector('.ct-name').textContent : 'All templates';
+      countEl.textContent = String(shown);
+      var filtered = Boolean(q || app || activeCat);
+      resetEl.hidden = !filtered;
+      emptyEl.hidden = shown !== 0;
+      grid.hidden = shown === 0;
+      syncUrl();
+    }
+
+    function resetFilters() {
+      searchEl.value = '';
+      appEl.value = '';
+      activeCat = '';
+      applyFilters();
+    }
+
+    tiles.forEach(function (t) {
+      t.addEventListener('click', function () {
+        activeCat = activeCat === t.dataset.cat ? '' : t.dataset.cat;
+        applyFilters();
+      });
+    });
+    searchEl.addEventListener('input', applyFilters);
+    appEl.addEventListener('change', applyFilters);
+    resetEl.addEventListener('click', resetFilters);
+    document.getElementById('tpl-empty-reset').addEventListener('click', resetFilters);
+    document.getElementById('tpl-empty-ask').addEventListener('click', function () {
+      var parts = [searchEl.value.trim()];
+      if (appEl.value) parts.push(appEl.options[appEl.selectedIndex].text);
+      runAsk(parts.filter(Boolean).join(' with '), true);
+    });
+
+    /* ---------- Ask ---------- */
+    var STOP = {};
+    'a an the and or to of for in on with my our your i we me us want need can could would you please that this it is are be from into when every each new all any get make build create template templates workflow workflows playbook playbooks automation automate help find show give some how do does via using use then them their so at by as up out one ones have has like something should will'
+      .split(' ')
+      .forEach(function (w) {
+        STOP[w] = true;
+      });
+
+    var SYNONYMS = {
+      ticket: ['support', 'triage'],
+      tickets: ['support', 'triage'],
+      helpdesk: ['support'],
+      customer: ['support'],
+      lead: ['sales', 'icp'],
+      leads: ['sales', 'icp'],
+      prospect: ['sales', 'icp'],
+      prospects: ['sales', 'icp'],
+      pipeline: ['sales'],
+      deal: ['sales', 'hubspot'],
+      deals: ['sales', 'hubspot'],
+      crm: ['hubspot', 'salesforce'],
+      email: ['gmail'],
+      emails: ['gmail'],
+      inbox: ['gmail'],
+      notify: ['slack'],
+      alert: ['slack'],
+      message: ['slack'],
+      summary: ['digest'],
+      report: ['digest'],
+      daily: ['schedule'],
+      weekly: ['schedule'],
+      competitor: ['competitive-intel'],
+      competitors: ['competitive-intel'],
+      rival: ['competitive-intel'],
+      tools: ['mcp'],
+      server: ['mcp'],
+    };
+
+    var APPS = {
+      slack: 'Slack', teams: 'Microsoft Teams', discord: 'Discord', gmail: 'Gmail', outlook: 'Outlook',
+      zendesk: 'Zendesk', intercom: 'Intercom', freshdesk: 'Freshdesk', hubspot: 'HubSpot',
+      salesforce: 'Salesforce', pipedrive: 'Pipedrive', zoho: 'Zoho', notion: 'Notion', jira: 'Jira',
+      asana: 'Asana', linear: 'Linear', trello: 'Trello', clickup: 'ClickUp', monday: 'Monday',
+      airtable: 'Airtable', sheets: 'Google Sheets', github: 'GitHub', gitlab: 'GitLab',
+      stripe: 'Stripe', shopify: 'Shopify', quickbooks: 'QuickBooks', xero: 'Xero',
+      netsuite: 'NetSuite', servicenow: 'ServiceNow', zoom: 'Zoom', calendly: 'Calendly',
+      typeform: 'Typeform', mailchimp: 'Mailchimp', klaviyo: 'Klaviyo', twilio: 'Twilio',
+      whatsapp: 'WhatsApp', telegram: 'Telegram', linkedin: 'LinkedIn', figma: 'Figma',
+      snowflake: 'Snowflake', bigquery: 'BigQuery', postgres: 'Postgres', segment: 'Segment',
+      mixpanel: 'Mixpanel', amplitude: 'Amplitude', sentry: 'Sentry', pagerduty: 'PagerDuty',
+      datadog: 'Datadog', docusign: 'DocuSign', dropbox: 'Dropbox', confluence: 'Confluence',
+    };
+
+    function tokenize(text) {
+      return text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, ' ')
+        .split(/\s+/)
+        .filter(function (w) {
+          return w.length > 1 && !STOP[w];
+        });
+    }
+
+    function stem(w) {
+      return w.length > 4 ? w.replace(/(ing|ies|es|ed|s)$/, '') : w;
+    }
+
+    function has(field, word) {
+      if (word.length < 4) return (' ' + field.replace(/[^a-z0-9]+/g, ' ') + ' ').indexOf(' ' + word + ' ') !== -1;
+      return field.indexOf(word) !== -1;
+    }
+
+    function scoreItem(item, words) {
+      var totalScore = 0;
+      var hits = [];
+      words.forEach(function (word) {
+        var s = stem(word);
+        var w = 0;
+        if (has(item.apps, s)) w = 6;
+        else if (has(item.title, s)) w = 5;
+        else if (has(item.tags, s)) w = 4;
+        else if (has(item.group, s)) w = 3;
+        else if (has(item.summary, s)) w = 2;
+        else if (has(item.extra, s)) w = 1;
+        (SYNONYMS[word] || []).forEach(function (syn) {
+          if (w < 3 && (has(item.tags, syn) || has(item.apps, syn) || has(item.group, syn))) w = 3;
+        });
+        if (w) {
+          totalScore += w;
+          hits.push(word);
+        }
+      });
+      return { item: item, score: totalScore, hits: hits, coverage: words.length ? hits.length / words.length : 0 };
+    }
+
+    function inferTrigger(text) {
+      var t = text.toLowerCase();
+      if (/\b(daily|weekly|monthly|hourly|every|each (morning|day|week|month)|schedule)\b/.test(t)) {
+        return 'Run it on a schedule that matches the request.';
+      }
+      if (/\b(when|whenever|as soon as|new|incoming|on every)\b/.test(t)) {
+        return 'Start it from the event described above (a webhook if the app supports one).';
+      }
+      return 'Suggest the best trigger and ask me to confirm it.';
+    }
+
+    function buildPrompt(ask, mentionedApps, nearest) {
+      var lines = ['Build a Ballet playbook that does this: ' + ask.replace(/\s+/g, ' ').replace(/[.\s]+$/, '') + '.', ''];
+      lines.push(
+        mentionedApps.length
+          ? 'Apps to connect: ' + mentionedApps.join(', ') + '.'
+          : 'Ask me which apps to connect before you start.',
+      );
+      lines.push('Trigger: ' + inferTrigger(ask));
+      if (nearest) {
+        lines.push('Start from the "' + nearest.name + '" template if it helps, and change what does not fit.');
+      }
+      lines.push('Keep it unpublished with triggers off until I have checked every step.');
+      return lines.join('\n');
+    }
+
+    function el(tag, className, text) {
+      var node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    function svgIcon(name) {
+      var paths = {
+        'arrow-up-right':
+          '<path d="M192 64v104a8 8 0 0 1-16 0V83.31L69.66 189.66a8 8 0 0 1-11.32-11.32L164.69 72H80a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8Z"/>',
+        copy:
+          '<path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8Zm-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"/>',
+        check:
+          '<path d="m229.66 77.66-128 128a8 8 0 0 1-11.32 0l-56-56a8 8 0 0 1 11.32-11.32L96 188.69 218.34 66.34a8 8 0 0 1 11.32 11.32Z"/>',
+      };
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', '15');
+      svg.setAttribute('height', '15');
+      svg.setAttribute('viewBox', '0 0 256 256');
+      svg.setAttribute('fill', 'currentColor');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.innerHTML = paths[name] || '';
+      return svg;
+    }
+
+    var stageEl = document.getElementById('stage');
+    var answerEl = document.getElementById('answer');
+    var bodyEl = document.getElementById('answer-body');
+    var askInput = document.getElementById('ask-input');
+    var askClearBtn = document.getElementById('ask-clear');
+    var currentAsk = '';
+    var runId = 0;
+
+    function setSearched(active) {
+      stageEl.classList.toggle('is-searched', active);
+      askClearBtn.hidden = !active;
+    }
+
+    function copyText(text, okMessage) {
+      if (!navigator.clipboard) {
+        window.balletToast && window.balletToast('Copy is not available in this browser');
+        return Promise.resolve(false);
+      }
+      return navigator.clipboard.writeText(text).then(
+        function () {
+          window.balletToast && window.balletToast(okMessage);
+          return true;
+        },
+        function () {
+          window.balletToast && window.balletToast('Could not copy. Select the text and copy it by hand.');
+          return false;
+        },
+      );
+    }
+
+    function promptCard(prompt, heading, note, streaming) {
+      var currentPrompt = prompt || '';
+      var card = el('div', streaming ? 'prompt-card is-streaming' : 'prompt-card');
+
+      var main = el('div', 'prompt-main');
+      var bar = el('div', 'prompt-bar');
+      var badge = el('span', 'prompt-badge');
+      badge.appendChild(el('span', 'prompt-dot'));
+      var statusLabel = el('span', '', streaming ? 'Writing Ballet prompt...' : 'Ballet prompt ready');
+      badge.appendChild(statusLabel);
+      bar.appendChild(badge);
+      main.appendChild(bar);
+
+      var pre = el('div', 'prompt-text');
+      function renderPromptBody(text, isDone) {
+        var displayText = text || 'Drafting your playbook prompt...';
+        if (window.__balletStreamdown && typeof window.__balletStreamdown.render === 'function') {
+          window.__balletStreamdown.render(pre, displayText, !isDone);
+        } else {
+          pre.textContent = displayText;
+        }
+      }
+      renderPromptBody(currentPrompt, !streaming);
+      main.appendChild(pre);
+      card.appendChild(main);
+
+      var side = el('div', 'prompt-side');
+      var sideCopy = el('div', 'prompt-side-copy');
+      sideCopy.appendChild(el('h4', '', heading));
+      sideCopy.appendChild(el('p', '', note));
+
+      var steps = el('ol', 'prompt-steps');
+      [
+        'Open Ballet Studio or sign up free',
+        'Paste this prompt into the builder',
+        'Review triggers and publish when ready',
+      ].forEach(function (label, idx) {
+        var li = el('li');
+        li.appendChild(el('span', '', String(idx + 1)));
+        li.appendChild(document.createTextNode(label));
+        steps.appendChild(li);
+      });
+      sideCopy.appendChild(steps);
+      side.appendChild(sideCopy);
+
+      var actions = el('div', 'prompt-actions');
+      var go = el('a', 'btn-mint');
+      go.href = signupUrl;
+      go.target = '_blank';
+      go.rel = 'noopener';
+      go.appendChild(document.createTextNode('Sign up and build it'));
+      go.appendChild(svgIcon('arrow-up-right'));
+      go.addEventListener('click', function (e) {
+        if (go.getAttribute('aria-disabled') === 'true') {
+          e.preventDefault();
+          return;
+        }
+        copyText(currentPrompt, 'Prompt copied. Paste it into Ballet after you sign up.');
+      });
+
+      var copy = el('button', 'btn-ghost-light');
+      copy.type = 'button';
+      var copyIcon = svgIcon('copy');
+      var copyLabel = el('span', '', 'Copy prompt');
+      copy.appendChild(copyIcon);
+      copy.appendChild(copyLabel);
+      var copyResetTimer = null;
+      copy.addEventListener('click', function () {
+        copyText(currentPrompt, 'Prompt copied').then(function (ok) {
+          if (!ok) return;
+          copy.classList.add('is-copied');
+          copyIcon.replaceWith(copyIcon = svgIcon('check'));
+          copyLabel.textContent = 'Copied';
+          if (copyResetTimer) clearTimeout(copyResetTimer);
+          copyResetTimer = setTimeout(function () {
+            copy.classList.remove('is-copied');
+            copyIcon.replaceWith(copyIcon = svgIcon('copy'));
+            copyLabel.textContent = 'Copy prompt';
+          }, 1800);
+        });
+      });
+
+      function setReady(ready) {
+        copy.disabled = !ready;
+        card.classList.toggle('is-streaming', !ready);
+        statusLabel.textContent = ready ? 'Ballet prompt ready' : 'Writing Ballet prompt...';
+        if (ready) {
+          go.removeAttribute('aria-disabled');
+          go.classList.remove('is-loading');
+        } else {
+          go.setAttribute('aria-disabled', 'true');
+          go.classList.add('is-loading');
+        }
+      }
+
+      setReady(!streaming);
+      actions.appendChild(go);
+      actions.appendChild(copy);
+      side.appendChild(actions);
+      card.appendChild(side);
+
+      card._setPrompt = function (text, done) {
+        currentPrompt = text;
+        renderPromptBody(text, Boolean(done));
+        if (done) setReady(true);
+      };
+      return card;
+    }
+
+    function resultCards(results) {
+      var wrap = el('div', 'answer-cards');
+      results.forEach(function (r) {
+        var clone = r.item.el.cloneNode(true);
+        clone.hidden = false;
+        clone.removeAttribute('data-id');
+        if (r.hits && r.hits.length) {
+          clone.insertBefore(el('p', 'answer-why', 'Matched on ' + r.hits.join(', ')), clone.querySelector('.tc-foot'));
+        } else if (typeof r.probability === 'number') {
+          var pct = Math.round(r.probability * 100);
+          clone.insertBefore(el('p', 'answer-why', pct + '% match'), clone.querySelector('.tc-foot'));
+        }
+        wrap.appendChild(clone);
+      });
+      return wrap;
+    }
+
+    var ITEM_BY_ID = {};
+    items.forEach(function (i) {
+      ITEM_BY_ID[i.id] = i;
+    });
+
+    function streamPromptIntoCard(card, ask, nearestId, fallbackPrompt, thisRun) {
+      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timer = controller ? setTimeout(function () { controller.abort(); }, 20000) : null;
+
+      fetch('/api/prompt/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: ask, nearestId: nearestId || undefined }),
+        signal: controller ? controller.signal : undefined,
+      })
+        .then(function (res) {
+          if (!res.ok || !res.body) throw new Error('HTTP ' + res.status);
+          var reader = res.body.getReader();
+          var decoder = new TextDecoder();
+          var text = '';
+          function read() {
+            return reader.read().then(function (chunk) {
+              if (thisRun !== runId) {
+                reader.cancel();
+                return;
+              }
+              if (chunk.done) {
+                text += decoder.decode();
+                var finalText = text.trim() || fallbackPrompt;
+                card._setPrompt(finalText, true);
+                return;
+              }
+              text += decoder.decode(chunk.value, { stream: true });
+              card._setPrompt(text, false);
+              return read();
+            });
+          }
+          return read();
+        })
+        .catch(function () {
+          if (thisRun !== runId) return;
+          card._setPrompt(fallbackPrompt, true);
+        })
+        .finally(function () {
+          if (timer) clearTimeout(timer);
+        });
+    }
+
+    function runKeywordAsk(ask, thisRun) {
+      var words = tokenize(ask);
+      var mentioned = [];
+      var missing = [];
+      words.forEach(function (w) {
+        if (APPS[w] && mentioned.indexOf(APPS[w]) === -1) {
+          mentioned.push(APPS[w]);
+          if (!has(everything, w)) missing.push(APPS[w]);
+        }
+      });
+
+      var ranked = items
+        .map(function (i) {
+          return scoreItem(i, words);
+        })
+        .filter(function (r) {
+          return r.score > 0;
+        })
+        .sort(function (a, b) {
+          return b.score - a.score;
+        });
+      var top = ranked[0];
+      var floor = top ? Math.max(4, top.score * 0.5) : 0;
+      var results = ranked
+        .filter(function (r) {
+          return r.score >= floor;
+        })
+        .slice(0, 3);
+      var found = Boolean(top) && missing.length === 0 && top.score >= 5 && top.coverage >= 0.5;
+      var prompt = buildPrompt(ask, mentioned, top ? top.item : null);
+
+      var trace = [{ text: 'Read ' + total + ' templates' }];
+      if (words.length) trace.push({ text: 'Looked for: ' + words.slice(0, 6).join(', ') });
+      bodyEl.textContent = '';
+
+      if (found) {
+        bodyEl.appendChild(el('h2', 'answer-title', results.length === 1 ? 'This template fits' : 'These templates fit'));
+        bodyEl.appendChild(
+          el('p', 'answer-note', 'Open one to read every step before you import it. Templates arrive unpublished with triggers off.'),
+        );
+        bodyEl.appendChild(resultCards(results));
+        var more = el('div', 'answer-more');
+        more.appendChild(el('span', '', 'Not quite what you meant?'));
+        var btn = el('button', 'btn-outline btn-sm', 'Write me a prompt to build it');
+        btn.type = 'button';
+        btn.addEventListener('click', function () {
+          more.replaceWith(
+            promptCard(prompt, 'Build it in Ballet', 'Sign up, paste this prompt, and Ballet drafts the playbook for you to review.', false),
+          );
+        });
+        more.appendChild(btn);
+        bodyEl.appendChild(more);
+      } else {
+        bodyEl.appendChild(el('h2', 'answer-title', 'No template covers this yet'));
+        bodyEl.appendChild(
+          el(
+            'p',
+            'answer-note',
+            missing.length
+              ? 'None of the ' + total + ' templates connect to ' + missing.join(' or ') + '. Use this prompt to have Ballet build the playbook instead.'
+              : 'Nothing in the catalog is a close match. Use this prompt to have Ballet build the playbook instead.',
+          ),
+        );
+        bodyEl.appendChild(
+          promptCard(prompt, 'Build it in Ballet', 'Sign up, paste this prompt, and Ballet drafts the playbook for you to review.', false),
+        );
+        if (results.length) {
+          bodyEl.appendChild(el('h2', 'answer-title', 'Nearest templates'));
+          bodyEl.appendChild(el('p', 'answer-note', 'These share part of what you asked for and can be a starting point.'));
+          bodyEl.appendChild(resultCards(results));
+        }
+      }
+    }
+
+    function runAsk(text, scroll) {
+      var ask = text.trim();
+      if (!ask) {
+        askInput.focus();
+        return;
+      }
+      currentAsk = ask;
+      askInput.value = ask;
+      runId += 1;
+      var thisRun = runId;
+
+      var words = tokenize(ask);
+      var mentioned = [];
+      words.forEach(function (w) {
+        if (APPS[w] && mentioned.indexOf(APPS[w]) === -1) mentioned.push(APPS[w]);
+      });
+
+      bodyEl.textContent = '';
+      setSearched(true);
+      answerEl.hidden = false;
+      syncUrl();
+      if (scroll && window.scrollY > 40) {
+        window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+      }
+
+      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timer = controller ? setTimeout(function () { controller.abort(); }, 4500) : null;
+
+      fetch('/api/ask/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: ask }),
+        signal: controller ? controller.signal : undefined,
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          if (thisRun !== runId) return;
+          var matches = (data && Array.isArray(data.matches) ? data.matches : [])
+            .map(function (m) {
+              var item = ITEM_BY_ID[m.id];
+              return item ? { item: item, probability: m.probability, hits: [] } : null;
+            })
+            .filter(Boolean);
+          var nearest = matches[0] ? matches[0].item : null;
+          var fallbackPrompt = buildPrompt(ask, mentioned, nearest);
+
+          if (data && data.found && matches.length) {
+            bodyEl.appendChild(el('h2', 'answer-title', matches.length === 1 ? 'This template fits' : 'These templates fit'));
+            bodyEl.appendChild(
+              el('p', 'answer-note', 'Open one to read every step before you import it. Templates arrive unpublished with triggers off.'),
+            );
+            bodyEl.appendChild(resultCards(matches));
+            var more = el('div', 'answer-more');
+            more.appendChild(el('span', '', 'Not quite what you meant?'));
+            var btn = el('button', 'btn-outline btn-sm', 'Write me a prompt to build it');
+            btn.type = 'button';
+            btn.addEventListener('click', function () {
+              var card = promptCard(
+                '',
+                'Build it in Ballet',
+                'Sign up, paste this prompt, and Ballet drafts the playbook for you to review.',
+                true,
+              );
+              more.replaceWith(card);
+              streamPromptIntoCard(card, ask, nearest ? nearest.id : null, fallbackPrompt, thisRun);
+            });
+            more.appendChild(btn);
+            bodyEl.appendChild(more);
+          } else {
+            bodyEl.appendChild(el('h2', 'answer-title', 'No template covers this yet'));
+            bodyEl.appendChild(
+              el('p', 'answer-note', 'Nothing in the catalog is a close match. Use this prompt to have Ballet build the playbook instead.'),
+            );
+            var card = promptCard(
+              '',
+              'Build it in Ballet',
+              'Sign up, paste this prompt, and Ballet drafts the playbook for you to review.',
+              true,
+            );
+            bodyEl.appendChild(card);
+            streamPromptIntoCard(card, ask, nearest ? nearest.id : null, fallbackPrompt, thisRun);
+            if (matches.length) {
+              bodyEl.appendChild(el('h2', 'answer-title', 'Nearest templates'));
+              bodyEl.appendChild(el('p', 'answer-note', 'These share part of what you asked for and can be a starting point.'));
+              bodyEl.appendChild(resultCards(matches));
+            }
+          }
+        })
+        .catch(function () {
+          if (thisRun !== runId) return;
+          runKeywordAsk(ask, thisRun);
+        })
+        .finally(function () {
+          if (timer) clearTimeout(timer);
+        });
+    }
+
+    document.getElementById('ask-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      runAsk(askInput.value, true);
+    });
+    askInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        runAsk(askInput.value, true);
+      }
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.ask-idea'), function (btn) {
+      btn.addEventListener('click', function () {
+        runAsk(btn.getAttribute('data-idea'), true);
+      });
+    });
+    function clearAsk() {
+      runId += 1;
+      currentAsk = '';
+      askInput.value = '';
+      setSearched(false);
+      answerEl.hidden = true;
+      syncUrl();
+      askInput.focus();
+    }
+
+    askClearBtn.addEventListener('click', clearAsk);
+
+    /* ---------- Shared ---------- */
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('.js-copy-link');
+      if (!btn) return;
+      e.preventDefault();
+      var url = new URL(btn.getAttribute('data-share-path') || '/', window.location.origin).href;
+      copyText(url, 'Template link copied');
+    });
+
+    document.addEventListener('keydown', function (e) {
+      var tag = document.activeElement ? document.activeElement.tagName : '';
+      if (e.key === '/' && ['INPUT', 'TEXTAREA', 'SELECT'].indexOf(tag) === -1) {
+        e.preventDefault();
+        askInput.focus();
+      }
+    });
+
+    function syncUrl() {
+      var params = new URLSearchParams();
+      if (currentAsk) params.set('ask', currentAsk);
+      if (searchEl.value.trim()) params.set('q', searchEl.value.trim());
+      if (activeCat) params.set('category', activeCat);
+      if (appEl.value) params.set('integration', appEl.value);
+      var qs = params.toString();
+      history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
+    }
+
+    var initial = new URLSearchParams(window.location.search);
+    searchEl.value = initial.get('q') || '';
+    activeCat = initial.get('category') || '';
+    // Links made before the categories changed carry ids that no longer exist.
+    if (!tiles.some(function (t) { return t.dataset.cat === activeCat; })) activeCat = '';
+    appEl.value = initial.get('integration') || '';
+    currentAsk = initial.get('ask') || '';
+    applyFilters();
+    if (currentAsk) runAsk(currentAsk, false);
+  })();
+</script>
