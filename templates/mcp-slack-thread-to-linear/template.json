@@ -1,15 +1,32 @@
 {
   "id": "mcp-slack-thread-to-linear",
+  "version": "1.0.0",
   "title": "Slack Thread to Linear Issue via MCP",
   "summary": "Turn a Slack thread into a well-formed Linear issue using the Slack and Linear MCP servers.",
   "category": "mcp",
-  "tags": ["mcp", "slack", "linear", "bug-report", "llm"],
+  "tags": [
+    "mcp",
+    "slack",
+    "linear",
+    "bug-report",
+    "llm"
+  ],
   "difficulty": "intermediate",
   "trigger": "Manual run",
   "integrations": [],
   "mcpServers": [
-    { "id": "slack", "tools": ["slack_read_thread"] },
-    { "id": "linear", "tools": ["save_issue"] }
+    {
+      "id": "slack",
+      "tools": [
+        "slack_read_thread"
+      ]
+    },
+    {
+      "id": "linear",
+      "tools": [
+        "save_issue"
+      ]
+    }
   ],
   "secrets": [],
   "setup": [

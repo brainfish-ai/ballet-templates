@@ -6,6 +6,7 @@ Verify any signed incoming webhook, reshape it, and forward it to a downstream s
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Ops |
 | Difficulty | beginner |
 | Trigger | Generic HMAC webhook |

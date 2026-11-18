@@ -1,13 +1,24 @@
 {
   "id": "meeting-prep-brief",
+  "version": "1.0.0",
   "title": "Meeting prep briefs for tomorrow",
   "summary": "Researches every company you meet tomorrow and writes a one-page brief per external meeting from your Google Calendar.",
   "category": "sales",
   "persona": "revops",
-  "tags": ["revops", "sales", "meeting-prep", "research", "google-calendar", "manual", "llm"],
+  "tags": [
+    "revops",
+    "sales",
+    "meeting-prep",
+    "research",
+    "google-calendar",
+    "manual",
+    "llm"
+  ],
   "difficulty": "beginner",
   "trigger": "Manual run; schedule it daily before your first meeting",
-  "integrations": ["google-calendar"],
+  "integrations": [
+    "google-calendar"
+  ],
   "secrets": [],
   "setup": [
     "Import the template and connect Google Calendar.",

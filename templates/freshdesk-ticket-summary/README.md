@@ -6,6 +6,7 @@ Summarise each new Freshdesk ticket in three bullets and add it as a private not
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Support |
 | Difficulty | beginner |
 | Trigger | Freshdesk webhook (ticket created) |

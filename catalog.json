@@ -5,6 +5,7 @@
   "templates": [
     {
       "id": "account-icp-scoring",
+      "version": "1.0.0",
       "title": "Account list research & ICP scoring",
       "summary": "Paste up to 10 company websites and get each one researched, scored against your ICP and ranked with an opening line.",
       "category": "sales",
@@ -30,6 +31,7 @@
     },
     {
       "id": "competitor-teardown",
+      "version": "1.0.0",
       "title": "Competitor pricing & positioning teardown",
       "summary": "Paste a competitor's website and get their pricing, positioning, key messages and the angles to counter them.",
       "category": "sales",
@@ -54,6 +56,7 @@
     },
     {
       "id": "competitor-watch",
+      "version": "1.0.0",
       "title": "Competitor watch: weekly digest & battlecards",
       "summary": "Emails you this week's competitor news, plus a battlecard for every upcoming meeting where a competitor comes up.",
       "category": "sales",
@@ -83,6 +86,7 @@
     },
     {
       "id": "crm-hygiene",
+      "version": "1.0.0",
       "title": "HubSpot CRM hygiene report",
       "summary": "Scans HubSpot contacts and companies for duplicates, missing fields, unowned and stale records, and writes a prioritised cleanup plan.",
       "category": "ops",
@@ -110,6 +114,7 @@
     },
     {
       "id": "daily-api-digest-slack",
+      "version": "1.0.0",
       "title": "Daily API Digest to Slack",
       "summary": "Pull records from any JSON API, summarise them, and post a digest to Slack on a schedule.",
       "category": "ops",
@@ -140,6 +145,7 @@
     },
     {
       "id": "freshdesk-ticket-summary",
+      "version": "1.0.0",
       "title": "Freshdesk Ticket Summary",
       "summary": "Summarise each new Freshdesk ticket in three bullets and add it as a private note for the agent who picks it up.",
       "category": "support",
@@ -170,6 +176,7 @@
     },
     {
       "id": "generic-webhook-relay",
+      "version": "1.0.0",
       "title": "Generic Webhook Relay",
       "summary": "Verify any signed incoming webhook, reshape it, and forward it to a downstream service with retries.",
       "category": "ops",
@@ -195,6 +202,7 @@
     },
     {
       "id": "github-issue-triage",
+      "version": "1.0.0",
       "title": "GitHub Issue Triage",
       "summary": "Label every newly opened GitHub issue with an LLM through a signed webhook.",
       "category": "ops",
@@ -223,6 +231,7 @@
     },
     {
       "id": "help-centre-audit",
+      "version": "1.0.0",
       "title": "Contact-driver & help-centre audit",
       "summary": "Paste your help centre URL and get the likely reasons customers contact support, the article gaps and the top 3 fixes.",
       "category": "support",
@@ -248,6 +257,7 @@
     },
     {
       "id": "inbound-lead-slack-alert",
+      "version": "1.0.0",
       "title": "Inbound Lead Slack Alert",
       "summary": "Score every form submission that hits a webhook and post it to Slack, flagging hot leads.",
       "category": "sales",
@@ -277,6 +287,7 @@
     },
     {
       "id": "l1-ticket-triage",
+      "version": "1.0.0",
       "title": "L1 ticket triage sweep",
       "summary": "Sweeps your open, unassigned Zendesk tickets, classifies each one and drafts a first reply as an internal note for an agent to review.",
       "category": "support",
@@ -304,6 +315,7 @@
     },
     {
       "id": "mcp-linear-weekly-digest",
+      "version": "1.0.0",
       "title": "Linear Weekly Digest via MCP",
       "summary": "Read recent Linear issues and post a weekly digest to Slack, using the Linear and Slack MCP servers.",
       "category": "mcp",
@@ -330,6 +342,7 @@
     },
     {
       "id": "mcp-slack-thread-to-linear",
+      "version": "1.0.0",
       "title": "Slack Thread to Linear Issue via MCP",
       "summary": "Turn a Slack thread into a well-formed Linear issue using the Slack and Linear MCP servers.",
       "category": "mcp",
@@ -356,6 +369,7 @@
     },
     {
       "id": "meeting-prep-brief",
+      "version": "1.0.0",
       "title": "Meeting prep briefs for tomorrow",
       "summary": "Researches every company you meet tomorrow and writes a one-page brief per external meeting from your Google Calendar.",
       "category": "sales",
@@ -384,6 +398,7 @@
     },
     {
       "id": "renewal-radar",
+      "version": "1.0.0",
       "title": "Renewal radar",
       "summary": "Paste your upcoming renewals and get each account risk-scored, with a pre-call brief for any customer call this week, emailed to you.",
       "category": "support",
@@ -414,6 +429,7 @@
     },
     {
       "id": "salesforce-lead-enrichment",
+      "version": "1.0.0",
       "title": "Salesforce Lead Enrichment",
       "summary": "Research each new Salesforce Lead on the web and write a short brief and rating back to the record.",
       "category": "sales",
@@ -444,6 +460,7 @@
     },
     {
       "id": "support-reply-drafter",
+      "version": "1.0.0",
       "title": "Support Reply Drafter",
       "summary": "Paste a customer message and get a polite, source-aware draft reply to review and send.",
       "category": "support",
@@ -467,6 +484,7 @@
     },
     {
       "id": "win-loss-by-competitor",
+      "version": "1.0.0",
       "title": "Win/loss by competitor",
       "summary": "Reads your closed HubSpot deals and reports win rate, revenue and the top won and lost reasons against each competitor.",
       "category": "sales",
@@ -494,6 +512,7 @@
     },
     {
       "id": "zendesk-ticket-triage",
+      "version": "1.0.0",
       "title": "Zendesk Ticket Triage",
       "summary": "Classify every new Zendesk ticket with an LLM and write the priority and tags back as an internal note.",
       "category": "support",

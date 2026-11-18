@@ -6,6 +6,7 @@ Paste your upcoming renewals and get each account risk-scored, with a pre-call b
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Support |
 | Difficulty | beginner |
 | Trigger | Manual run (pasted list or CSV of renewals); schedule it weekly |

@@ -6,6 +6,7 @@ Pull records from any JSON API, summarise them, and post a digest to Slack on a 
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Ops |
 | Difficulty | beginner |
 | Trigger | Manual run, or attach a daily schedule in Studio |

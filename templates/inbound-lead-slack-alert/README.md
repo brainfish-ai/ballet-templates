@@ -6,6 +6,7 @@ Score every form submission that hits a webhook and post it to Slack, flagging h
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Sales |
 | Difficulty | beginner |
 | Trigger | Generic HMAC webhook |

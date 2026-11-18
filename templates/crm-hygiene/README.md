@@ -6,6 +6,7 @@ Scans HubSpot contacts and companies for duplicates, missing fields, unowned and
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Ops |
 | Difficulty | beginner |
 | Trigger | Manual run; schedule it weekly |

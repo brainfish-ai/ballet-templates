@@ -1,13 +1,25 @@
 {
   "id": "competitor-watch",
+  "version": "1.0.0",
   "title": "Competitor watch: weekly digest & battlecards",
   "summary": "Emails you this week's competitor news, plus a battlecard for every upcoming meeting where a competitor comes up.",
   "category": "sales",
   "persona": "marketing-ops",
-  "tags": ["marketing-ops", "competitive-intel", "battlecards", "google-calendar", "gmail", "manual", "llm"],
+  "tags": [
+    "marketing-ops",
+    "competitive-intel",
+    "battlecards",
+    "google-calendar",
+    "gmail",
+    "manual",
+    "llm"
+  ],
   "difficulty": "beginner",
   "trigger": "Manual run (list of competitors); schedule it weekly",
-  "integrations": ["google-calendar", "gmail"],
+  "integrations": [
+    "google-calendar",
+    "gmail"
+  ],
   "secrets": [],
   "setup": [
     "Import the template and connect Google Calendar and Gmail.",

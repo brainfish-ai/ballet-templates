@@ -6,6 +6,7 @@ Paste your help centre URL and get the likely reasons customers contact support,
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Support |
 | Difficulty | beginner |
 | Trigger | Manual run (help centre URL) |

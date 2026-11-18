@@ -1,9 +1,16 @@
 {
   "id": "support-reply-drafter",
+  "version": "1.0.0",
   "title": "Support Reply Drafter",
   "summary": "Paste a customer message and get a polite, source-aware draft reply to review and send.",
   "category": "support",
-  "tags": ["support", "drafting", "manual", "llm", "search"],
+  "tags": [
+    "support",
+    "drafting",
+    "manual",
+    "llm",
+    "search"
+  ],
   "difficulty": "beginner",
   "trigger": "Manual run",
   "integrations": [],

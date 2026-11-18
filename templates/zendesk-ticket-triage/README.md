@@ -6,6 +6,7 @@ Classify every new Zendesk ticket with an LLM and write the priority and tags ba
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Support |
 | Difficulty | beginner |
 | Trigger | Zendesk webhook (ticket created) |

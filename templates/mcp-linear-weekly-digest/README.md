@@ -6,6 +6,7 @@ Read recent Linear issues and post a weekly digest to Slack, using the Linear an
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | MCP |
 | Difficulty | intermediate |
 | Trigger | Manual run, or attach a weekly schedule in Studio |

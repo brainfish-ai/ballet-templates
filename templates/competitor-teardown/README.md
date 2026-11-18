@@ -6,6 +6,7 @@ Paste a competitor's website and get their pricing, positioning, key messages an
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Sales |
 | Difficulty | beginner |
 | Trigger | Manual run (competitor URL) |

@@ -156,6 +156,8 @@ const SECRET_LITERALS = [
 
 const PLATFORM_TOOLS = new Set(['search_web', 'read_url', 'send_email', 'html_to_pdf']);
 
+const SEMVER_RE = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
+
 /** Returns a list of human-readable problems; empty means valid. */
 export function validateTemplate(t) {
   const errors = [...t.errors];
@@ -165,6 +167,9 @@ export function validateTemplate(t) {
 
   if (meta) {
     if (meta.id !== t.id) errors.push(`template.json id "${meta.id}" must equal folder name "${t.id}"`);
+    if (typeof meta.version !== 'string' || !SEMVER_RE.test(meta.version)) {
+      errors.push('template.json: "version" is required and must be semver (e.g. "1.0.0")');
+    }
     for (const key of ['title', 'summary', 'trigger']) {
       if (typeof meta[key] !== 'string' || !meta[key].trim()) errors.push(`template.json: "${key}" is required`);
     }
@@ -334,6 +339,7 @@ export function catalogEntry(t) {
   const deps = scanDependencies(t);
   return {
     id: t.id,
+    version: t.meta.version,
     title: t.meta.title,
     summary: t.meta.summary,
     category: t.meta.category,
@@ -366,6 +372,7 @@ export function renderTemplateReadme(t, ctx) {
     lines.push(`Prefer another route? [${fallback.includes('/signup?remix=') ? 'Remix it on Ballet' : 'Import from GitHub'}](${fallback}).`, '');
   }
   lines.push('| | |', '|---|---|');
+  lines.push(`| Version | ${mdEscape(t.meta.version)} |`);
   lines.push(`| Category | ${categoryLabel(t.meta.category)} |`);
   lines.push(`| Difficulty | ${t.meta.difficulty} |`);
   lines.push(`| Trigger | ${mdEscape(t.meta.trigger)} |`);

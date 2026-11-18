@@ -1,10 +1,17 @@
 {
   "id": "competitor-teardown",
+  "version": "1.0.0",
   "title": "Competitor pricing & positioning teardown",
   "summary": "Paste a competitor's website and get their pricing, positioning, key messages and the angles to counter them.",
   "category": "sales",
   "persona": "marketing-ops",
-  "tags": ["marketing", "competitive", "pricing", "manual", "llm"],
+  "tags": [
+    "marketing",
+    "competitive",
+    "pricing",
+    "manual",
+    "llm"
+  ],
   "difficulty": "beginner",
   "trigger": "Manual run (competitor URL)",
   "integrations": [],

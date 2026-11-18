@@ -6,6 +6,7 @@ Research each new Salesforce Lead on the web and write a short brief and rating 
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Sales |
 | Difficulty | intermediate |
 | Trigger | Salesforce webhook (Lead created) |

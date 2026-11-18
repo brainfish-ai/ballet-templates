@@ -1,16 +1,34 @@
 {
   "id": "inbound-lead-slack-alert",
+  "version": "1.0.0",
   "title": "Inbound Lead Slack Alert",
   "summary": "Score every form submission that hits a webhook and post it to Slack, flagging hot leads.",
   "category": "sales",
-  "tags": ["sales", "leads", "slack", "webhook", "llm"],
+  "tags": [
+    "sales",
+    "leads",
+    "slack",
+    "webhook",
+    "llm"
+  ],
   "difficulty": "beginner",
   "trigger": "Generic HMAC webhook",
-  "integrations": ["slack"],
+  "integrations": [
+    "slack"
+  ],
   "secrets": [
-    { "name": "INBOUND_HMAC_SECRET", "description": "HMAC-SHA256 secret your form tool uses to sign webhook bodies." },
-    { "name": "SLACK_BOT_TOKEN", "description": "Slack bot token with the `chat:write` scope." },
-    { "name": "SLACK_LEADS_CHANNEL", "description": "Channel id or name to post leads to, for example `#leads`." }
+    {
+      "name": "INBOUND_HMAC_SECRET",
+      "description": "HMAC-SHA256 secret your form tool uses to sign webhook bodies."
+    },
+    {
+      "name": "SLACK_BOT_TOKEN",
+      "description": "Slack bot token with the `chat:write` scope."
+    },
+    {
+      "name": "SLACK_LEADS_CHANNEL",
+      "description": "Channel id or name to post leads to, for example `#leads`."
+    }
   ],
   "setup": [
     "Add the three secrets above and invite the Slack bot to the channel.",

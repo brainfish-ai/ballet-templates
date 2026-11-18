@@ -1,9 +1,14 @@
 {
   "id": "my-first-playbook",
+  "version": "1.0.0",
   "title": "My First Playbook",
   "summary": "A minimal manual playbook that asks an agent for a friendly greeting. Replace it with your own.",
   "category": "ops",
-  "tags": ["starter", "manual", "llm"],
+  "tags": [
+    "starter",
+    "manual",
+    "llm"
+  ],
   "difficulty": "beginner",
   "trigger": "Manual run",
   "integrations": [],

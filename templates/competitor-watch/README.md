@@ -6,6 +6,7 @@ Emails you this week's competitor news, plus a battlecard for every upcoming mee
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Sales |
 | Difficulty | beginner |
 | Trigger | Manual run (list of competitors); schedule it weekly |

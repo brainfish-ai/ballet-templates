@@ -1,17 +1,38 @@
 {
   "id": "daily-api-digest-slack",
+  "version": "1.0.0",
   "title": "Daily API Digest to Slack",
   "summary": "Pull records from any JSON API, summarise them, and post a digest to Slack on a schedule.",
   "category": "ops",
-  "tags": ["scheduled", "api", "slack", "digest", "llm"],
+  "tags": [
+    "scheduled",
+    "api",
+    "slack",
+    "digest",
+    "llm"
+  ],
   "difficulty": "beginner",
   "trigger": "Manual run, or attach a daily schedule in Studio",
-  "integrations": ["slack"],
+  "integrations": [
+    "slack"
+  ],
   "secrets": [
-    { "name": "DIGEST_API_URL", "description": "Full URL of the JSON endpoint to read, without the query string." },
-    { "name": "DIGEST_API_TOKEN", "description": "Bearer token for that API." },
-    { "name": "SLACK_BOT_TOKEN", "description": "Slack bot token with the `chat:write` scope." },
-    { "name": "SLACK_DIGEST_CHANNEL", "description": "Channel id or name to post to, for example `#ops`." }
+    {
+      "name": "DIGEST_API_URL",
+      "description": "Full URL of the JSON endpoint to read, without the query string."
+    },
+    {
+      "name": "DIGEST_API_TOKEN",
+      "description": "Bearer token for that API."
+    },
+    {
+      "name": "SLACK_BOT_TOKEN",
+      "description": "Slack bot token with the `chat:write` scope."
+    },
+    {
+      "name": "SLACK_DIGEST_CHANNEL",
+      "description": "Channel id or name to post to, for example `#ops`."
+    }
   ],
   "setup": [
     "Add the four secrets above.",

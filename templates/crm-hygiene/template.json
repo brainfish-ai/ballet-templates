@@ -1,13 +1,23 @@
 {
   "id": "crm-hygiene",
+  "version": "1.0.0",
   "title": "HubSpot CRM hygiene report",
   "summary": "Scans HubSpot contacts and companies for duplicates, missing fields, unowned and stale records, and writes a prioritised cleanup plan.",
   "category": "ops",
   "persona": "revops",
-  "tags": ["revops", "crm", "data-quality", "hubspot", "manual", "llm"],
+  "tags": [
+    "revops",
+    "crm",
+    "data-quality",
+    "hubspot",
+    "manual",
+    "llm"
+  ],
   "difficulty": "beginner",
   "trigger": "Manual run; schedule it weekly",
-  "integrations": ["hubspot"],
+  "integrations": [
+    "hubspot"
+  ],
   "secrets": [],
   "setup": [
     "Import the template and connect HubSpot.",

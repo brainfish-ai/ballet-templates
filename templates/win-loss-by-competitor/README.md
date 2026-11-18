@@ -6,6 +6,7 @@ Reads your closed HubSpot deals and reports win rate, revenue and the top won an
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Sales |
 | Difficulty | intermediate |
 | Trigger | Manual run (deal property name, lookback in days) |

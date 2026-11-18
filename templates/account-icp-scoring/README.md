@@ -6,6 +6,7 @@ Paste up to 10 company websites and get each one researched, scored against your
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Sales |
 | Difficulty | beginner |
 | Trigger | Manual run (list of company URLs) |

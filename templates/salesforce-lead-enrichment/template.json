@@ -1,16 +1,35 @@
 {
   "id": "salesforce-lead-enrichment",
+  "version": "1.0.0",
   "title": "Salesforce Lead Enrichment",
   "summary": "Research each new Salesforce Lead on the web and write a short brief and rating back to the record.",
   "category": "sales",
-  "tags": ["salesforce", "sales", "enrichment", "webhook", "llm", "search"],
+  "tags": [
+    "salesforce",
+    "sales",
+    "enrichment",
+    "webhook",
+    "llm",
+    "search"
+  ],
   "difficulty": "intermediate",
   "trigger": "Salesforce webhook (Lead created)",
-  "integrations": ["salesforce"],
+  "integrations": [
+    "salesforce"
+  ],
   "secrets": [
-    { "name": "SALESFORCE_WEBHOOK_TOKEN", "description": "Bearer token Salesforce sends in the Authorization header when calling the webhook." },
-    { "name": "SALESFORCE_INSTANCE_URL", "description": "Your instance URL, for example `https://acme.my.salesforce.com`." },
-    { "name": "SALESFORCE_ACCESS_TOKEN", "description": "OAuth access token with permission to update Lead records." }
+    {
+      "name": "SALESFORCE_WEBHOOK_TOKEN",
+      "description": "Bearer token Salesforce sends in the Authorization header when calling the webhook."
+    },
+    {
+      "name": "SALESFORCE_INSTANCE_URL",
+      "description": "Your instance URL, for example `https://acme.my.salesforce.com`."
+    },
+    {
+      "name": "SALESFORCE_ACCESS_TOKEN",
+      "description": "OAuth access token with permission to update Lead records."
+    }
   ],
   "setup": [
     "Add the three secrets above.",

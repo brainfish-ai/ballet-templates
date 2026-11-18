@@ -1,15 +1,30 @@
 {
   "id": "zendesk-ticket-triage",
+  "version": "1.0.0",
   "title": "Zendesk Ticket Triage",
   "summary": "Classify every new Zendesk ticket with an LLM and write the priority and tags back as an internal note.",
   "category": "support",
-  "tags": ["zendesk", "support", "triage", "webhook", "llm"],
+  "tags": [
+    "zendesk",
+    "support",
+    "triage",
+    "webhook",
+    "llm"
+  ],
   "difficulty": "beginner",
   "trigger": "Zendesk webhook (ticket created)",
-  "integrations": ["zendesk"],
+  "integrations": [
+    "zendesk"
+  ],
   "secrets": [
-    { "name": "ZENDESK_API_TOKEN", "description": "Zendesk API token used to register the webhook and update tickets." },
-    { "name": "ZENDESK_SUBDOMAIN", "description": "Your Zendesk subdomain, for example `acme` for acme.zendesk.com." }
+    {
+      "name": "ZENDESK_API_TOKEN",
+      "description": "Zendesk API token used to register the webhook and update tickets."
+    },
+    {
+      "name": "ZENDESK_SUBDOMAIN",
+      "description": "Your Zendesk subdomain, for example `acme` for acme.zendesk.com."
+    }
   ],
   "setup": [
     "Connect Zendesk and add the two secrets above.",

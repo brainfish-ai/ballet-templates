@@ -4,6 +4,7 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import Icon from '../components/Icon.astro';
 import AppGlyph from '../components/AppGlyph.astro';
+import PuzzleStage from '../components/PuzzleStage.astro';
 import {
   USE_CASES,
   appLabel,
@@ -130,6 +131,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
         </div>
       </div>
     </div>
+    <PuzzleStage />
   </section>
 
   <section id="answer" class="answer" hidden aria-live="polite">
@@ -375,17 +377,21 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
   /* ---------- Stage (hero — clean light studio canvas) ---------- */
   .stage {
     position: relative;
+    z-index: 10;
     isolation: isolate;
     margin-top: 0;
-    padding: 132px 0 88px;
+    padding: 212px 0 88px;
     background: var(--sky);
     color: var(--ink);
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
     border-bottom: 1px solid var(--line);
     transition: padding 0.22s ease, background 0.22s ease;
   }
 
   .stage-inner {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -396,7 +402,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
     margin: 0;
     font-family: var(--display);
     font-weight: 600;
-    font-size: clamp(2.5rem, 6.4vw, 5.25rem);
+    font-size: clamp(2.25rem, 5.2vw, 4.35rem);
     line-height: 0.98;
     letter-spacing: -0.045em;
     color: var(--ink);
@@ -497,6 +503,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
   .stage.is-searched .stage-sub,
   .stage.is-searched .ask-ideas,
   .stage.is-searched .cx-agent,
+  .stage.is-searched .cx-stage-puzzle,
   .stage.is-searched .ask-hint {
     display: none;
   }
@@ -613,7 +620,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
   /* ---------- Install directly with coding agent ---------- */
   .cx-agent {
     position: relative;
-    z-index: 5;
+    z-index: 20;
     display: flex;
     justify-content: center;
     margin-top: 14px;
@@ -626,7 +633,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
     border: 0;
     border-radius: 999px;
     background: none;
-    color: var(--muted);
+    color: #635c7a;
     font: inherit;
     font-size: 14.5px;
     cursor: pointer;
@@ -640,7 +647,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
     place-items: center;
     width: 30px;
     height: 30px;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(27, 22, 49, 0.1);
     border-radius: 9px;
     background: #ffffff;
     color: var(--ink);
@@ -654,6 +661,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
     position: absolute;
     top: 100%;
     left: 50%;
+    z-index: 30;
     width: min(460px, calc(100vw - 32px));
     padding-top: 8px;
     text-align: left;
@@ -674,7 +682,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
   }
   .cx-agent-box {
     padding: 8px;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(27, 22, 49, 0.1);
     border-radius: 22px;
     background: #ffffff;
     box-shadow: 0 30px 60px -28px rgba(42, 31, 94, 0.45);
@@ -715,24 +723,78 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
     margin: 0;
     padding: 14px 16px;
     border-radius: 14px;
-    background: var(--paper-soft);
+    background: #f0ebe3;
     font-size: 14.5px;
     line-height: 1.55;
     color: var(--ink);
     overflow-wrap: anywhere;
   }
   .cx-agent-text span {
-    color: var(--muted);
+    color: #635c7a;
   }
   .cx-agent-row:focus-visible,
   .cx-agent-copy:focus-visible {
-    outline: 3px solid var(--brand-soft);
+    outline: 3px solid #8a5bd1;
     outline-offset: 3px;
   }
   @media (prefers-reduced-motion: reduce) {
     .cx-agent-pop {
       transform: translate(-50%, 0);
       transition: none;
+    }
+  }
+
+  /* ---------- 3D Puzzle Stage (subtle blended banner layer) ---------- */
+  .cx-stage {
+    position: absolute;
+    left: 50%;
+    top: -96px;
+    bottom: auto;
+    transform: translateX(-50%);
+    width: min(1100px, 100%);
+    aspect-ratio: 2000 / 860;
+    margin: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.45;
+    background: none;
+    -webkit-mask-image: radial-gradient(ellipse 56% 58% at 50% 50%, #000 35%, transparent 92%);
+    mask-image: radial-gradient(ellipse 56% 58% at 50% 50%, #000 35%, transparent 92%);
+  }
+  .cx-still,
+  .cx-stage canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .cx-still {
+    object-fit: contain;
+    transition: opacity 0.6s ease;
+  }
+  .cx-stage canvas {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .cx-stage.is-live > canvas {
+    opacity: 1;
+  }
+  .cx-stage.is-live .cx-still {
+    opacity: 0;
+  }
+  @media (pointer: fine) and (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+    .cx-stage-puzzle:not(.is-still) .cx-still {
+      opacity: 0;
+      transition: none;
+    }
+  }
+  @media (max-width: 640px) {
+    .cx-stage-puzzle {
+      top: -58px;
+      width: min(440px, 100%);
+      aspect-ratio: var(--phone, 2000 / 860);
+      -webkit-mask-image: radial-gradient(ellipse 68% 62% at 50% 48%, #000 28%, transparent 88%);
+      mask-image: radial-gradient(ellipse 68% 62% at 50% 48%, #000 28%, transparent 88%);
     }
   }
 
@@ -1663,7 +1725,7 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
 
   @media (max-width: 720px) {
     .stage {
-      padding: 132px 0 80px;
+      padding: 215px 0 72px;
       border-radius: 0 0 24px 24px;
     }
     .stage.is-searched {
@@ -2463,4 +2525,9 @@ const accentOf = (useCase: string) => USE_CASES.find(u => u.id === useCase)?.acc
     applyFilters();
     if (currentAsk) runAsk(currentAsk, false);
   })();
+</script>
+
+<script>
+  import { mountPieces } from '../scripts/pieces/boot';
+  mountPieces();
 </script>

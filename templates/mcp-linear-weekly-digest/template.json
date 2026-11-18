@@ -1,15 +1,32 @@
 {
   "id": "mcp-linear-weekly-digest",
+  "version": "1.0.0",
   "title": "Linear Weekly Digest via MCP",
   "summary": "Read recent Linear issues and post a weekly digest to Slack, using the Linear and Slack MCP servers.",
   "category": "mcp",
-  "tags": ["mcp", "linear", "slack", "digest", "llm"],
+  "tags": [
+    "mcp",
+    "linear",
+    "slack",
+    "digest",
+    "llm"
+  ],
   "difficulty": "intermediate",
   "trigger": "Manual run, or attach a weekly schedule in Studio",
   "integrations": [],
   "mcpServers": [
-    { "id": "linear", "tools": ["list_issues"] },
-    { "id": "slack", "tools": ["slack_send_message"] }
+    {
+      "id": "linear",
+      "tools": [
+        "list_issues"
+      ]
+    },
+    {
+      "id": "slack",
+      "tools": [
+        "slack_send_message"
+      ]
+    }
   ],
   "secrets": [],
   "setup": [

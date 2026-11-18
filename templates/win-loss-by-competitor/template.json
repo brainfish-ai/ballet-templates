@@ -1,13 +1,23 @@
 {
   "id": "win-loss-by-competitor",
+  "version": "1.0.0",
   "title": "Win/loss by competitor",
   "summary": "Reads your closed HubSpot deals and reports win rate, revenue and the top won and lost reasons against each competitor.",
   "category": "sales",
   "persona": "marketing-ops",
-  "tags": ["marketing-ops", "competitive-intel", "win-loss", "hubspot", "manual", "llm"],
+  "tags": [
+    "marketing-ops",
+    "competitive-intel",
+    "win-loss",
+    "hubspot",
+    "manual",
+    "llm"
+  ],
   "difficulty": "intermediate",
   "trigger": "Manual run (deal property name, lookback in days)",
-  "integrations": ["hubspot"],
+  "integrations": [
+    "hubspot"
+  ],
   "secrets": [],
   "setup": [
     "Import the template and connect HubSpot.",

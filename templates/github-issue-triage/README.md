@@ -6,6 +6,7 @@ Label every newly opened GitHub issue with an LLM through a signed webhook.
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Ops |
 | Difficulty | intermediate |
 | Trigger | GitHub webhook (issues) |

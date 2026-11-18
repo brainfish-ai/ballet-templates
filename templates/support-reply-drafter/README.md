@@ -6,6 +6,7 @@ Paste a customer message and get a polite, source-aware draft reply to review an
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Support |
 | Difficulty | beginner |
 | Trigger | Manual run |

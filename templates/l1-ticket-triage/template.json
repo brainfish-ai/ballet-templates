@@ -1,13 +1,23 @@
 {
   "id": "l1-ticket-triage",
+  "version": "1.0.0",
   "title": "L1 ticket triage sweep",
   "summary": "Sweeps your open, unassigned Zendesk tickets, classifies each one and drafts a first reply as an internal note for an agent to review.",
   "category": "support",
   "persona": "customer-ops",
-  "tags": ["customer-ops", "support", "triage", "zendesk", "manual", "llm"],
+  "tags": [
+    "customer-ops",
+    "support",
+    "triage",
+    "zendesk",
+    "manual",
+    "llm"
+  ],
   "difficulty": "beginner",
   "trigger": "Manual run; schedule it every hour or at the start of each shift",
-  "integrations": ["zendesk"],
+  "integrations": [
+    "zendesk"
+  ],
   "secrets": [],
   "setup": [
     "Import the template and connect Zendesk.",

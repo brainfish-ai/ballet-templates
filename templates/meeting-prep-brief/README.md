@@ -6,6 +6,7 @@ Researches every company you meet tomorrow and writes a one-page brief per exter
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Sales |
 | Difficulty | beginner |
 | Trigger | Manual run; schedule it daily before your first meeting |

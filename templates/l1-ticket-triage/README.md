@@ -6,6 +6,7 @@ Sweeps your open, unassigned Zendesk tickets, classifies each one and drafts a f
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | Support |
 | Difficulty | beginner |
 | Trigger | Manual run; schedule it every hour or at the start of each shift |

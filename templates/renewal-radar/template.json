@@ -1,13 +1,26 @@
 {
   "id": "renewal-radar",
+  "version": "1.0.0",
   "title": "Renewal radar",
   "summary": "Paste your upcoming renewals and get each account risk-scored, with a pre-call brief for any customer call this week, emailed to you.",
   "category": "support",
   "persona": "customer-ops",
-  "tags": ["customer-ops", "customer-success", "renewals", "churn-risk", "google-calendar", "gmail", "manual", "llm"],
+  "tags": [
+    "customer-ops",
+    "customer-success",
+    "renewals",
+    "churn-risk",
+    "google-calendar",
+    "gmail",
+    "manual",
+    "llm"
+  ],
   "difficulty": "beginner",
   "trigger": "Manual run (pasted list or CSV of renewals); schedule it weekly",
-  "integrations": ["google-calendar", "gmail"],
+  "integrations": [
+    "google-calendar",
+    "gmail"
+  ],
   "secrets": [],
   "setup": [
     "Import the template and connect Google Calendar and Gmail.",

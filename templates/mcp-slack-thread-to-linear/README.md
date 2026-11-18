@@ -6,6 +6,7 @@ Turn a Slack thread into a well-formed Linear issue using the Slack and Linear M
 
 | | |
 |---|---|
+| Version | 1.0.0 |
 | Category | MCP |
 | Difficulty | intermediate |
 | Trigger | Manual run |
