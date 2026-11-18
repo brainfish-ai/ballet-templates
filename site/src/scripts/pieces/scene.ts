@@ -51,6 +51,8 @@ export interface PiecesOptions {
   still?: boolean;
   /** Play through the assembly once and settle at the finished state. */
   settle?: boolean;
+  /** Keep surrounding puzzle pieces grey while rendering the Ballet mark in color. */
+  greyPieces?: boolean;
   onFrame?: (pieces: BlockState[]) => void;
 }
 
@@ -725,8 +727,8 @@ export function createPieces(o: PiecesOptions): Pieces {
       if (pulseRing) {
         const u = sc / PULSE_DUR;
         // how far out the green has been painted: to the ring, and everywhere once it's gone
-        litU.uRing.value = u > 0 ? pulseRing.at(Math.min(1, u)) : 0;
-        pulseRing.mesh.visible = u > 0 && u < 1;
+        litU.uRing.value = !o.greyPieces && u > 0 ? pulseRing.at(Math.min(1, u)) : 0;
+        pulseRing.mesh.visible = !o.greyPieces && u > 0 && u < 1;
         if (pulseRing.mesh.visible) {
           pulseRing.mesh.scale.setScalar(pulseRing.at(u) / 0.94);
           (pulseRing.mesh.material as THREE.MeshBasicMaterial).opacity = 0.8 * Math.pow(1 - u, 1.4);
@@ -765,12 +767,17 @@ export function createPieces(o: PiecesOptions): Pieces {
         g.visible = t > 0 && gone < 1;
         // locked on, it's connected: green at once, with a glow that fades as it settles
         if (p.lit) {
-          // the colour comes on as the ring passes, while the piece is still
-          // sliding in, so the green travels with the pulse rather than behind it
-          const l = tau - p.lit.at;
-          const on = smooth(0, 0.3, l);
-          p.lit.glyph?.color.lerpColors(GREY.glyph, p.lit.to.glyph, on);
-          p.lit.body.emissiveIntensity = l > 0 ? 0.5 * Math.exp(-l / 0.22) : 0;
+          if (o.greyPieces) {
+            p.lit.glyph?.color.copy(GREY.glyph);
+            p.lit.body.emissiveIntensity = 0;
+          } else {
+            // the colour comes on as the ring passes, while the piece is still
+            // sliding in, so the green travels with the pulse rather than behind it
+            const l = tau - p.lit.at;
+            const on = smooth(0, 0.3, l);
+            p.lit.glyph?.color.lerpColors(GREY.glyph, p.lit.to.glyph, on);
+            p.lit.body.emissiveIntensity = l > 0 ? 0.5 * Math.exp(-l / 0.22) : 0;
+          }
         }
       }
     } else if (o.variant === "lattice") {

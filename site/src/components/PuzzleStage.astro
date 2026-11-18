@@ -3,9 +3,10 @@ import { HERO_PHONE_SRCSET, PUZZLE_STEPS } from '../lib/puzzle';
 
 interface Props {
   settle?: boolean;
+  greyPieces?: boolean;
 }
 
-const { settle = true } = Astro.props;
+const { settle = true, greyPieces = true } = Astro.props;
 
 const STILL = { w: 2000, h: 860 };
 const CROP = { x: 520, y: 60, w: 960, h: 800 };
@@ -15,6 +16,7 @@ const CROP = { x: 520, y: 60, w: 960, h: 800 };
   class="cx-stage cx-stage-puzzle"
   data-pieces="puzzle"
   data-settle={settle ? 'true' : undefined}
+  data-grey-pieces={greyPieces ? 'true' : undefined}
   data-steps={JSON.stringify(PUZZLE_STEPS)}
   style={`--phone: ${CROP.w} / ${CROP.h}`}
 >

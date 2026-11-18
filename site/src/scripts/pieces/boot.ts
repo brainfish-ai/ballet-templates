@@ -30,6 +30,7 @@ export function mountPieces(root: ParentNode = document) {
     if (!canvas) continue;
     const variant = (el.dataset.pieces || "lattice") as Variant;
     const settle = el.dataset.settle === "true";
+    const greyPieces = el.dataset.greyPieces === "true";
     const steps = JSON.parse(el.dataset.steps || "[]") as PieceStep[];
     const labels = [...el.querySelectorAll<HTMLElement>("[data-piece-label]")];
     // the labels follow the blocks; until the scene runs they keep their still positions
@@ -54,7 +55,7 @@ export function mountPieces(root: ParentNode = document) {
           loading = true;
           try {
             const { createPieces } = await sceneModule;
-            scene = createPieces({ canvas, variant, steps, reduced, settle, onFrame, still: import.meta.env.DEV });
+            scene = createPieces({ canvas, variant, steps, reduced, settle, greyPieces, onFrame, still: import.meta.env.DEV });
             el.classList.add("is-live");
             if (import.meta.env.DEV) (el as unknown as { __pieces: unknown }).__pieces = scene;
           } catch (err) {
