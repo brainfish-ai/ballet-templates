@@ -1,12 +1,12 @@
 const { slack_message, slack_channel, skipped } = input_data as {
   slack_message?: string;
   slack_channel?: string;
-  skipped?: boolean;
+  skipped?: boolean | string;
 };
 
 let result;
 
-if (skipped) {
+if (skipped === true || skipped === 'true') {
   result = { skipped: true };
 } else {
   const slackResult = await metaphor.integration('slack_bot', 'messages.send', {

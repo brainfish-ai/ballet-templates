@@ -3,12 +3,12 @@ const { contact_id, company_id, churn_summary, subscription_end, skipped } = inp
   company_id?: string | null;
   churn_summary?: string;
   subscription_end?: string;
-  skipped?: boolean;
+  skipped?: boolean | string;
 };
 
 let result;
 
-if (skipped) {
+if (skipped === true || skipped === 'true') {
   result = { skipped: true };
 } else if (!contact_id && !company_id) {
   result = { logged: false, message: 'No HubSpot contact or company found. Skipping note.' };

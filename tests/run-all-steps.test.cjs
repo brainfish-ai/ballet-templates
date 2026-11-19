@@ -140,7 +140,104 @@ async function runBehaviorFixTests() {
     const weeklyDeals = await runStep(fetchDealsPath, { report_date: '2026-11-19' });
     console.log('  ✓ Fetch deals returns open deals only (closed-won filtering verified in code)');
     
-    passed += 3;
+    // Test 3: String "false" should NOT skip (zendesk-negative-csat-alert/summarize_ticket)
+    console.log('Testing zendesk-negative-csat-alert/summarize_ticket handles skipped="false"...');
+    const csatSummaryFalseString = await runStep(csatSummarizePath, {
+      skipped: 'false',  // String "false"
+      ticket: { ticket_id: '123', subject: 'Test', description: 'Test desc', status: 'open', priority: 'normal', ticket_url: 'https://test.zendesk.com/tickets/123' },
+      rating_comment: 'Too slow',
+    });
+    
+    assert.notStrictEqual(csatSummaryFalseString.skipped, true, 'String "false" should NOT skip');
+    assert(csatSummaryFalseString.summary, 'Should generate summary when skipped="false"');
+    console.log('  ✓ zendesk-negative-csat-alert/summarize_ticket handles skipped="false"');
+    
+    // Test 4: String "false" should NOT skip (zendesk-negative-csat-alert/alert_owner)
+    console.log('Testing zendesk-negative-csat-alert/alert_owner handles skipped="false"...');
+    const csatAlertPath = path.join(templatesDir, 'zendesk-negative-csat-alert/steps/alert_owner.ts');
+    const csatAlertFalseString = await runStep(csatAlertPath, {
+      skipped: 'false',  // String "false"
+      slack_message: 'Test alert',
+      slack_channel: '#support',
+      owner_email: 'owner@example.com',
+    });
+    
+    assert.notStrictEqual(csatAlertFalseString.skipped, true, 'String "false" should NOT skip');
+    assert.strictEqual(csatAlertFalseString.sent, true, 'Should send alert when skipped="false"');
+    console.log('  ✓ zendesk-negative-csat-alert/alert_owner handles skipped="false"');
+    
+    // Test 5: String "false" should NOT skip (stripe-churn-alert/lookup_hubspot)
+    console.log('Testing stripe-churn-alert/lookup_hubspot handles skipped="false"...');
+    const churnLookupPath = path.join(templatesDir, 'stripe-churn-alert/steps/lookup_hubspot.ts');
+    const churnLookupFalseString = await runStep(churnLookupPath, {
+      skipped: 'false',  // String "false"
+      customer_email: 'customer@example.com',
+      customer_name: 'Test Customer',
+    });
+    
+    assert.notStrictEqual(churnLookupFalseString.skipped, true, 'String "false" should NOT skip');
+    console.log('  ✓ stripe-churn-alert/lookup_hubspot handles skipped="false"');
+    
+    // Test 6: String "false" should NOT skip (stripe-churn-alert/classify_churn)
+    console.log('Testing stripe-churn-alert/classify_churn handles skipped="false"...');
+    const churnClassifyPath = path.join(templatesDir, 'stripe-churn-alert/steps/classify_churn.ts');
+    const churnClassifyFalseString = await runStep(churnClassifyPath, {
+      skipped: 'false',  // String "false"
+      subscription: { plan_name: 'Pro', amount: 5000, currency: 'USD', cancellation_reason: 'too expensive', customer_name: 'Test Customer' },
+      hubspot_notes: 'Recent activity',
+    });
+    
+    assert.notStrictEqual(churnClassifyFalseString.skipped, true, 'String "false" should NOT skip');
+    assert(churnClassifyFalseString.category, 'Should classify churn when skipped="false"');
+    console.log('  ✓ stripe-churn-alert/classify_churn handles skipped="false"');
+    
+    // Test 7: String "false" should NOT skip (stripe-churn-alert/alert_slack)
+    console.log('Testing stripe-churn-alert/alert_slack handles skipped="false"...');
+    const churnAlertPath = path.join(templatesDir, 'stripe-churn-alert/steps/alert_slack.ts');
+    const churnAlertFalseString = await runStep(churnAlertPath, {
+      skipped: 'false',  // String "false"
+      slack_message: 'Test churn alert',
+      slack_channel: '#alerts',
+    });
+    
+    assert.notStrictEqual(churnAlertFalseString.skipped, true, 'String "false" should NOT skip');
+    assert.strictEqual(churnAlertFalseString.sent, true, 'Should send alert when skipped="false"');
+    console.log('  ✓ stripe-churn-alert/alert_slack handles skipped="false"');
+    
+    // Test 8: String "false" should NOT skip (stripe-churn-alert/log_hubspot_note)
+    console.log('Testing stripe-churn-alert/log_hubspot_note handles skipped="false"...');
+    const churnLogPath = path.join(templatesDir, 'stripe-churn-alert/steps/log_hubspot_note.ts');
+    const churnLogFalseString = await runStep(churnLogPath, {
+      skipped: 'false',  // String "false"
+      contact_id: '123',
+      company_id: null,
+      churn_summary: 'Test summary',
+      subscription_end: '2024-12-31',
+    });
+    
+    assert.notStrictEqual(churnLogFalseString.skipped, true, 'String "false" should NOT skip');
+    console.log('  ✓ stripe-churn-alert/log_hubspot_note handles skipped="false"');
+    
+    // Test 9: String "false" in subscription should NOT skip (stripe-churn-alert/classify_churn)
+    console.log('Testing stripe-churn-alert/classify_churn handles subscription.skipped="false"...');
+    const churnClassifySubFalseString = await runStep(churnClassifyPath, {
+      skipped: false,
+      subscription: { 
+        plan_name: 'Pro', 
+        amount: 5000, 
+        currency: 'USD', 
+        cancellation_reason: 'too expensive', 
+        customer_name: 'Test Customer',
+        skipped: 'false'  // String "false" in subscription
+      },
+      hubspot_notes: 'Recent activity',
+    });
+    
+    assert.notStrictEqual(churnClassifySubFalseString.skipped, true, 'subscription.skipped="false" should NOT skip');
+    assert(churnClassifySubFalseString.category, 'Should classify churn when subscription.skipped="false"');
+    console.log('  ✓ stripe-churn-alert/classify_churn handles subscription.skipped="false"');
+    
+    passed += 9;
     console.log('\nBehavior fix tests passed!\n');
   } catch (error) {
     console.error(`  ✗ Behavior fix test failed: ${error.message}`);

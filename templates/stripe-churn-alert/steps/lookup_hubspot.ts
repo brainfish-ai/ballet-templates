@@ -1,8 +1,8 @@
-const { customer_email, customer_name, skipped } = input_data as { customer_email?: string; customer_name?: string; skipped?: boolean };
+const { customer_email, customer_name, skipped } = input_data as { customer_email?: string; customer_name?: string; skipped?: boolean | string };
 
 let result;
 
-if (skipped) {
+if (skipped === true || skipped === 'true') {
   result = { skipped: true };
 } else {
   let contact_id: string | null = null;

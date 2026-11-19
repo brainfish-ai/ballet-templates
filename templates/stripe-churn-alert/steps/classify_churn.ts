@@ -5,15 +5,15 @@ const { subscription, hubspot_notes, skipped } = input_data as {
     currency: string;
     cancellation_reason: string;
     customer_name: string;
-    skipped?: boolean;
+    skipped?: boolean | string;
   };
   hubspot_notes?: string;
-  skipped?: boolean;
+  skipped?: boolean | string;
 };
 
 let result;
 
-if (skipped || subscription?.skipped) {
+if (skipped === true || skipped === 'true' || subscription?.skipped === true || subscription?.skipped === 'true') {
   result = { skipped: true };
 } else {
   const prompt = `Customer: ${subscription!.customer_name}

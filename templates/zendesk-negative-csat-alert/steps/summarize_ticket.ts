@@ -9,12 +9,12 @@ const { ticket, rating_comment, hubspot_notes, skipped } = input_data as {
   };
   rating_comment?: string;
   hubspot_notes?: string;
-  skipped?: boolean;
+  skipped?: boolean | string;
 };
 
 let result;
 
-if (skipped) {
+if (skipped === true || skipped === 'true') {
   result = { skipped: true, summary: '', suggested_action: '', slack_message: '' };
 } else {
 
