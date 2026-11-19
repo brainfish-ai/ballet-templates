@@ -11,27 +11,28 @@ const { subscription, hubspot_notes, skipped } = input_data as {
   skipped?: boolean;
 };
 
-if (skipped || subscription?.skipped) {
-  const result = { skipped: true };
-  return;
-}
+let result;
 
-const prompt = `Customer: ${subscription!.customer_name}
+if (skipped || subscription?.skipped) {
+  result = { skipped: true };
+} else {
+  const prompt = `Customer: ${subscription!.customer_name}
 Plan: ${subscription!.plan_name} (${subscription!.currency} ${subscription!.amount / 100})
 Cancellation reason from Stripe: ${subscription!.cancellation_reason}
 HubSpot notes: ${hubspot_notes ?? 'none'}`;
 
-const res = await metaphor.agent('churn-classifier', { prompt });
+  const res = await metaphor.agent('churn-classifier', { prompt });
 
-const churn_category = String(res?.category ?? 'unknown');
-const reason_summary = String(res?.summary ?? 'No reason provided').slice(0, 300);
+  const churn_category = String(res?.category ?? 'unknown');
+  const reason_summary = String(res?.summary ?? 'No reason provided').slice(0, 300);
 
-const summary = `Churn detected: ${subscription!.customer_name} cancelled ${subscription!.plan_name}. Reason: ${reason_summary}. Category: ${churn_category}.`;
+  const summary = `Churn detected: ${subscription!.customer_name} cancelled ${subscription!.plan_name}. Reason: ${reason_summary}. Category: ${churn_category}.`;
 
-const slack_message = `:warning: *Churn Alert*: ${subscription!.customer_name} cancelled *${subscription!.plan_name}* (${subscription!.currency} ${subscription!.amount / 100}).\n*Reason*: ${reason_summary}\n*Category*: ${churn_category}\nView in HubSpot or Stripe.`;
+  const slack_message = `:warning: *Churn Alert*: ${subscription!.customer_name} cancelled *${subscription!.plan_name}* (${subscription!.currency} ${subscription!.amount / 100}).\n*Reason*: ${reason_summary}\n*Category*: ${churn_category}\nView in HubSpot or Stripe.`;
 
-const result = {
-  category: churn_category,
-  summary: reason_summary,
-  slack_message,
-};
+  result = {
+    category: churn_category,
+    summary: reason_summary,
+    slack_message,
+  };
+}

@@ -17,7 +17,9 @@ spec:
     properties:
       slack_channel:
         type: string
-        description: Slack channel ID or name for CSAT alerts (e.g. #customer-success)
+        description: "Slack channel ID or name for CSAT alerts (e.g. #customer-success)"
+    required:
+      - slack_channel
   steps:
     - id: filter_rating
       type: code
@@ -25,7 +27,8 @@ spec:
       codeFile: steps/filter_rating.ts
       description: Check if the rating qualifies as negative and deserves an alert.
       friendlyMessage: Filtering the rating
-      input: "{{ flow.input }}"
+      input:
+        event: "{{ flow.input }}"
       output:
         variable: result
         format: json

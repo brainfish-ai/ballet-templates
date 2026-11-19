@@ -1,6 +1,5 @@
 // Read from native Zendesk webhook payload
-// Be defensive: satisfaction_rating may be in flow.input.ticket.satisfaction_rating or flow.input.raw
-const webhook = input_data as any;
+const webhook = (input_data as any).event || input_data;
 const ticket = webhook.ticket || {};
 const raw = webhook.raw || {};
 
@@ -16,14 +15,20 @@ const negative_scores = ['bad'];
 
 const is_negative = negative_scores.includes(rating_score.toLowerCase());
 
-if (!is_negative) {
-  throw new Error(`Rating score "${rating_score}" is not negative. Exiting workflow.`);
-}
+let result;
 
-const result = { 
-  is_negative, 
-  rating_score, 
-  rating_comment,
-  ticket_id,
-  requester_email,
-};
+if (!is_negative) {
+  result = {
+    skipped: true,
+    is_negative: false,
+    rating_score,
+  };
+} else {
+  result = { 
+    is_negative, 
+    rating_score, 
+    rating_comment,
+    ticket_id,
+    requester_email,
+  };
+}

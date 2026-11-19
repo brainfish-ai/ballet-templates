@@ -5,7 +5,7 @@ const { lead_id, brief, rating } = input_data as {
 };
 
 // Update Lead record in Salesforce
-const updateResult = metaphor.integration('salesforce', 'records.update', {
+const updateResult = await metaphor.integration('salesforce', 'records.update', {
   sobject: 'Lead',
   id: lead_id,
   fields: {
@@ -15,7 +15,7 @@ const updateResult = metaphor.integration('salesforce', 'records.update', {
 });
 
 if (!updateResult.ok) {
-  throw new Error(`Failed to update Lead: ${updateResult.error}`);
+  throw new Error(`Failed to update Lead: ${updateResult.error?.message ?? JSON.stringify(updateResult.error)}`);
 }
 
 const result = {

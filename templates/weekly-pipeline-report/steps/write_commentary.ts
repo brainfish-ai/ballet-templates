@@ -36,11 +36,17 @@ const stage_summary = Object.entries(current_week.stages)
   .map(([stage, data]) => `${stage}: ${data.count} deals / $${data.value.toFixed(2)}`)
   .join('\n');
 
-const change_text = changes.total_count_pct !== 'N/A'
-  ? `(${parseFloat(changes.total_count_pct) > 0 ? 'up' : 'down'} ${Math.abs(parseFloat(changes.total_count_pct))}% from last week)`
-  : '(baseline week)';
+let change_text = '(baseline week)';
+if (changes.total_count_pct !== 'N/A') {
+  const pct = parseFloat(changes.total_count_pct);
+  if (pct === 0) {
+    change_text = '(flat)';
+  } else {
+    change_text = `(${pct > 0 ? 'up' : 'down'} ${Math.abs(pct)}% from last week)`;
+  }
+}
 
-const slack_message = `**Weekly Pipeline Report** (${current_week.report_date})\n\n**Total**: ${current_week.total_count} deals / $${current_week.total_value.toFixed(2)} ${change_text}\n\n**By Stage**:\n${stage_summary}\n\n**AI Insight**: ${commentary}`;
+const slack_message = `*Weekly Pipeline Report* (${current_week.report_date})\n\n*Total*: ${current_week.total_count} deals / $${current_week.total_value.toFixed(2)} ${change_text}\n\n*By Stage*:\n${stage_summary}\n\n*AI Insight*: ${commentary}`;
 
 const result = {
   commentary,

@@ -9,7 +9,7 @@ let company_id: string | null = null;
 
 if (customer_email && customer_email !== 'unknown') {
   // Search for contact by email
-  const searchResult = metaphor.integration('hubspot', 'contacts.search', {
+  const searchResult = await metaphor.integration('hubspot', 'contacts.search', {
     filterGroups: [{
       filters: [{ propertyName: 'email', operator: 'EQ', value: customer_email }]
     }],
@@ -21,7 +21,7 @@ if (customer_email && customer_email !== 'unknown') {
     const contactId = searchResult.data.results[0].id;
     
     // Get full contact details with associations
-    const contactResult = metaphor.integration('hubspot', 'contacts.get', {
+    const contactResult = await metaphor.integration('hubspot', 'contacts.get', {
       contactId,
       properties: ['email', 'hubspot_owner_id'],
       associations: ['companies'],
@@ -40,36 +40,18 @@ if (customer_email && customer_email !== 'unknown') {
 }
 
 if (contact_id) {
-  // Update contact payment status
-  const updateResult = metaphor.integration('hubspot', 'contacts.update', {
+  // Update contact payment status (user must create custom 'payment_status' property in HubSpot)
+  // Also update a custom property for notes since api.get POST doesn't work
+  const updateResult = await metaphor.integration('hubspot', 'contacts.update', {
     contactId: contact_id,
     properties: {
       payment_status,
+      stripe_payment_notes: `Stripe Payment Failure\n\n${failure_summary}\n\nLogged automatically by Ballet.`,
     },
   });
 
   if (!updateResult.ok) {
-    throw new Error(`HubSpot contact update failed: ${updateResult.error}`);
-  }
-
-  // Create note
-  const noteResult = metaphor.integration('hubspot', 'api.get', {
-    path: '/crm/v3/objects/notes',
-    method: 'POST',
-    body: {
-      properties: {
-        hs_note_body: `Stripe Payment Failure\n\n${failure_summary}\n\nLogged automatically by Ballet.`,
-        hs_timestamp: new Date().toISOString(),
-      },
-      associations: [{
-        to: { id: contact_id },
-        types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 202 }],
-      }],
-    },
-  });
-
-  if (!noteResult.ok) {
-    throw new Error(`HubSpot note creation failed: ${noteResult.error}`);
+    throw new Error(`HubSpot contact update failed: ${updateResult.error?.message ?? JSON.stringify(updateResult.error)}`);
   }
 }
 

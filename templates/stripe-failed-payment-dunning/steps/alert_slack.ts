@@ -3,13 +3,13 @@ const { slack_message, slack_channel } = input_data as {
   slack_channel: string;
 };
 
-const slackResult = metaphor.integration('slack_bot', 'messages.send', {
+const slackResult = await metaphor.integration('slack_bot', 'messages.send', {
   channel: slack_channel,
   text: slack_message,
 });
 
 if (!slackResult.ok) {
-  throw new Error(`Failed to send Slack message: ${slackResult.error}`);
+  throw new Error(`Failed to send Slack message: ${slackResult.error?.message ?? JSON.stringify(slackResult.error)}`);
 }
 
 const result = {

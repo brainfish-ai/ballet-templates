@@ -25,9 +25,10 @@ spec:
         type: string
       slack_channel:
         type: string
-        description: Slack channel ID or name for lead alerts (e.g. #sales-leads)
+        description: "Slack channel ID or name for lead alerts (e.g. #sales-leads)"
     required:
       - email
+      - slack_channel
   steps:
     - id: score
       type: code

@@ -19,7 +19,7 @@ spec:
     properties:
       slack_channel:
         type: string
-        description: Slack channel ID or name for billing alerts (e.g. #billing)
+        description: "Slack channel ID or name for billing alerts (e.g. #billing)"
     required:
       - slack_channel
   steps:
@@ -29,7 +29,8 @@ spec:
       codeFile: steps/fetch_failure_details.ts
       description: Fetch invoice and customer details from Stripe and extract failure metadata.
       friendlyMessage: Fetching payment failure details
-      input: "{{ flow.input }}"
+      input:
+        event: "{{ flow.input }}"
       output:
         variable: result
         format: json

@@ -4,27 +4,26 @@ const { ticket_id, priority, tags } = input_data as {
   tags: string[];
 };
 
-// Update ticket priority
-const updateResult = metaphor.integration('zendesk', 'tickets.update', {
+// Update ticket priority and tags (flat structure, not nested)
+const updateResult = await metaphor.integration('zendesk', 'tickets.update', {
   id: parseInt(ticket_id, 10),
-  ticket: {
-    priority,
-  },
+  priority,
+  tags,
 });
 
 if (!updateResult.ok) {
-  throw new Error(`Failed to update ticket priority: ${updateResult.error}`);
+  throw new Error(`Failed to update ticket priority: ${updateResult.error?.message ?? JSON.stringify(updateResult.error)}`);
 }
 
-// Add internal note with tags
-const replyResult = metaphor.integration('zendesk', 'tickets.reply', {
+// Add internal note
+const replyResult = await metaphor.integration('zendesk', 'tickets.reply', {
   id: parseInt(ticket_id, 10),
   body: `Auto-triage tags: ${tags.join(', ')}`,
   public: false,
 });
 
 if (!replyResult.ok) {
-  throw new Error(`Failed to add internal note: ${replyResult.error}`);
+  throw new Error(`Failed to add internal note: ${replyResult.error?.message ?? JSON.stringify(replyResult.error)}`);
 }
 
 const result = {

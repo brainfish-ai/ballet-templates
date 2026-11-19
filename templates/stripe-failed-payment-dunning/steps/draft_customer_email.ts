@@ -28,7 +28,7 @@ const email_body = String(res?.email_body ?? `Hi ${customer_name},\n\nWe noticed
 const subject = `Payment Update Needed: ${amount_formatted} invoice`;
 
 // Request approval before sending
-const approval = metaphor.waitForInput({
+const approval = await metaphor.waitForInput({
   prompt: `Review and approve email to ${customer_name} (${customer_email})`,
   details: `Subject: ${subject}\n\n${email_body}`,
   schema: {
@@ -53,15 +53,15 @@ const approval = metaphor.waitForInput({
     const final_body = approval.edited_body || email_body;
 
     // Send the email
-    const sendResult = metaphor.integration('gmail', 'messages.send', {
+    const sendResult = await metaphor.integration('gmail', 'messages.send', {
       to: [customer_email],
       subject,
       body: final_body,
-      contentType: 'text/plain',
+      contentType: 'text',
     });
 
     if (!sendResult.ok) {
-      throw new Error(`Failed to send email: ${sendResult.error}`);
+      throw new Error(`Failed to send email: ${sendResult.error?.message ?? JSON.stringify(sendResult.error)}`);
     }
 
     result = {

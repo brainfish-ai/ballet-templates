@@ -12,7 +12,9 @@ spec:
     properties:
       slack_channel:
         type: string
-        description: Slack channel ID or name for daily digest (e.g. #general)
+        description: "Slack channel ID or name for daily digest (e.g. #general)"
+    required:
+      - slack_channel
   steps:
     - id: fetch_data
       type: http
