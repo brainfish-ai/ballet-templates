@@ -1,0 +1,46 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: freshdesk-sla-breach-alert
+  name: Freshdesk SLA Breach Alert
+  description: Scheduled check of Freshdesk tickets near or over SLA, deduplicates already-alerted tickets, sends Slack alert to owner or channel.
+spec:
+  trigger:
+    type: schedule
+    schedule:
+      cron: "*/15 * * * *"
+  inputSchema:
+    type: object
+    properties:
+      alert_threshold_hours:
+        type: number
+        description: Alert when SLA breach is within this many hours. Defaults to 2.
+      slack_channel:
+        type: string
+        description: Slack channel ID or name to post alerts to, for example #support-escalations.
+    required:
+      - slack_channel
+  steps:
+    - id: check_sla
+      type: code
+      language: typescript
+      codeFile: steps/check_sla.ts
+      description: Fetch tickets near or over SLA from Freshdesk, deduplicate tickets already alerted in the last 24 hours.
+      friendlyMessage: Checking Freshdesk SLA status
+      input:
+        alert_threshold_hours: "{{ flow.input.alert_threshold_hours }}"
+      output:
+        variable: result
+        format: json
+    - id: alert_slack
+      type: code
+      language: typescript
+      codeFile: steps/alert_slack.ts
+      description: Post Slack alert for each ticket breaching SLA, tagging the assigned agent or posting to the channel.
+      friendlyMessage: Sending Slack alerts
+      input:
+        tickets: "{{ steps.check_sla.output.tickets }}"
+        slack_channel: "{{ flow.input.slack_channel }}"
+      output:
+        variable: result
+        format: json

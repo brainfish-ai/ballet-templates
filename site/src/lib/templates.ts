@@ -61,6 +61,17 @@ export interface CatalogItem {
   agents: string[];
   steps: number;
   path: string;
+  primaryKeyword?: string;
+  seoTitle?: string;
+  answer?: string;
+  faq?: Array<{ q: string; a: string }>;
+  sampleOutput?: string;
+  setupMinutes?: number;
+  whatYouNeed?: string;
+  failureHandling?: string;
+  nativeVsTemplate?: string;
+  related?: string[];
+  lastValidated?: string;
 }
 
 /** The banner on a template card: where the work starts and what Ballet leaves behind. */

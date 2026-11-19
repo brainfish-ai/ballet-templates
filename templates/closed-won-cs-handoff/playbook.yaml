@@ -1,0 +1,84 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: closed-won-cs-handoff
+  name: Closed Won CS Handoff
+  description: When a HubSpot deal moves to closed won, check required handoff fields, AI writes handoff summary, creates Slack channel, requires approval before inviting customer-facing people.
+spec:
+  trigger:
+    type: webhook
+    webhook:
+      provider: generic
+      token: ""
+      responseMode: immediate
+      credentialRef: HUBSPOT_WEBHOOK_SECRET
+  inputSchema:
+    type: object
+    properties:
+      deal_id:
+        type: string
+      deal_name:
+        type: string
+      close_date:
+        type: string
+      arr:
+        type: number
+      owner_email:
+        type: string
+    required:
+      - deal_id
+      - deal_name
+  steps:
+    - id: fetch_deal
+      type: code
+      language: typescript
+      codeFile: steps/fetch_deal.ts
+      description: Fetch full deal details from HubSpot and check required handoff fields.
+      friendlyMessage: Fetching deal details
+      input:
+        deal_id: "{{ flow.input.deal_id }}"
+      output:
+        variable: result
+        format: json
+    - id: write_handoff
+      type: code
+      language: typescript
+      codeFile: steps/write_handoff.ts
+      description: AI writes a handoff summary for the CS team with key context, stakeholders, and success criteria.
+      friendlyMessage: Writing handoff summary
+      input:
+        deal: "{{ steps.fetch_deal.output.deal }}"
+      output:
+        variable: result
+        format: json
+    - id: create_channel
+      type: code
+      language: typescript
+      codeFile: steps/create_channel.ts
+      description: Create a Slack channel for the account with CS and sales team members.
+      friendlyMessage: Creating Slack channel
+      input:
+        deal_name: "{{ flow.input.deal_name }}"
+        handoff_summary: "{{ steps.write_handoff.output.summary }}"
+      output:
+        variable: result
+        format: json
+    - id: approval
+      type: approval
+      description: Review handoff summary and Slack channel before inviting customer-facing people.
+      prompt: "Review the handoff summary for {{ flow.input.deal_name }}. Approve to invite the customer success team to the Slack channel."
+      input:
+        summary: "{{ steps.write_handoff.output.summary }}"
+        channel_id: "{{ steps.create_channel.output.channel_id }}"
+    - id: invite_team
+      type: code
+      language: typescript
+      codeFile: steps/invite_team.ts
+      description: Invite CS team members to the Slack channel after approval.
+      friendlyMessage: Inviting CS team
+      input:
+        channel_id: "{{ steps.create_channel.output.channel_id }}"
+        cs_team_emails: "{{ steps.fetch_deal.output.cs_team_emails }}"
+      output:
+        variable: result
+        format: json

@@ -1,0 +1,54 @@
+{
+  "id": "freshdesk-sla-breach-alert",
+  "title": "Freshdesk SLA Breach Alert",
+  "summary": "Scheduled check of Freshdesk tickets near or over SLA, deduplicates already-alerted tickets, sends Slack alert to owner or channel.",
+  "category": "support",
+  "tags": ["freshdesk", "support", "sla", "slack", "schedule"],
+  "difficulty": "beginner",
+  "trigger": "Schedule (every 15 minutes)",
+  "integrations": ["freshdesk", "slack"],
+  "primaryKeyword": "freshdesk sla breach slack notification",
+  "seoTitle": "Freshdesk SLA Breach Alerts to Slack in Real Time",
+  "answer": "This template runs every 15 minutes, queries Freshdesk for open tickets within 2 hours of their SLA due date or already overdue, deduplicates tickets already alerted in the last 24 hours, then posts Slack notifications to a designated channel with breach countdown or overdue hours. Support managers see which tickets need immediate attention to avoid SLA violations and maintain service commitments.",
+  "faq": [
+    {
+      "q": "Can Freshdesk send SLA breach alerts to Slack natively?",
+      "a": "Freshdesk's native Slack app does not include SLA breach alerts. It posts ticket updates but does not proactively monitor SLA timers or send countdown warnings. This template fills that gap with scheduled checks and deduplication."
+    },
+    {
+      "q": "How does deduplication work?",
+      "a": "The template tracks which ticket IDs were alerted in the previous run. Each ticket is alerted once per 24-hour period, so your Slack channel does not get spammed with repeat alerts for the same overdue ticket."
+    },
+    {
+      "q": "Can I customize the alert threshold?",
+      "a": "Yes. Set the alert_threshold_hours input to change when alerts fire. For example, 4 hours gives more lead time, 1 hour alerts only imminent breaches. The default is 2 hours."
+    },
+    {
+      "q": "What happens if the Freshdesk API is slow or fails?",
+      "a": "The fetch call will retry automatically. If the API is down, the scheduled run logs the error and the next run tries again in 15 minutes. No alerts are sent for that interval."
+    },
+    {
+      "q": "Can I route alerts to different Slack channels by priority?",
+      "a": "Yes. Modify the alert_slack step to conditionally post to different channels based on ticket.priority. For example, send urgent breaches to a dedicated escalation channel."
+    }
+  ],
+  "sampleOutput": "Slack message: Warning: SLA Warning: Ticket #1234 breaches in 1h (High priority). Customer login issue after migration. View ticket.",
+  "setupMinutes": 15,
+  "whatYouNeed": "Freshdesk account with API access, Freshdesk API key, Slack workspace with bot token and chat:write scope, Slack channel for alerts",
+  "failureHandling": "The template runs on a schedule, so failures do not block subsequent runs. If the Freshdesk API call fails, the error is logged and the next 15-minute run retries. Deduplication is in-memory per run, so if you need persistent deduplication across restarts, connect a Ballet data table.",
+  "nativeVsTemplate": "Use Freshdesk's built-in automations if you only need basic ticket-created or status-change Slack posts. Use this template when you need proactive SLA monitoring with breach countdown alerts, deduplication, and custom thresholds that Freshdesk's native Slack integration cannot provide.",
+  "related": ["freshdesk-ticket-summary", "zendesk-ticket-triage", "l1-ticket-triage"],
+  "secrets": [
+    { "name": "FRESHDESK_DOMAIN", "description": "Your Freshdesk subdomain, for example acme for acme.freshdesk.com." },
+    { "name": "FRESHDESK_API_KEY", "description": "Freshdesk API key (used as Basic auth username)." },
+    { "name": "SLACK_BOT_TOKEN", "description": "Slack bot token with chat:write scope." }
+  ],
+  "setup": [
+    "Add the three secrets above and invite the Slack bot to the alert channel.",
+    "Publish the playbook with the schedule trigger enabled.",
+    "Set slack_channel input to your channel ID or name.",
+    "Optionally adjust alert_threshold_hours to your SLA buffer.",
+    "The first run checks for breaching tickets; alerts appear in Slack within 15 minutes."
+  ],
+  "lastValidated": "2026-11-19"
+}
