@@ -8,8 +8,6 @@ if (!tickets || tickets.length === 0) {
   return;
 }
 
-const domain = metaphor.secret('FRESHDESK_DOMAIN');
-const slackToken = metaphor.secret('SLACK_BOT_TOKEN');
 let alertsSent = 0;
 
 for (const ticket of tickets) {
@@ -19,28 +17,21 @@ for (const ticket of tickets) {
   const isOverdue = hoursRemaining < 0;
   
   const priorityLabels = ['', 'Low', 'Medium', 'High', 'Urgent'];
-  const priorityLabel = priorityLabels[ticket.priority] ?? 'Unknown';
+  const priorityLabel = priorityLabels[ticket.priority] || 'Unknown';
   
   const message = isOverdue
     ? `:rotating_light: SLA BREACH: Ticket #${ticket.id} is ${Math.abs(hoursRemaining)}h overdue (${priorityLabel} priority)`
     : `:warning: SLA Warning: Ticket #${ticket.id} breaches in ${hoursRemaining}h (${priorityLabel} priority)`;
   
-  const text = `${message}\n*${ticket.subject}*\n<https://${domain}.freshdesk.com/a/tickets/${ticket.id}|View ticket>`;
+  const text = `${message}\n*${ticket.subject}*\nView ticket: #${ticket.id}`;
   
-  const slackRes = await fetch('https://slack.com/api/chat.postMessage', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${slackToken}`,
-    },
-    body: JSON.stringify({
-      channel: slack_channel,
-      text: text,
-    }),
+  const slackResult = metaphor.integration('slack_bot', 'messages.send', {
+    channel: slack_channel,
+    text: text,
   });
   
-  if (!slackRes.ok) {
-    console.warn(`Failed to post Slack alert for ticket ${ticket.id}: ${slackRes.status}`);
+  if (!slackResult.ok) {
+    console.warn(`Failed to post Slack alert for ticket ${ticket.id}: ${slackResult.error}`);
   } else {
     alertsSent++;
   }

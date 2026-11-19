@@ -1,18 +1,16 @@
-const { report_date, totals } = input_data as {
+const { report_date, totals, google_sheet_id } = input_data as {
   report_date: string;
   totals: {
     total_count: number;
     total_value: number;
     stages: Record<string, { count: number; value: number }>;
   };
+  google_sheet_id: string;
 };
 
-const sheetsApiKey = metaphor.secret('GOOGLE_SHEETS_API_KEY');
-const sheetId = metaphor.secret('GOOGLE_SHEET_ID');
-
-const discovery = totals.stages['discovery'] ?? { count: 0, value: 0 };
-const proposal = totals.stages['proposal'] ?? { count: 0, value: 0 };
-const closed = totals.stages['closedwon'] ?? { count: 0, value: 0 };
+const discovery = totals.stages['discovery'] || { count: 0, value: 0 };
+const proposal = totals.stages['proposal'] || { count: 0, value: 0 };
+const closed = totals.stages['closedwon'] || { count: 0, value: 0 };
 
 const row = [
   report_date,
@@ -26,22 +24,16 @@ const row = [
   closed.value.toFixed(2),
 ];
 
-const appendRes = await fetch(
-  `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A:Z:append?valueInputOption=RAW&key=${sheetsApiKey}`,
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      values: [row],
-    }),
-  },
-);
+// Append to Google Sheets
+const appendResult = metaphor.integration('google_sheets', 'values.append', {
+  spreadsheetId: google_sheet_id,
+  range: 'Sheet1!A:Z',
+  values: [row],
+  valueInputOption: 'USER_ENTERED',
+});
 
-if (!appendRes.ok) {
-  const errorText = await appendRes.text();
-  throw new Error(`Google Sheets append failed: ${appendRes.status} ${errorText}`);
+if (!appendResult.ok) {
+  throw new Error(`Failed to append to Google Sheets: ${appendResult.error}`);
 }
 
 const result = { appended: true, row };

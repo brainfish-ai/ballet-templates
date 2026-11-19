@@ -34,20 +34,16 @@
   ],
   "sampleOutput": "Lead Description updated: Acme Corp is a B2B SaaS platform for project management, serving mid-market teams. Raised $10M Series A in Q3 2026. Good fit for collaboration features. Rating: Warm. Built by the Brainfish team.",
   "setupMinutes": 15,
-  "whatYouNeed": "Salesforce instance URL, Salesforce OAuth access token with Lead update permission, bearer token for webhook authentication, Salesforce Flow configured to send Lead data on creation",
-  "failureHandling": "If web search or company research fails, the brief notes this and the rating defaults to Cold. The Salesforce update HTTP step retries up to 3 times with exponential backoff starting at 500ms. If all retries fail, the workflow logs the error and the Lead remains unenriched. Check run history for failures.",
+  "whatYouNeed": "Salesforce integration connected in Ballet, Salesforce Flow configured to send Lead data on creation via webhook",
+  "failureHandling": "If web search or company research fails, the brief notes this and the rating defaults to Cold. If the Salesforce update fails, the workflow retries automatically. If all retries fail, the workflow logs the error and the Lead remains unenriched. Check run history for failures.",
   "nativeVsTemplate": "Use Salesforce enrichment apps when you only need firmographic data (employee count, industry, revenue). Use this template when you want AI-powered research that reads a company's website, understands their business, and writes a custom brief and fit score based on your own criteria.",
   "related": ["account-icp-scoring", "crm-hygiene"],
-  "secrets": [
-    { "name": "SALESFORCE_WEBHOOK_TOKEN", "description": "Bearer token Salesforce sends in the Authorization header when calling the webhook." },
-    { "name": "SALESFORCE_INSTANCE_URL", "description": "Your instance URL, for example `https://acme.my.salesforce.com`." },
-    { "name": "SALESFORCE_ACCESS_TOKEN", "description": "OAuth access token with permission to update Lead records." }
-  ],
+  "secrets": [],
   "setup": [
-    "Add the three secrets above.",
+    "Connect the Salesforce integration in Ballet once.",
     "Publish the playbook and copy its webhook URL.",
-    "In Salesforce, create a Flow on Lead creation that sends an outbound message or HTTP callout with lead_id, company, email and title.",
+    "In Salesforce, create a Flow on Lead creation that sends an outbound message or HTTP callout with lead_id, company, email and title to the webhook URL.",
     "Create a test Lead and check the Description field."
   ],
-  "lastValidated": "2026-11-19"
+  "lastValidated": null
 }

@@ -5,38 +5,28 @@ if (!cs_team_emails || cs_team_emails.length === 0) {
   return;
 }
 
-const slackToken = metaphor.secret('SLACK_BOT_TOKEN');
-
 // Look up Slack user IDs by email
 const userIds: string[] = [];
 for (const email of cs_team_emails) {
-  const lookupRes = await fetch(`https://slack.com/api/users.lookupByEmail?email=${encodeURIComponent(email)}`, {
-    headers: {
-      'Authorization': `Bearer ${slackToken}`,
-    },
+  const lookupResult = metaphor.integration('slack_bot', 'users.findByEmail', {
+    email,
   });
   
-  if (lookupRes.ok) {
-    const lookupData = await lookupRes.json() as { ok: boolean; user?: { id: string } };
-    if (lookupData.ok && lookupData.user) {
-      userIds.push(lookupData.user.id);
-    }
+  if (lookupResult.ok && lookupResult.data?.id) {
+    userIds.push(lookupResult.data.id);
   }
 }
 
 // Invite users to channel
 if (userIds.length > 0) {
-  await fetch('https://slack.com/api/conversations.invite', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${slackToken}`,
-    },
-    body: JSON.stringify({
-      channel: channel_id,
-      users: userIds.join(','),
-    }),
+  const inviteResult = metaphor.integration('slack_bot', 'channels.invite', {
+    channel: channel_id,
+    users: userIds,
   });
+
+  if (!inviteResult.ok) {
+    throw new Error(`Failed to invite users: ${inviteResult.error}`);
+  }
 }
 
 const result = { invited_count: userIds.length };

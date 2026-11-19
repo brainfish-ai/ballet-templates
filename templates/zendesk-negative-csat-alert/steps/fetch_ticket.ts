@@ -4,33 +4,18 @@ if (!is_negative) {
   throw new Error('Rating not negative. Exiting workflow.');
 }
 
-const subdomain = metaphor.secret('ZENDESK_SUBDOMAIN');
-const apiToken = metaphor.secret('ZENDESK_API_TOKEN');
-
-const ticketRes = await fetch(`https://${subdomain}.zendesk.com/api/v2/tickets/${ticket_id}.json`, {
-  headers: {
-    'Authorization': `Bearer ${apiToken}`,
-  },
+// Get full ticket details from Zendesk
+const ticketResult = metaphor.integration('zendesk', 'tickets.get', {
+  id: parseInt(ticket_id, 10),
 });
 
-if (!ticketRes.ok) {
-  throw new Error(`Zendesk API error: ${ticketRes.status} ${ticketRes.statusText}`);
+if (!ticketResult.ok) {
+  throw new Error(`Failed to fetch ticket: ${ticketResult.error}`);
 }
 
-const ticketData = await ticketRes.json() as {
-  ticket: {
-    id: number;
-    subject: string;
-    description: string;
-    status: string;
-    priority: string | null;
-    requester_id: number;
-    assignee_id: number | null;
-  };
-};
+const ticket = ticketResult.data;
 
-const ticket = ticketData.ticket;
-
+// Simple deduplication (note: this is in-memory only, resets on restart)
 const alreadyAlerted = new Set<number>();
 
 if (alreadyAlerted.has(ticket.id)) {
@@ -42,8 +27,8 @@ alreadyAlerted.add(ticket.id);
 const result = {
   ticket_id,
   subject: ticket.subject,
-  description: ticket.description.slice(0, 500),
+  description: (ticket.description || '').slice(0, 500),
   status: ticket.status,
-  priority: ticket.priority ?? 'normal',
-  ticket_url: `https://${subdomain}.zendesk.com/agent/tickets/${ticket_id}`,
+  priority: ticket.priority || 'normal',
+  ticket_url: `https://${ticket.url?.split('/api/')[0] || 'zendesk.com'}/agent/tickets/${ticket_id}`,
 };

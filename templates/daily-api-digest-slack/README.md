@@ -15,7 +15,7 @@ Pull records from any JSON API, summarise them, and post a digest to Slack on a 
 
 1. **fetch_data** (http): Fetch records from the vendor API.
 2. **summarize** (code): Reduce the records to counts and a short written digest.
-3. **post_digest** (http): Post the digest to Slack.
+3. **post_digest** (code): Post the digest to Slack.
 
 ## What you need
 
@@ -25,10 +25,8 @@ Secrets (add them in Studio; values never leave your workspace):
 |---|---|
 | `DIGEST_API_URL` | Full URL of the JSON endpoint to read, without the query string. |
 | `DIGEST_API_TOKEN` | Bearer token for that API. |
-| `SLACK_BOT_TOKEN` | Slack bot token with the `chat:write` scope. |
-| `SLACK_DIGEST_CHANNEL` | Channel id or name to post to, for example `#ops`. |
 
-Integrations: `slack`
+Integrations: `slack_bot`
 
 Agents (created for you on import; edit them in Studio):
 
@@ -36,9 +34,10 @@ Agents (created for you on import; edit them in Studio):
 
 ## Setup
 
-1. Add the four secrets above.
-2. Run the playbook once manually to check the digest.
-3. In Studio, add a schedule (for example `0 9 * * *`) to run it every morning.
+1. Connect the Slack Bot integration in Ballet once and invite the bot to your digest channel.
+2. Update the fetch_data step with your API URL and authentication method (the template defaults to bearer token).
+3. Run the playbook once manually to check the digest.
+4. Set up a daily schedule using an external scheduler or cron job to trigger the playbook via API, or use Ballet's scheduling feature if available.
 
 ## Files
 

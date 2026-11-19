@@ -1,18 +1,17 @@
 const { deal_id } = input_data as { deal_id: string };
 
-const hubspotToken = metaphor.secret('HUBSPOT_ACCESS_TOKEN');
-
-const dealRes = await fetch(`https://api.hubapi.com/crm/v3/objects/deals/${deal_id}?properties=dealname,amount,closedate,hubspot_owner_id,hs_priority,notes_last_updated`, {
-  headers: {
-    'Authorization': `Bearer ${hubspotToken}`,
-  },
+// Get full deal details from HubSpot with associations
+const dealResult = metaphor.integration('hubspot', 'deals.get', {
+  dealId: deal_id,
+  properties: ['dealname', 'amount', 'closedate', 'hubspot_owner_id', 'hs_priority', 'notes_last_updated'],
+  associations: ['contacts', 'companies'],
 });
 
-if (!dealRes.ok) {
-  throw new Error(`HubSpot API error: ${dealRes.status} ${dealRes.statusText}`);
+if (!dealResult.ok) {
+  throw new Error(`Failed to fetch deal: ${dealResult.error}`);
 }
 
-const dealData = await dealRes.json() as { properties: Record<string, string> };
+const dealData = dealResult.data;
 const deal = dealData.properties;
 
 // Check required handoff fields

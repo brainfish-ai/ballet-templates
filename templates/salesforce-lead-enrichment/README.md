@@ -15,17 +15,11 @@ Research each new Salesforce Lead on the web and write a short brief and rating 
 
 1. **research_company** (code): Search the web for what the company does and recent news.
 2. **write_brief** (code): Turn the research into a short brief and a fit score.
-3. **update_lead** (http): Write the brief back to the Lead record.
+3. **update_lead** (code): Write the brief back to the Lead record.
 
 ## What you need
 
-Secrets (add them in Studio; values never leave your workspace):
-
-| Name | Purpose |
-|---|---|
-| `SALESFORCE_WEBHOOK_TOKEN` | Bearer token Salesforce sends in the Authorization header when calling the webhook. |
-| `SALESFORCE_INSTANCE_URL` | Your instance URL, for example `https://acme.my.salesforce.com`. |
-| `SALESFORCE_ACCESS_TOKEN` | OAuth access token with permission to update Lead records. |
+No secrets required.
 
 Integrations: `salesforce`
 
@@ -35,9 +29,9 @@ Agents (created for you on import; edit them in Studio):
 
 ## Setup
 
-1. Add the three secrets above.
+1. Connect the Salesforce integration in Ballet once.
 2. Publish the playbook and copy its webhook URL.
-3. In Salesforce, create a Flow on Lead creation that sends an outbound message or HTTP callout with lead_id, company, email and title.
+3. In Salesforce, create a Flow on Lead creation that sends an outbound message or HTTP callout with lead_id, company, email and title to the webhook URL.
 4. Create a test Lead and check the Description field.
 
 ## Files

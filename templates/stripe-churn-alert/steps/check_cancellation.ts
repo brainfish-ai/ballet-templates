@@ -1,64 +1,40 @@
-const { subscription_id, customer_id, cancel_at_period_end, current_period_end } = input_data as {
-  subscription_id: string;
-  customer_id: string;
-  cancel_at_period_end?: boolean;
-  current_period_end?: number;
-};
+// Read from flow.input which contains the native Stripe webhook payload
+const webhook = input_data as any;
+const subscription = webhook.object || {};
+const previous = webhook.raw?.previous_attributes || webhook.raw?.data?.previous_attributes || {};
 
-if (!cancel_at_period_end) {
-  throw new Error('Subscription not cancelled (cancel_at_period_end is false). Exiting workflow.');
+// Check if this is a cancellation event
+const isCancelled = subscription.cancel_at_period_end === true || subscription.status === 'canceled';
+
+if (!isCancelled) {
+  throw new Error('Subscription not cancelled. Exiting workflow.');
 }
 
-const stripeKey = metaphor.secret('STRIPE_API_KEY');
+const subscription_id = subscription.id;
+const customer_id = subscription.customer;
 
-const subRes = await fetch(`https://api.stripe.com/v1/subscriptions/${subscription_id}`, {
-  headers: {
-    'Authorization': `Bearer ${stripeKey}`,
-  },
+// Get full customer details from Stripe
+const customerResult = metaphor.integration('stripe', 'customers.get', {
+  customerId: customer_id,
 });
 
-if (!subRes.ok) {
-  throw new Error(`Stripe API error: ${subRes.status} ${subRes.statusText}`);
+if (!customerResult.ok) {
+  throw new Error(`Failed to fetch customer: ${customerResult.error}`);
 }
 
-const subscription = await subRes.json() as {
-  id: string;
-  customer: string;
-  cancel_at_period_end: boolean;
-  current_period_end: number;
-  items: { data: Array<{ plan: { nickname?: string; amount: number; currency: string; interval: string } }> };
-  metadata?: Record<string, string>;
-};
-
-const customerRes = await fetch(`https://api.stripe.com/v1/customers/${customer_id}`, {
-  headers: {
-    'Authorization': `Bearer ${stripeKey}`,
-  },
-});
-
-if (!customerRes.ok) {
-  throw new Error(`Stripe customer API error: ${customerRes.status} ${customerRes.statusText}`);
-}
-
-const customer = await customerRes.json() as {
-  id: string;
-  email?: string;
-  name?: string;
-  metadata?: Record<string, string>;
-};
-
-const plan = subscription.items.data[0]?.plan;
-const plan_name = plan?.nickname ?? `${plan?.currency.toUpperCase()} ${plan?.amount / 100}/${plan?.interval}`;
-const subscription_end = new Date((current_period_end ?? subscription.current_period_end) * 1000).toISOString();
+const customer = customerResult.data;
+const plan = subscription.items?.data?.[0]?.plan || subscription.plan;
+const plan_name = plan?.nickname || `${plan?.currency?.toUpperCase()} ${(plan?.amount || 0) / 100}/${plan?.interval}`;
+const subscription_end = new Date((subscription.current_period_end || subscription.ended_at) * 1000).toISOString();
 
 const result = {
   subscription_id,
   customer_id,
-  customer_email: customer.email ?? 'unknown',
-  customer_name: customer.name ?? 'Unknown Customer',
+  customer_email: customer.email || 'unknown',
+  customer_name: customer.name || 'Unknown Customer',
   plan_name,
-  amount: plan?.amount ?? 0,
-  currency: plan?.currency?.toUpperCase() ?? 'USD',
+  amount: plan?.amount || 0,
+  currency: plan?.currency?.toUpperCase() || 'USD',
   subscription_end,
-  cancellation_reason: subscription.metadata?.cancellation_reason ?? 'not provided',
+  cancellation_reason: subscription.cancellation_details?.reason || subscription.metadata?.cancellation_reason || 'not provided',
 };

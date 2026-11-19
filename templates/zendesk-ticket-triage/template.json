@@ -34,18 +34,15 @@
   ],
   "sampleOutput": "Internal note posted to Zendesk ticket: Auto-triage tags: billing, urgent, needs-engineering-review",
   "setupMinutes": 10,
-  "whatYouNeed": "Zendesk account with admin access, Zendesk API token, Zendesk subdomain",
-  "failureHandling": "The HTTP step retries up to 3 times with exponential backoff (250ms initial delay). If webhook registration fails, Ballet logs the error and you can republish the playbook. Failed classification runs appear in run history with error details.",
+  "whatYouNeed": "Zendesk integration connected in Ballet",
+  "failureHandling": "If webhook registration fails, Ballet logs the error and you can republish the playbook. Failed classification runs appear in run history with error details.",
   "nativeVsTemplate": "Use Zendesk's built-in triggers if you only need simple keyword-based routing or priority rules. Use this template when you want AI-powered classification that understands ticket context, learns from your custom instructions, and adapts to complex triage logic that cannot be expressed in Zendesk's rule builder.",
   "related": ["freshdesk-ticket-summary", "support-reply-drafter", "l1-ticket-triage"],
-  "secrets": [
-    { "name": "ZENDESK_API_TOKEN", "description": "Zendesk API token used to register the webhook and update tickets." },
-    { "name": "ZENDESK_SUBDOMAIN", "description": "Your Zendesk subdomain, for example `acme` for acme.zendesk.com." }
-  ],
+  "secrets": [],
   "setup": [
-    "Connect Zendesk and add the two secrets above.",
+    "Connect the Zendesk integration in Ballet once.",
     "Publish the playbook; Ballet registers the Zendesk webhook for you.",
     "Create a test ticket and watch the run in Studio."
   ],
-  "lastValidated": "2026-11-19"
+  "lastValidated": null
 }

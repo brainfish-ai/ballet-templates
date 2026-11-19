@@ -8,7 +8,7 @@ Pull HubSpot deals every Monday, compute stage totals and week-over-week change,
 |---|---|
 | Category | Sales |
 | Difficulty | intermediate |
-| Trigger | Schedule (every Monday at 9am) |
+| Trigger | Manual (set up weekly schedule with external scheduler or cron) |
 | Steps | 5 |
 
 ## What it does
@@ -17,19 +17,13 @@ Pull HubSpot deals every Monday, compute stage totals and week-over-week change,
 2. **compute_totals** (code): Compute stage-by-stage totals (count and value) and calculate week-over-week change from Google Sheets.
 3. **append_to_sheets** (code): Append the current week's totals to Google Sheets for historical tracking.
 4. **write_commentary** (code): Use AI to write a 3-line executive summary with key pipeline insights.
-5. **post_to_slack** (http): Post the pipeline report and AI commentary to Slack.
+5. **post_to_slack** (code): Post the pipeline report and AI commentary to Slack.
 
 ## What you need
 
-Secrets (add them in Studio; values never leave your workspace):
+No secrets required.
 
-| Name | Purpose |
-|---|---|
-| `HUBSPOT_ACCESS_TOKEN` | HubSpot private app access token with deals scope. Or swap for Salesforce credentials if using Salesforce. |
-| `GOOGLE_SHEETS_API_KEY` | Google Sheets API key or service account credentials with spreadsheets scope. |
-| `GOOGLE_SHEET_ID` | The Google Sheet ID where weekly pipeline data is logged (from the sheet URL). |
-| `SLACK_BOT_TOKEN` | Slack bot token with chat:write scope. |
-| `SLACK_PIPELINE_CHANNEL` | Slack channel ID or name to post pipeline reports to, for example #sales. |
+Integrations: `hubspot`, `google_sheets`, `slack_bot`
 
 Agents (created for you on import; edit them in Studio):
 
@@ -37,11 +31,12 @@ Agents (created for you on import; edit them in Studio):
 
 ## Setup
 
-1. Add the five secrets above and invite the Slack bot to the pipeline channel.
-2. Create a Google Sheet with columns: Week Ending, Total Deals, Total Value, Discovery Deals, Discovery Value, Proposal Deals, Proposal Value, Closed Deals, Closed Value. Share it with your service account email or make it editable via the API key.
-3. Publish the playbook with the weekly schedule enabled (default: Mondays at 9am).
-4. The first run establishes a baseline with no week-over-week comparison. Subsequent weeks calculate changes.
-5. To use Salesforce, edit the fetch_deals step to call Salesforce APIs.
+1. Connect the HubSpot, Google Sheets, and Slack Bot integrations in Ballet once.
+2. Create a Google Sheet with columns: Week Ending, Total Deals, Total Value, Discovery Deals, Discovery Value, Proposal Deals, Proposal Value, Closed Deals, Closed Value. Note the Sheet ID from its URL.
+3. Invite the Slack bot to your pipeline reports channel.
+4. Publish the playbook and run it manually, or set up a weekly schedule (e.g. Mondays at 9am) using an external scheduler or cron job to trigger the playbook via API.
+5. The first run establishes a baseline with no week-over-week comparison. Subsequent weeks calculate changes.
+6. To use Salesforce, edit the fetch_deals step to call Salesforce integration.
 
 ## Files
 

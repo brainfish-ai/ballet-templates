@@ -16,22 +16,14 @@ Detect Stripe payment failures, apply retry and escalation rules, update HubSpot
 1. **fetch_failure_details** (code): Fetch invoice and customer details from Stripe and extract failure metadata.
 2. **apply_dunning_rules** (code): Apply retry and escalation rules based on failure count and invoice amount.
 3. **lookup_hubspot** (code): Find the customer in HubSpot and update the payment_status property.
-4. **alert_slack** (http): Post the payment failure alert to Slack, tagging the account owner or billing team.
+4. **alert_slack** (code): Post the payment failure alert to Slack, tagging the account owner or billing team.
 5. **draft_customer_email** (code): Draft a customer-facing email with payment retry instructions (requires manual approval).
 
 ## What you need
 
-Secrets (add them in Studio; values never leave your workspace):
+No secrets required.
 
-| Name | Purpose |
-|---|---|
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret from your Stripe dashboard. |
-| `STRIPE_API_KEY` | Stripe secret API key starting with sk_live_ or sk_test_. |
-| `HUBSPOT_ACCESS_TOKEN` | HubSpot private app access token with contacts, companies, and notes scopes. |
-| `SLACK_BOT_TOKEN` | Slack bot token with chat:write scope. |
-| `SLACK_BILLING_CHANNEL` | Slack channel ID or name to post payment failure alerts to, for example #billing-alerts. |
-
-Integrations: `stripe`, `hubspot`, `slack`, `gmail`
+Integrations: `stripe`, `hubspot`, `slack_bot`, `gmail`
 
 Agents (created for you on import; edit them in Studio):
 
@@ -39,9 +31,9 @@ Agents (created for you on import; edit them in Studio):
 
 ## Setup
 
-1. Add the five secrets above and invite the Slack bot to the billing alerts channel.
+1. Connect the Stripe, HubSpot, Slack Bot, and Gmail integrations in Ballet once.
 2. Create a custom HubSpot property called payment_status (text field) on contacts and companies.
-3. Connect Gmail with drafts scope.
+3. Invite the Slack bot to your billing alerts channel.
 4. Publish the playbook and copy the webhook URL from Studio.
 5. In Stripe dashboard, add the webhook URL and subscribe to invoice.payment_failed events.
 6. Test by creating a test invoice with a declined test card and watching the run.

@@ -17,21 +17,13 @@ Detect bad Zendesk satisfaction ratings, look up HubSpot account context, genera
 2. **fetch_ticket** (code): Fetch full ticket details from Zendesk including subject, description, and status.
 3. **lookup_hubspot** (code): Find the requester in HubSpot and fetch account owner and recent notes.
 4. **summarize_ticket** (code): Use AI to summarize the ticket and the customer's frustration.
-5. **alert_owner** (http): Post the CSAT alert to Slack, tagging the account owner or the fallback channel.
+5. **alert_owner** (code): Post the CSAT alert to Slack, tagging the account owner or the fallback channel.
 
 ## What you need
 
-Secrets (add them in Studio; values never leave your workspace):
+No secrets required.
 
-| Name | Purpose |
-|---|---|
-| `ZENDESK_API_TOKEN` | Zendesk API token used to register the webhook and fetch ticket details. |
-| `ZENDESK_SUBDOMAIN` | Your Zendesk subdomain, for example acme for acme.zendesk.com. |
-| `HUBSPOT_ACCESS_TOKEN` | HubSpot private app access token with contacts and companies scopes. |
-| `SLACK_BOT_TOKEN` | Slack bot token with chat:write scope. |
-| `SLACK_CSAT_CHANNEL` | Slack channel ID or name to post CSAT alerts to, for example #customer-success. |
-
-Integrations: `zendesk`, `hubspot`, `slack`
+Integrations: `zendesk`, `hubspot`, `slack_bot`
 
 Agents (created for you on import; edit them in Studio):
 
@@ -39,10 +31,11 @@ Agents (created for you on import; edit them in Studio):
 
 ## Setup
 
-1. Add the five secrets above and invite the Slack bot to the CSAT alerts channel.
+1. Connect the Zendesk, HubSpot, and Slack Bot integrations in Ballet once.
 2. Enable satisfaction ratings in Zendesk (Admin > Tickets > Satisfaction).
-3. Publish the playbook; Ballet registers the Zendesk webhook for you.
-4. Test by submitting a bad satisfaction rating on a test ticket and watching the run.
+3. Invite the Slack bot to your CSAT alerts channel.
+4. Publish the playbook; Ballet registers the Zendesk webhook for you.
+5. Test by submitting a bad satisfaction rating on a test ticket and watching the run.
 
 ## Files
 

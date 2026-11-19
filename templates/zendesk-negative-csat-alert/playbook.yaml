@@ -9,25 +9,15 @@ spec:
     type: webhook
     webhook:
       provider: zendesk
+      integrationId: zendesk
       token: ""
       responseMode: immediate
-      credentialRef: ZENDESK_API_TOKEN
-      events:
-        - zen:event-type:satisfaction_rating.created
   inputSchema:
     type: object
     properties:
-      ticket_id:
+      slack_channel:
         type: string
-      rating_score:
-        type: string
-      rating_comment:
-        type: string
-      requester_email:
-        type: string
-    required:
-      - ticket_id
-      - rating_score
+        description: Slack channel ID or name for CSAT alerts (e.g. #customer-success)
   steps:
     - id: filter_rating
       type: code
@@ -35,9 +25,7 @@ spec:
       codeFile: steps/filter_rating.ts
       description: Check if the rating qualifies as negative and deserves an alert.
       friendlyMessage: Filtering the rating
-      input:
-        rating_score: "{{ flow.input.rating_score }}"
-        rating_comment: "{{ flow.input.rating_comment }}"
+      input: "{{ flow.input }}"
       output:
         variable: result
         format: json
@@ -48,7 +36,7 @@ spec:
       description: Fetch full ticket details from Zendesk including subject, description, and status.
       friendlyMessage: Fetching ticket details
       input:
-        ticket_id: "{{ flow.input.ticket_id }}"
+        ticket_id: "{{ steps.filter_rating.output.ticket_id }}"
         is_negative: "{{ steps.filter_rating.output.is_negative }}"
       output:
         variable: result
@@ -60,7 +48,7 @@ spec:
       description: Find the requester in HubSpot and fetch account owner and recent notes.
       friendlyMessage: Looking up account context
       input:
-        requester_email: "{{ flow.input.requester_email }}"
+        requester_email: "{{ steps.filter_rating.output.requester_email }}"
       output:
         variable: result
         format: json
@@ -72,31 +60,20 @@ spec:
       friendlyMessage: Summarizing the feedback
       input:
         ticket: "{{ steps.fetch_ticket.output }}"
-        rating_comment: "{{ flow.input.rating_comment }}"
+        rating_comment: "{{ steps.filter_rating.output.rating_comment }}"
         hubspot_notes: "{{ steps.lookup_hubspot.output.notes }}"
       output:
         variable: result
         format: json
     - id: alert_owner
-      type: http
+      type: code
+      language: typescript
+      codeFile: steps/alert_owner.ts
       description: Post the CSAT alert to Slack, tagging the account owner or the fallback channel.
       friendlyMessage: Alerting the account owner
-      method: POST
-      url: https://slack.com/api/chat.postMessage
-      headers:
-        Content-Type: application/json
-      body:
-        channel: "{{ secret.SLACK_CSAT_CHANNEL }}"
-        text: "{{ steps.summarize_ticket.output.slack_message }}"
-      auth:
-        type: bearer
-        tokenRef: SLACK_BOT_TOKEN
-      input: {}
+      input:
+        slack_message: "{{ steps.summarize_ticket.output.slack_message }}"
+        slack_channel: "{{ flow.input.slack_channel }}"
       output:
         variable: result
         format: json
-      timeoutMs: 15000
-      retry:
-        maxAttempts: 3
-        backoff: exponential
-        delayMs: 250

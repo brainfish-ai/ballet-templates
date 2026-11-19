@@ -8,7 +8,7 @@ Scheduled check of Freshdesk tickets near or over SLA, deduplicates already-aler
 |---|---|
 | Category | Support |
 | Difficulty | beginner |
-| Trigger | Schedule (every 15 minutes) |
+| Trigger | Manual (set up 15-minute schedule with external scheduler or cron) |
 | Steps | 2 |
 
 ## What it does
@@ -18,23 +18,18 @@ Scheduled check of Freshdesk tickets near or over SLA, deduplicates already-aler
 
 ## What you need
 
-Secrets (add them in Studio; values never leave your workspace):
+No secrets required.
 
-| Name | Purpose |
-|---|---|
-| `FRESHDESK_DOMAIN` | Your Freshdesk subdomain, for example acme for acme.freshdesk.com. |
-| `FRESHDESK_API_KEY` | Freshdesk API key (used as Basic auth username). |
-| `SLACK_BOT_TOKEN` | Slack bot token with chat:write scope. |
-
-Integrations: `freshdesk`, `slack`
+Integrations: `freshdesk`, `slack_bot`
 
 ## Setup
 
-1. Add the three secrets above and invite the Slack bot to the alert channel.
-2. Publish the playbook with the schedule trigger enabled.
-3. Set slack_channel input to your channel ID or name.
-4. Optionally adjust alert_threshold_hours to your SLA buffer.
-5. The first run checks for breaching tickets; alerts appear in Slack within 15 minutes.
+1. Connect the Freshdesk and Slack Bot integrations in Ballet once.
+2. Invite the Slack bot to your alert channel.
+3. Publish the playbook and run it manually, or set up a 15-minute schedule using an external scheduler or cron job to trigger the playbook via API.
+4. Set slack_channel input to your channel ID or name.
+5. Optionally adjust alert_threshold_hours to your SLA buffer.
+6. Each run checks for breaching tickets and posts alerts to Slack.
 
 ## Files
 

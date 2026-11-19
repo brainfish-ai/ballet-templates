@@ -11,7 +11,6 @@ spec:
       provider: generic
       token: ""
       responseMode: immediate
-      credentialRef: INBOUND_HMAC_SECRET
       idempotencyHeader: X-Event-Id
   inputSchema:
     type: object
@@ -24,6 +23,9 @@ spec:
         type: string
       message:
         type: string
+      slack_channel:
+        type: string
+        description: Slack channel ID or name for lead alerts (e.g. #sales-leads)
     required:
       - email
   steps:
@@ -42,25 +44,14 @@ spec:
         variable: result
         format: json
     - id: notify
-      type: http
+      type: code
+      language: typescript
+      codeFile: steps/notify.ts
       description: Post the lead to Slack, flagged as hot when it scores 7 or higher.
       friendlyMessage: Notifying the team
-      method: POST
-      url: https://slack.com/api/chat.postMessage
-      headers:
-        Content-Type: application/json
-      body:
-        channel: "{{ secret.SLACK_LEADS_CHANNEL }}"
-        text: "{{ steps.score.output.slack_text }}"
-      auth:
-        type: bearer
-        tokenRef: SLACK_BOT_TOKEN
-      input: {}
+      input:
+        slack_text: "{{ steps.score.output.slack_text }}"
+        slack_channel: "{{ flow.input.slack_channel }}"
       output:
         variable: result
         format: json
-      timeoutMs: 15000
-      retry:
-        maxAttempts: 3
-        backoff: exponential
-        delayMs: 250

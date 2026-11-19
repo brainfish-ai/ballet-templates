@@ -9,7 +9,7 @@ When a HubSpot deal moves to closed won, check required handoff fields, AI write
 | Category | Sales |
 | Difficulty | intermediate |
 | Trigger | HubSpot webhook (deal stage changed to closed won) |
-| Steps | 5 |
+| Steps | 6 |
 
 ## What it does
 
@@ -17,19 +17,14 @@ When a HubSpot deal moves to closed won, check required handoff fields, AI write
 2. **write_handoff** (code): AI writes a handoff summary for the CS team with key context, stakeholders, and success criteria.
 3. **create_channel** (code): Create a Slack channel for the account with CS and sales team members.
 4. **approval** (code): Review handoff summary and Slack channel before inviting customer-facing people.
-5. **invite_team** (code): Invite CS team members to the Slack channel after approval.
+5. **create_handoff_doc** (code): Create a Google Drive document with the handoff summary after approval.
+6. **invite_team** (code): Invite CS team members to the Slack channel after approval.
 
 ## What you need
 
-Secrets (add them in Studio; values never leave your workspace):
+No secrets required.
 
-| Name | Purpose |
-|---|---|
-| `HUBSPOT_WEBHOOK_SECRET` | HMAC secret for verifying HubSpot webhook signatures. |
-| `HUBSPOT_ACCESS_TOKEN` | HubSpot private app access token or OAuth token with crm.objects.deals.read scope. |
-| `SLACK_BOT_TOKEN` | Slack bot token with channels:manage, conversations:write, users:read.email scopes. |
-
-Integrations: `hubspot`, `slack`
+Integrations: `hubspot`, `slack_bot`, `google_drive`
 
 Agents (created for you on import; edit them in Studio):
 
@@ -37,11 +32,11 @@ Agents (created for you on import; edit them in Studio):
 
 ## Setup
 
-1. Add the three secrets above.
+1. Connect the HubSpot, Slack Bot, and Google Drive integrations in Ballet once.
 2. Publish the playbook and copy the webhook URL from Studio.
 3. In HubSpot, create a workflow that triggers when deal stage changes to closed won and sends a webhook to the Ballet URL with deal_id, deal_name, close_date, arr, owner_email fields.
 4. Test with a deal moved to closed won.
-5. When the approval step appears, review the handoff summary and approve to invite the CS team.
+5. When the approval step appears, review the handoff summary and approve to proceed with team invites and document creation.
 
 ## Simplifications
 

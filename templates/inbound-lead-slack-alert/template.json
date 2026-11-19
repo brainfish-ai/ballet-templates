@@ -6,7 +6,7 @@
   "tags": ["sales", "leads", "slack", "webhook", "llm"],
   "difficulty": "beginner",
   "trigger": "Generic HMAC webhook",
-  "integrations": ["slack"],
+  "integrations": ["slack_bot"],
   "primaryKeyword": "inbound lead scoring slack automation",
   "seoTitle": "Auto-Score Inbound Leads and Alert Sales via Slack",
   "answer": "This template receives form submissions via an HMAC-authenticated webhook, scores each lead using an AI agent that evaluates name, email, company, and message content, then posts the lead to a designated Slack channel with a hot lead flag for scores of 7 or higher. Sales reps see every inbound lead instantly with AI-generated context about why it matters.",
@@ -34,19 +34,16 @@
   ],
   "sampleOutput": "Slack message: New lead from Acme Corp (sarah@acme.com). Score: 9/10. Hot lead. Reason: Enterprise company, asking about API integration, clear buying intent.",
   "setupMinutes": 10,
-  "whatYouNeed": "Form tool that sends HMAC-SHA256 signed webhooks, Slack workspace with bot token and chat:write scope, Slack channel for lead alerts",
-  "failureHandling": "The Slack API call retries up to 3 times with exponential backoff (250ms initial delay). If lead scoring or Slack posting fails, the run appears in history with error details. The webhook responds immediately to avoid form tool timeouts.",
+  "whatYouNeed": "Form tool that sends HMAC-SHA256 signed webhooks, Slack Bot integration connected and invited to lead alerts channel",
+  "failureHandling": "If lead scoring or Slack posting fails, the run appears in history with error details. The webhook responds immediately to avoid form tool timeouts.",
   "nativeVsTemplate": "Use your form tool's native Slack integration if you only need raw form submissions posted to Slack. Use this template when you want AI-powered lead scoring, hot lead prioritization, and intelligent context so your sales team knows which leads to contact first.",
   "related": ["salesforce-lead-enrichment", "meeting-prep-brief"],
-  "secrets": [
-    { "name": "INBOUND_HMAC_SECRET", "description": "HMAC-SHA256 secret your form tool uses to sign webhook bodies." },
-    { "name": "SLACK_BOT_TOKEN", "description": "Slack bot token with the `chat:write` scope." },
-    { "name": "SLACK_LEADS_CHANNEL", "description": "Channel id or name to post leads to, for example `#leads`." }
-  ],
+  "secrets": [],
   "setup": [
-    "Add the three secrets above and invite the Slack bot to the channel.",
+    "Connect the Slack Bot integration in Ballet once and invite the bot to your lead alerts channel.",
     "Publish the playbook and point your form tool's webhook at the URL shown in Studio.",
+    "Configure your form tool to send HMAC-SHA256 signatures if needed.",
     "Submit a test form and watch the run."
   ],
-  "lastValidated": "2026-11-19"
+  "lastValidated": null
 }

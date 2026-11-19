@@ -9,24 +9,9 @@ spec:
     type: webhook
     webhook:
       provider: zendesk
+      integrationId: zendesk
       token: ""
       responseMode: immediate
-      credentialRef: ZENDESK_API_TOKEN
-      events:
-        - zen:event-type:ticket.created
-  inputSchema:
-    type: object
-    properties:
-      ticket_id:
-        type: string
-      subject:
-        type: string
-      description:
-        type: string
-    required:
-      - ticket_id
-      - subject
-      - description
   steps:
     - id: classify
       type: code
@@ -34,35 +19,20 @@ spec:
       codeFile: steps/classify.ts
       description: Use an LLM to assign a priority and tags to the ticket.
       friendlyMessage: Reading the ticket
-      input:
-        subject: "{{ flow.input.subject }}"
-        description: "{{ flow.input.description }}"
+      input: "{{ flow.input }}"
       output:
         variable: result
         format: json
     - id: post_note
-      type: http
+      type: code
+      language: typescript
+      codeFile: steps/post_note.ts
       description: Write the classification back to Zendesk as an internal note.
       friendlyMessage: Updating the ticket
-      method: PUT
-      url: https://{{ secret.ZENDESK_SUBDOMAIN }}.zendesk.com/api/v2/tickets/{{ flow.input.ticket_id }}.json
-      headers:
-        Content-Type: application/json
-      body:
-        ticket:
-          priority: "{{ steps.classify.output.priority }}"
-          comment:
-            public: false
-            body: "Auto-triage tags: {{ steps.classify.output.tags }}"
-      auth:
-        type: bearer
-        tokenRef: ZENDESK_API_TOKEN
-      input: {}
+      input:
+        ticket_id: "{{ steps.classify.output.ticket_id }}"
+        priority: "{{ steps.classify.output.priority }}"
+        tags: "{{ steps.classify.output.tags }}"
       output:
         variable: result
         format: json
-      timeoutMs: 15000
-      retry:
-        maxAttempts: 3
-        backoff: exponential
-        delayMs: 250

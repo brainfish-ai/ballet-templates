@@ -5,8 +5,8 @@
   "category": "support",
   "tags": ["freshdesk", "support", "sla", "slack", "schedule"],
   "difficulty": "beginner",
-  "trigger": "Schedule (every 15 minutes)",
-  "integrations": ["freshdesk", "slack"],
+  "trigger": "Manual (set up 15-minute schedule with external scheduler or cron)",
+  "integrations": ["freshdesk", "slack_bot"],
   "primaryKeyword": "freshdesk sla breach slack notification",
   "seoTitle": "Freshdesk SLA Breach Alerts to Slack in Real Time",
   "answer": "This template runs every 15 minutes, queries Freshdesk for open tickets within 2 hours of their SLA due date or already overdue, deduplicates tickets already alerted in the last 24 hours, then posts Slack notifications to a designated channel with breach countdown or overdue hours. Support managers see which tickets need immediate attention to avoid SLA violations and maintain service commitments.",
@@ -34,21 +34,18 @@
   ],
   "sampleOutput": "Slack message: Warning: SLA Warning: Ticket #1234 breaches in 1h (High priority). Customer login issue after migration. View ticket.",
   "setupMinutes": 15,
-  "whatYouNeed": "Freshdesk account with API access, Freshdesk API key, Slack workspace with bot token and chat:write scope, Slack channel for alerts",
-  "failureHandling": "The template runs on a schedule, so failures do not block subsequent runs. If the Freshdesk API call fails, the error is logged and the next 15-minute run retries. Deduplication is in-memory per run, so if you need persistent deduplication across restarts, connect a Ballet data table.",
+  "whatYouNeed": "Freshdesk integration connected in Ballet, Slack Bot integration connected and invited to alerts channel",
+  "failureHandling": "If the Freshdesk API call fails, the error is logged and you can retry manually or via scheduler. Deduplication is in-memory per run, so if you need persistent deduplication across restarts, connect a Ballet data table.",
   "nativeVsTemplate": "Use Freshdesk's built-in automations if you only need basic ticket-created or status-change Slack posts. Use this template when you need proactive SLA monitoring with breach countdown alerts, deduplication, and custom thresholds that Freshdesk's native Slack integration cannot provide.",
   "related": ["freshdesk-ticket-summary", "zendesk-ticket-triage", "l1-ticket-triage"],
-  "secrets": [
-    { "name": "FRESHDESK_DOMAIN", "description": "Your Freshdesk subdomain, for example acme for acme.freshdesk.com." },
-    { "name": "FRESHDESK_API_KEY", "description": "Freshdesk API key (used as Basic auth username)." },
-    { "name": "SLACK_BOT_TOKEN", "description": "Slack bot token with chat:write scope." }
-  ],
+  "secrets": [],
   "setup": [
-    "Add the three secrets above and invite the Slack bot to the alert channel.",
-    "Publish the playbook with the schedule trigger enabled.",
+    "Connect the Freshdesk and Slack Bot integrations in Ballet once.",
+    "Invite the Slack bot to your alert channel.",
+    "Publish the playbook and run it manually, or set up a 15-minute schedule using an external scheduler or cron job to trigger the playbook via API.",
     "Set slack_channel input to your channel ID or name.",
     "Optionally adjust alert_threshold_hours to your SLA buffer.",
-    "The first run checks for breaching tickets; alerts appear in Slack within 15 minutes."
+    "Each run checks for breaching tickets and posts alerts to Slack."
   ],
-  "lastValidated": "2026-11-19"
+  "lastValidated": null
 }

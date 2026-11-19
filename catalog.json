@@ -46,18 +46,15 @@
       "trigger": "HubSpot webhook (deal stage changed to closed won)",
       "integrations": [
         "hubspot",
-        "slack"
+        "slack_bot",
+        "google_drive"
       ],
       "mcpServers": [],
-      "secrets": [
-        "HUBSPOT_WEBHOOK_SECRET",
-        "HUBSPOT_ACCESS_TOKEN",
-        "SLACK_BOT_TOKEN"
-      ],
+      "secrets": [],
       "agents": [
         "cs-handoff-writer"
       ],
-      "steps": 5,
+      "steps": 6,
       "path": "templates/closed-won-cs-handoff"
     },
     {
@@ -155,14 +152,12 @@
       "difficulty": "beginner",
       "trigger": "Manual run, or attach a daily schedule in Studio",
       "integrations": [
-        "slack"
+        "slack_bot"
       ],
       "mcpServers": [],
       "secrets": [
         "DIGEST_API_URL",
-        "DIGEST_API_TOKEN",
-        "SLACK_BOT_TOKEN",
-        "SLACK_DIGEST_CHANNEL"
+        "DIGEST_API_TOKEN"
       ],
       "agents": [
         "digest-writer"
@@ -183,17 +178,13 @@
         "schedule"
       ],
       "difficulty": "beginner",
-      "trigger": "Schedule (every 15 minutes)",
+      "trigger": "Manual (set up 15-minute schedule with external scheduler or cron)",
       "integrations": [
         "freshdesk",
-        "slack"
+        "slack_bot"
       ],
       "mcpServers": [],
-      "secrets": [
-        "FRESHDESK_DOMAIN",
-        "FRESHDESK_API_KEY",
-        "SLACK_BOT_TOKEN"
-      ],
+      "secrets": [],
       "agents": [],
       "steps": 2,
       "path": "templates/freshdesk-sla-breach-alert"
@@ -321,14 +312,10 @@
       "difficulty": "beginner",
       "trigger": "Generic HMAC webhook",
       "integrations": [
-        "slack"
+        "slack_bot"
       ],
       "mcpServers": [],
-      "secrets": [
-        "INBOUND_HMAC_SECRET",
-        "SLACK_BOT_TOKEN",
-        "SLACK_LEADS_CHANNEL"
-      ],
+      "secrets": [],
       "agents": [
         "lead-scorer"
       ],
@@ -491,11 +478,7 @@
         "salesforce"
       ],
       "mcpServers": [],
-      "secrets": [
-        "SALESFORCE_WEBHOOK_TOKEN",
-        "SALESFORCE_INSTANCE_URL",
-        "SALESFORCE_ACCESS_TOKEN"
-      ],
+      "secrets": [],
       "agents": [
         "lead-researcher"
       ],
@@ -520,16 +503,10 @@
       "integrations": [
         "stripe",
         "hubspot",
-        "slack"
+        "slack_bot"
       ],
       "mcpServers": [],
-      "secrets": [
-        "STRIPE_WEBHOOK_SECRET",
-        "STRIPE_API_KEY",
-        "HUBSPOT_ACCESS_TOKEN",
-        "SLACK_BOT_TOKEN",
-        "SLACK_CHURN_CHANNEL"
-      ],
+      "secrets": [],
       "agents": [
         "churn-classifier"
       ],
@@ -556,17 +533,11 @@
       "integrations": [
         "stripe",
         "hubspot",
-        "slack",
+        "slack_bot",
         "gmail"
       ],
       "mcpServers": [],
-      "secrets": [
-        "STRIPE_WEBHOOK_SECRET",
-        "STRIPE_API_KEY",
-        "HUBSPOT_ACCESS_TOKEN",
-        "SLACK_BOT_TOKEN",
-        "SLACK_BILLING_CHANNEL"
-      ],
+      "secrets": [],
       "agents": [
         "dunning-email-writer"
       ],
@@ -611,16 +582,14 @@
         "llm"
       ],
       "difficulty": "intermediate",
-      "trigger": "Schedule (every Monday at 9am)",
-      "integrations": [],
-      "mcpServers": [],
-      "secrets": [
-        "HUBSPOT_ACCESS_TOKEN",
-        "GOOGLE_SHEETS_API_KEY",
-        "GOOGLE_SHEET_ID",
-        "SLACK_BOT_TOKEN",
-        "SLACK_PIPELINE_CHANNEL"
+      "trigger": "Manual (set up weekly schedule with external scheduler or cron)",
+      "integrations": [
+        "hubspot",
+        "google_sheets",
+        "slack_bot"
       ],
+      "mcpServers": [],
+      "secrets": [],
       "agents": [
         "pipeline-commentator"
       ],
@@ -673,16 +642,10 @@
       "integrations": [
         "zendesk",
         "hubspot",
-        "slack"
+        "slack_bot"
       ],
       "mcpServers": [],
-      "secrets": [
-        "ZENDESK_API_TOKEN",
-        "ZENDESK_SUBDOMAIN",
-        "HUBSPOT_ACCESS_TOKEN",
-        "SLACK_BOT_TOKEN",
-        "SLACK_CSAT_CHANNEL"
-      ],
+      "secrets": [],
       "agents": [
         "ticket-summarizer"
       ],
@@ -707,10 +670,7 @@
         "zendesk"
       ],
       "mcpServers": [],
-      "secrets": [
-        "ZENDESK_API_TOKEN",
-        "ZENDESK_SUBDOMAIN"
-      ],
+      "secrets": [],
       "agents": [
         "ticket-classifier"
       ],

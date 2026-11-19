@@ -1,73 +1,54 @@
-const { invoice_id, customer_id, amount_due, attempt_count } = input_data as {
-  invoice_id: string;
-  customer_id: string;
-  amount_due?: number;
-  attempt_count?: number;
-};
+// Read from native Stripe webhook payload
+const webhook = input_data as any;
+const invoice = webhook.object || {};
 
-const stripeKey = metaphor.secret('STRIPE_API_KEY');
+const invoice_id = invoice.id;
+const customer_id = invoice.customer;
 
-const invoiceRes = await fetch(`https://api.stripe.com/v1/invoices/${invoice_id}`, {
-  headers: {
-    'Authorization': `Bearer ${stripeKey}`,
-  },
+// Get full invoice details
+const invoiceResult = metaphor.integration('stripe', 'invoices.get', {
+  invoiceId: invoice_id,
 });
 
-if (!invoiceRes.ok) {
-  throw new Error(`Stripe invoice API error: ${invoiceRes.status} ${invoiceRes.statusText}`);
+if (!invoiceResult.ok) {
+  throw new Error(`Failed to fetch invoice: ${invoiceResult.error}`);
 }
 
-const invoice = await invoiceRes.json() as {
-  id: string;
-  customer: string;
-  amount_due: number;
-  currency: string;
-  attempt_count: number;
-  next_payment_attempt: number | null;
-  hosted_invoice_url?: string;
-  charge?: string;
-};
+const invoiceData = invoiceResult.data;
 
-const customerRes = await fetch(`https://api.stripe.com/v1/customers/${customer_id}`, {
-  headers: {
-    'Authorization': `Bearer ${stripeKey}`,
-  },
+// Get customer details
+const customerResult = metaphor.integration('stripe', 'customers.get', {
+  customerId: customer_id,
 });
 
-if (!customerRes.ok) {
-  throw new Error(`Stripe customer API error: ${customerRes.status} ${customerRes.statusText}`);
+if (!customerResult.ok) {
+  throw new Error(`Failed to fetch customer: ${customerResult.error}`);
 }
 
-const customer = await customerRes.json() as {
-  id: string;
-  email?: string;
-  name?: string;
-};
+const customer = customerResult.data;
 
+// Get failure reason from payment intent
 let failure_reason = 'Unknown';
-
-if (invoice.charge) {
-  const chargeRes = await fetch(`https://api.stripe.com/v1/charges/${invoice.charge}`, {
-    headers: {
-      'Authorization': `Bearer ${stripeKey}`,
-    },
+if (invoiceData.payment_intent) {
+  const paymentIntentResult = metaphor.integration('stripe', 'paymentIntents.get', {
+    paymentIntentId: invoiceData.payment_intent,
   });
 
-  if (chargeRes.ok) {
-    const charge = await chargeRes.json() as { failure_message?: string };
-    failure_reason = charge.failure_message ?? 'Declined';
+  if (paymentIntentResult.ok) {
+    const lastError = paymentIntentResult.data?.last_payment_error;
+    failure_reason = lastError?.message || lastError?.code || 'Declined';
   }
 }
 
 const result = {
   invoice_id,
   customer_id,
-  customer_email: customer.email ?? 'unknown',
-  customer_name: customer.name ?? 'Unknown Customer',
-  amount_due: amount_due ?? invoice.amount_due,
-  currency: invoice.currency.toUpperCase(),
-  attempt_count: attempt_count ?? invoice.attempt_count,
+  customer_email: customer.email || 'unknown',
+  customer_name: customer.name || 'Unknown Customer',
+  amount_due: invoiceData.amount_due,
+  currency: invoiceData.currency.toUpperCase(),
+  attempt_count: invoiceData.attempt_count || 1,
   failure_reason,
-  invoice_url: invoice.hosted_invoice_url ?? `https://dashboard.stripe.com/invoices/${invoice_id}`,
-  next_payment_attempt: invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000).toISOString() : null,
+  invoice_url: invoiceData.hosted_invoice_url || `https://dashboard.stripe.com/invoices/${invoice_id}`,
+  next_payment_attempt: invoiceData.next_payment_attempt ? new Date(invoiceData.next_payment_attempt * 1000).toISOString() : null,
 };

@@ -1,6 +1,7 @@
-const { deals, report_date } = input_data as {
+const { deals, report_date, google_sheet_id } = input_data as {
   deals: Array<{ id: string; name: string; amount: number; stage: string }>;
   report_date: string;
+  google_sheet_id: string;
 };
 
 const stageGroups: Record<string, { count: number; value: number }> = {};
@@ -24,31 +25,25 @@ const current_week = {
   stages: stageGroups,
 };
 
-const sheetsApiKey = metaphor.secret('GOOGLE_SHEETS_API_KEY');
-const sheetId = metaphor.secret('GOOGLE_SHEET_ID');
-
 let previous_week: typeof current_week | null = null;
 
-try {
-  const sheetRes = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A:Z?key=${sheetsApiKey}`,
-  );
+// Get previous week's data from Google Sheets
+const sheetResult = metaphor.integration('google_sheets', 'values.get', {
+  spreadsheetId: google_sheet_id,
+  range: 'Sheet1!A:Z',
+});
 
-  if (sheetRes.ok) {
-    const sheetData = await sheetRes.json() as { values?: string[][] };
-    const rows = sheetData.values ?? [];
-    if (rows.length > 1) {
-      const lastRow = rows[rows.length - 1];
-      previous_week = {
-        report_date: lastRow[0] ?? '',
-        total_count: parseInt(lastRow[1] ?? '0', 10),
-        total_value: parseFloat(lastRow[2] ?? '0'),
-        stages: {},
-      };
-    }
+if (sheetResult.ok && sheetResult.data?.values) {
+  const rows = sheetResult.data.values;
+  if (rows.length > 1) {
+    const lastRow = rows[rows.length - 1];
+    previous_week = {
+      report_date: lastRow[0] || '',
+      total_count: parseInt(lastRow[1] || '0', 10),
+      total_value: parseFloat(lastRow[2] || '0'),
+      stages: {},
+    };
   }
-} catch (err) {
-  previous_week = null;
 }
 
 const changes = {

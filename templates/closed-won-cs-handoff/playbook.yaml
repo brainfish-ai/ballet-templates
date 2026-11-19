@@ -11,7 +11,6 @@ spec:
       provider: generic
       token: ""
       responseMode: immediate
-      credentialRef: HUBSPOT_WEBHOOK_SECRET
   inputSchema:
     type: object
     properties:
@@ -72,6 +71,18 @@ spec:
       input:
         summary: "{{ steps.write_handoff.output.summary }}"
         channel_id: "{{ steps.create_channel.output.channel_id }}"
+      output:
+        variable: result
+        format: json
+    - id: create_handoff_doc
+      type: code
+      language: typescript
+      codeFile: steps/create_handoff_doc.ts
+      description: Create a Google Drive document with the handoff summary after approval.
+      friendlyMessage: Creating handoff document
+      input:
+        deal_name: "{{ flow.input.deal_name }}"
+        handoff_summary: "{{ steps.write_handoff.output.summary }}"
       output:
         variable: result
         format: json

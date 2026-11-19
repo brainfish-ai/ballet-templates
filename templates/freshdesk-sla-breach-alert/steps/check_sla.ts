@@ -1,31 +1,28 @@
 const { alert_threshold_hours } = input_data as { alert_threshold_hours?: number };
 
-const threshold = alert_threshold_hours ?? 2;
-const domain = metaphor.secret('FRESHDESK_DOMAIN');
-const apiKey = metaphor.secret('FRESHDESK_API_KEY');
+const threshold = alert_threshold_hours || 2;
 
-// Fetch open tickets from Freshdesk
-const ticketsRes = await fetch(`https://${domain}.freshdesk.com/api/v2/tickets?filter=new_and_my_open`, {
-  headers: {
-    'Authorization': `Basic ${btoa(apiKey + ':X')}`,
-  },
+// Fetch open tickets from Freshdesk with SLA sorting
+// Get updated tickets recently, ordered by due_by ascending
+const updated_since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+const ticketsResult = metaphor.integration('freshdesk', 'tickets.list', {
+  order_by: 'due_by',
+  order_type: 'asc',
+  updated_since,
+  per_page: 100,
 });
 
-if (!ticketsRes.ok) {
-  throw new Error(`Freshdesk API error: ${ticketsRes.status} ${ticketsRes.statusText}`);
+if (!ticketsResult.ok) {
+  throw new Error(`Failed to fetch Freshdesk tickets: ${ticketsResult.error}`);
 }
 
-const allTickets = await ticketsRes.json() as Array<{
-  id: number;
-  subject: string;
-  due_by: string;
-  responder_id: number | null;
-  priority: number;
-}>;
+const allTickets = ticketsResult.data || [];
 
-// Filter tickets near SLA breach
+// Filter tickets near SLA breach in code (due_by filtering)
 const now = new Date();
-const breachingSoon = allTickets.filter(t => {
+const breachingSoon = allTickets.filter((t: any) => {
+  if (!t.due_by) return false;
   const dueBy = new Date(t.due_by);
   const hoursUntilBreach = (dueBy.getTime() - now.getTime()) / (1000 * 60 * 60);
   return hoursUntilBreach <= threshold && hoursUntilBreach >= -24; // Include up to 24h overdue
@@ -35,10 +32,10 @@ const breachingSoon = allTickets.filter(t => {
 // In a real implementation, you would query a data table or cache
 // For this template, we'll use a simple in-memory approach that works per-run
 const alreadyAlerted = new Set<number>();
-const tickets = breachingSoon.filter(t => !alreadyAlerted.has(t.id));
+const tickets = breachingSoon.filter((t: any) => !alreadyAlerted.has(t.id));
 
 const result = {
-  tickets: tickets.map(t => ({
+  tickets: tickets.map((t: any) => ({
     id: t.id,
     subject: t.subject,
     due_by: t.due_by,

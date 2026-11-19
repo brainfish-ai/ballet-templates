@@ -9,26 +9,20 @@ spec:
     type: webhook
     webhook:
       provider: stripe
+      integrationId: stripe
       token: ""
       responseMode: immediate
-      credentialRef: STRIPE_WEBHOOK_SECRET
       events:
         - customer.subscription.updated
-      idempotencyHeader: Stripe-Event-Id
+        - customer.subscription.deleted
   inputSchema:
     type: object
     properties:
-      subscription_id:
+      slack_channel:
         type: string
-      customer_id:
-        type: string
-      cancel_at_period_end:
-        type: boolean
-      current_period_end:
-        type: number
+        description: Slack channel ID or name for churn alerts (e.g. #customer-success)
     required:
-      - subscription_id
-      - customer_id
+      - slack_channel
   steps:
     - id: check_cancellation
       type: code
@@ -36,11 +30,7 @@ spec:
       codeFile: steps/check_cancellation.ts
       description: Verify the subscription is cancelled and fetch customer details from Stripe.
       friendlyMessage: Checking the cancellation
-      input:
-        subscription_id: "{{ flow.input.subscription_id }}"
-        customer_id: "{{ flow.input.customer_id }}"
-        cancel_at_period_end: "{{ flow.input.cancel_at_period_end }}"
-        current_period_end: "{{ flow.input.current_period_end }}"
+      input: "{{ flow.input }}"
       output:
         variable: result
         format: json
@@ -69,28 +59,17 @@ spec:
         variable: result
         format: json
     - id: alert_slack
-      type: http
+      type: code
+      language: typescript
+      codeFile: steps/alert_slack.ts
       description: Post the churn alert to Slack, tagging the account owner if found.
       friendlyMessage: Alerting the team
-      method: POST
-      url: https://slack.com/api/chat.postMessage
-      headers:
-        Content-Type: application/json
-      body:
-        channel: "{{ secret.SLACK_CHURN_CHANNEL }}"
-        text: "{{ steps.classify_churn.output.slack_message }}"
-      auth:
-        type: bearer
-        tokenRef: SLACK_BOT_TOKEN
-      input: {}
+      input:
+        slack_message: "{{ steps.classify_churn.output.slack_message }}"
+        slack_channel: "{{ flow.input.slack_channel }}"
       output:
         variable: result
         format: json
-      timeoutMs: 15000
-      retry:
-        maxAttempts: 3
-        backoff: exponential
-        delayMs: 250
     - id: log_hubspot_note
       type: code
       language: typescript

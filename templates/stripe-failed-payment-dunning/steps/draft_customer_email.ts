@@ -8,7 +8,7 @@ const { should_draft, customer_email, customer_name, invoice_url, amount_due, cu
 };
 
 if (!should_draft || !customer_email || customer_email === 'unknown') {
-  const result = { drafted: false, message: 'Email draft skipped per dunning rules or missing customer email.' };
+  const result = { drafted: false, sent: false, message: 'Email draft skipped per dunning rules or missing customer email.' };
   return;
 }
 
@@ -24,28 +24,50 @@ const res = await metaphor.agent('dunning-email-writer', { prompt });
 
 const email_body = String(res?.email_body ?? `Hi ${customer_name},\n\nWe noticed that your recent payment of ${amount_formatted} was declined. Please update your payment method to avoid service interruption.\n\nYou can retry the payment here: ${invoice_url}\n\nThank you!`);
 
-function check<T>(res: { ok: boolean; data?: T; error?: { message?: string } }, what: string): T {
-  if (!res.ok) {
-    throw new Error(`${what} failed: ${res.error?.message ?? 'unknown error'}. Check the Gmail connection and try again.`);
-  }
-  return res.data as T;
+const subject = `Payment Update Needed: ${amount_formatted} invoice`;
+
+// Request approval before sending
+const approval = metaphor.waitForInput({
+  prompt: `Review and approve email to ${customer_name} (${customer_email})`,
+  details: `Subject: ${subject}\n\n${email_body}`,
+  schema: {
+    type: 'object',
+    properties: {
+      approved: {
+        type: 'boolean',
+        description: 'Approve to send this email',
+      },
+      edited_body: {
+        type: 'string',
+        description: 'Optional: edit the email body before sending',
+      },
+    },
+    required: ['approved'],
+  },
+});
+
+if (!approval.approved) {
+  const result = { drafted: true, sent: false, message: 'Email not sent: approval denied.' };
+  return;
 }
 
-const draftRes = check(
-  await metaphor.integration('gmail', 'drafts.create', {
-    to: [customer_email],
-    subject: `Payment Update Needed: ${amount_formatted} invoice`,
-    body: email_body,
-    contentType: 'text',
-  }),
-  'Creating Gmail draft',
-);
+const final_body = approval.edited_body || email_body;
 
-const draft_id = (draftRes as { id?: string })?.id ?? 'unknown';
+// Send the email
+const sendResult = metaphor.integration('gmail', 'messages.send', {
+  to: [customer_email],
+  subject,
+  body: final_body,
+  contentType: 'text/plain',
+});
+
+if (!sendResult.ok) {
+  throw new Error(`Failed to send email: ${sendResult.error}`);
+}
 
 const result = {
   drafted: true,
-  draft_id,
+  sent: true,
   to: customer_email,
-  message: `Email drafted for review. Draft ID: ${draft_id}. Review and send from Gmail.`,
+  message: `Email sent to ${customer_email}`,
 };

@@ -6,9 +6,7 @@ metadata:
   description: Scheduled check of Freshdesk tickets near or over SLA, deduplicates already-alerted tickets, sends Slack alert to owner or channel.
 spec:
   trigger:
-    type: schedule
-    schedule:
-      cron: "*/15 * * * *"
+    type: manual
   inputSchema:
     type: object
     properties:

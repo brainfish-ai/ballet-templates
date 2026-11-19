@@ -14,16 +14,11 @@ Classify every new Zendesk ticket with an LLM and write the priority and tags ba
 ## What it does
 
 1. **classify** (code): Use an LLM to assign a priority and tags to the ticket.
-2. **post_note** (http): Write the classification back to Zendesk as an internal note.
+2. **post_note** (code): Write the classification back to Zendesk as an internal note.
 
 ## What you need
 
-Secrets (add them in Studio; values never leave your workspace):
-
-| Name | Purpose |
-|---|---|
-| `ZENDESK_API_TOKEN` | Zendesk API token used to register the webhook and update tickets. |
-| `ZENDESK_SUBDOMAIN` | Your Zendesk subdomain, for example `acme` for acme.zendesk.com. |
+No secrets required.
 
 Integrations: `zendesk`
 
@@ -33,7 +28,7 @@ Agents (created for you on import; edit them in Studio):
 
 ## Setup
 
-1. Connect Zendesk and add the two secrets above.
+1. Connect the Zendesk integration in Ballet once.
 2. Publish the playbook; Ballet registers the Zendesk webhook for you.
 3. Create a test ticket and watch the run in Studio.
 
