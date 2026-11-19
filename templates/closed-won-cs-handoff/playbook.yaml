@@ -64,12 +64,17 @@ spec:
         variable: result
         format: json
     - id: approval
-      type: approval
+      type: code
+      language: typescript
+      codeFile: steps/approval.ts
       description: Review handoff summary and Slack channel before inviting customer-facing people.
-      prompt: "Review the handoff summary for {{ flow.input.deal_name }}. Approve to invite the customer success team to the Slack channel."
+      friendlyMessage: Waiting for approval
       input:
         summary: "{{ steps.write_handoff.output.summary }}"
         channel_id: "{{ steps.create_channel.output.channel_id }}"
+      output:
+        variable: result
+        format: json
     - id: invite_team
       type: code
       language: typescript

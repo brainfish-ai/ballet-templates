@@ -29,6 +29,38 @@
       "path": "templates/account-icp-scoring"
     },
     {
+      "id": "closed-won-cs-handoff",
+      "title": "Closed Won CS Handoff",
+      "summary": "When a HubSpot deal moves to closed won, check required handoff fields, AI writes handoff summary, creates Slack channel, requires approval before inviting customer-facing people.",
+      "category": "sales",
+      "tags": [
+        "hubspot",
+        "sales",
+        "customer-success",
+        "slack",
+        "webhook",
+        "llm",
+        "approval"
+      ],
+      "difficulty": "intermediate",
+      "trigger": "HubSpot webhook (deal stage changed to closed won)",
+      "integrations": [
+        "hubspot",
+        "slack"
+      ],
+      "mcpServers": [],
+      "secrets": [
+        "HUBSPOT_WEBHOOK_SECRET",
+        "HUBSPOT_ACCESS_TOKEN",
+        "SLACK_BOT_TOKEN"
+      ],
+      "agents": [
+        "cs-handoff-writer"
+      ],
+      "steps": 5,
+      "path": "templates/closed-won-cs-handoff"
+    },
+    {
       "id": "competitor-teardown",
       "title": "Competitor pricing & positioning teardown",
       "summary": "Paste a competitor's website and get their pricing, positioning, key messages and the angles to counter them.",
@@ -137,6 +169,34 @@
       ],
       "steps": 3,
       "path": "templates/daily-api-digest-slack"
+    },
+    {
+      "id": "freshdesk-sla-breach-alert",
+      "title": "Freshdesk SLA Breach Alert",
+      "summary": "Scheduled check of Freshdesk tickets near or over SLA, deduplicates already-alerted tickets, sends Slack alert to owner or channel.",
+      "category": "support",
+      "tags": [
+        "freshdesk",
+        "support",
+        "sla",
+        "slack",
+        "schedule"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Schedule (every 15 minutes)",
+      "integrations": [
+        "freshdesk",
+        "slack"
+      ],
+      "mcpServers": [],
+      "secrets": [
+        "FRESHDESK_DOMAIN",
+        "FRESHDESK_API_KEY",
+        "SLACK_BOT_TOKEN"
+      ],
+      "agents": [],
+      "steps": 2,
+      "path": "templates/freshdesk-sla-breach-alert"
     },
     {
       "id": "freshdesk-ticket-summary",
@@ -443,6 +503,77 @@
       "path": "templates/salesforce-lead-enrichment"
     },
     {
+      "id": "stripe-churn-alert",
+      "title": "Stripe Churn Alert",
+      "summary": "Detect Stripe subscription cancellations, look up the customer in HubSpot, classify the churn reason with AI, and post an alert to Slack with a HubSpot note.",
+      "category": "sales",
+      "tags": [
+        "stripe",
+        "churn",
+        "hubspot",
+        "slack",
+        "webhook",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Stripe webhook (subscription updated with cancel_at_period_end)",
+      "integrations": [
+        "stripe",
+        "hubspot",
+        "slack"
+      ],
+      "mcpServers": [],
+      "secrets": [
+        "STRIPE_WEBHOOK_SECRET",
+        "STRIPE_API_KEY",
+        "HUBSPOT_ACCESS_TOKEN",
+        "SLACK_BOT_TOKEN",
+        "SLACK_CHURN_CHANNEL"
+      ],
+      "agents": [
+        "churn-classifier"
+      ],
+      "steps": 5,
+      "path": "templates/stripe-churn-alert"
+    },
+    {
+      "id": "stripe-failed-payment-dunning",
+      "title": "Stripe Failed Payment Dunning",
+      "summary": "Detect Stripe payment failures, apply retry and escalation rules, update HubSpot, send Slack alerts, and draft a customer email needing approval before sending.",
+      "category": "sales",
+      "tags": [
+        "stripe",
+        "payment",
+        "dunning",
+        "hubspot",
+        "slack",
+        "gmail",
+        "webhook",
+        "llm"
+      ],
+      "difficulty": "intermediate",
+      "trigger": "Stripe webhook (invoice.payment_failed)",
+      "integrations": [
+        "stripe",
+        "hubspot",
+        "slack",
+        "gmail"
+      ],
+      "mcpServers": [],
+      "secrets": [
+        "STRIPE_WEBHOOK_SECRET",
+        "STRIPE_API_KEY",
+        "HUBSPOT_ACCESS_TOKEN",
+        "SLACK_BOT_TOKEN",
+        "SLACK_BILLING_CHANNEL"
+      ],
+      "agents": [
+        "dunning-email-writer"
+      ],
+      "steps": 5,
+      "path": "templates/stripe-failed-payment-dunning"
+    },
+    {
       "id": "support-reply-drafter",
       "title": "Support Reply Drafter",
       "summary": "Paste a customer message and get a polite, source-aware draft reply to review and send.",
@@ -464,6 +595,37 @@
       ],
       "steps": 2,
       "path": "templates/support-reply-drafter"
+    },
+    {
+      "id": "weekly-pipeline-report",
+      "title": "Weekly Pipeline Report",
+      "summary": "Pull HubSpot deals every Monday, compute stage totals and week-over-week change, append to Google Sheets, generate AI commentary, and post to Slack.",
+      "category": "sales",
+      "tags": [
+        "sales",
+        "pipeline",
+        "hubspot",
+        "google-sheets",
+        "slack",
+        "schedule",
+        "llm"
+      ],
+      "difficulty": "intermediate",
+      "trigger": "Schedule (every Monday at 9am)",
+      "integrations": [],
+      "mcpServers": [],
+      "secrets": [
+        "HUBSPOT_ACCESS_TOKEN",
+        "GOOGLE_SHEETS_API_KEY",
+        "GOOGLE_SHEET_ID",
+        "SLACK_BOT_TOKEN",
+        "SLACK_PIPELINE_CHANNEL"
+      ],
+      "agents": [
+        "pipeline-commentator"
+      ],
+      "steps": 5,
+      "path": "templates/weekly-pipeline-report"
     },
     {
       "id": "win-loss-by-competitor",
@@ -491,6 +653,41 @@
       ],
       "steps": 2,
       "path": "templates/win-loss-by-competitor"
+    },
+    {
+      "id": "zendesk-negative-csat-alert",
+      "title": "Zendesk Negative CSAT Alert",
+      "summary": "Detect bad Zendesk satisfaction ratings, look up HubSpot account context, generate an AI summary of the ticket, and ping the account owner in Slack with deduplication.",
+      "category": "support",
+      "tags": [
+        "zendesk",
+        "csat",
+        "satisfaction",
+        "hubspot",
+        "slack",
+        "webhook",
+        "llm"
+      ],
+      "difficulty": "beginner",
+      "trigger": "Zendesk webhook (satisfaction rating received)",
+      "integrations": [
+        "zendesk",
+        "hubspot",
+        "slack"
+      ],
+      "mcpServers": [],
+      "secrets": [
+        "ZENDESK_API_TOKEN",
+        "ZENDESK_SUBDOMAIN",
+        "HUBSPOT_ACCESS_TOKEN",
+        "SLACK_BOT_TOKEN",
+        "SLACK_CSAT_CHANNEL"
+      ],
+      "agents": [
+        "ticket-summarizer"
+      ],
+      "steps": 5,
+      "path": "templates/zendesk-negative-csat-alert"
     },
     {
       "id": "zendesk-ticket-triage",
