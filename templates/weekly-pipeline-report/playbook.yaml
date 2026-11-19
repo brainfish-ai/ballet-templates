@@ -1,0 +1,89 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: weekly-pipeline-report
+  name: Weekly Pipeline Report
+  description: Pull HubSpot deals every Monday, compute stage totals and week-over-week change, append to Google Sheets, generate AI commentary, and post to Slack.
+spec:
+  trigger:
+    type: schedule
+    schedule:
+      cron: "0 9 * * 1"
+  inputSchema:
+    type: object
+    properties:
+      report_date:
+        type: string
+        description: Optional override for the report week ending date (YYYY-MM-DD). Defaults to today.
+  steps:
+    - id: fetch_deals
+      type: code
+      language: typescript
+      codeFile: steps/fetch_deals.ts
+      description: Fetch all open deals from HubSpot and group by pipeline stage.
+      friendlyMessage: Fetching pipeline deals
+      input:
+        report_date: "{{ flow.input.report_date }}"
+      output:
+        variable: result
+        format: json
+    - id: compute_totals
+      type: code
+      language: typescript
+      codeFile: steps/compute_totals.ts
+      description: Compute stage-by-stage totals (count and value) and calculate week-over-week change from Google Sheets.
+      friendlyMessage: Computing pipeline totals
+      input:
+        deals: "{{ steps.fetch_deals.output.deals }}"
+        report_date: "{{ steps.fetch_deals.output.report_date }}"
+      output:
+        variable: result
+        format: json
+    - id: append_to_sheets
+      type: code
+      language: typescript
+      codeFile: steps/append_to_sheets.ts
+      description: Append the current week's totals to Google Sheets for historical tracking.
+      friendlyMessage: Logging to Google Sheets
+      input:
+        report_date: "{{ steps.fetch_deals.output.report_date }}"
+        totals: "{{ steps.compute_totals.output.current_week }}"
+      output:
+        variable: result
+        format: json
+    - id: write_commentary
+      type: code
+      language: typescript
+      codeFile: steps/write_commentary.ts
+      description: Use AI to write a 3-line executive summary with key pipeline insights.
+      friendlyMessage: Writing AI commentary
+      input:
+        current_week: "{{ steps.compute_totals.output.current_week }}"
+        previous_week: "{{ steps.compute_totals.output.previous_week }}"
+        changes: "{{ steps.compute_totals.output.changes }}"
+      output:
+        variable: result
+        format: json
+    - id: post_to_slack
+      type: http
+      description: Post the pipeline report and AI commentary to Slack.
+      friendlyMessage: Posting to Slack
+      method: POST
+      url: https://slack.com/api/chat.postMessage
+      headers:
+        Content-Type: application/json
+      body:
+        channel: "{{ secret.SLACK_PIPELINE_CHANNEL }}"
+        text: "{{ steps.write_commentary.output.slack_message }}"
+      auth:
+        type: bearer
+        tokenRef: SLACK_BOT_TOKEN
+      input: {}
+      output:
+        variable: result
+        format: json
+      timeoutMs: 15000
+      retry:
+        maxAttempts: 3
+        backoff: exponential
+        delayMs: 250

@@ -1,0 +1,102 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: zendesk-negative-csat-alert
+  name: Zendesk Negative CSAT Alert
+  description: Detect bad Zendesk satisfaction ratings, look up HubSpot account context, generate an AI summary, and ping the account owner in Slack with deduplication.
+spec:
+  trigger:
+    type: webhook
+    webhook:
+      provider: zendesk
+      token: ""
+      responseMode: immediate
+      credentialRef: ZENDESK_API_TOKEN
+      events:
+        - zen:event-type:satisfaction_rating.created
+  inputSchema:
+    type: object
+    properties:
+      ticket_id:
+        type: string
+      rating_score:
+        type: string
+      rating_comment:
+        type: string
+      requester_email:
+        type: string
+    required:
+      - ticket_id
+      - rating_score
+  steps:
+    - id: filter_rating
+      type: code
+      language: typescript
+      codeFile: steps/filter_rating.ts
+      description: Check if the rating qualifies as negative and deserves an alert.
+      friendlyMessage: Filtering the rating
+      input:
+        rating_score: "{{ flow.input.rating_score }}"
+        rating_comment: "{{ flow.input.rating_comment }}"
+      output:
+        variable: result
+        format: json
+    - id: fetch_ticket
+      type: code
+      language: typescript
+      codeFile: steps/fetch_ticket.ts
+      description: Fetch full ticket details from Zendesk including subject, description, and status.
+      friendlyMessage: Fetching ticket details
+      input:
+        ticket_id: "{{ flow.input.ticket_id }}"
+        is_negative: "{{ steps.filter_rating.output.is_negative }}"
+      output:
+        variable: result
+        format: json
+    - id: lookup_hubspot
+      type: code
+      language: typescript
+      codeFile: steps/lookup_hubspot.ts
+      description: Find the requester in HubSpot and fetch account owner and recent notes.
+      friendlyMessage: Looking up account context
+      input:
+        requester_email: "{{ flow.input.requester_email }}"
+      output:
+        variable: result
+        format: json
+    - id: summarize_ticket
+      type: code
+      language: typescript
+      codeFile: steps/summarize_ticket.ts
+      description: Use AI to summarize the ticket and the customer's frustration.
+      friendlyMessage: Summarizing the feedback
+      input:
+        ticket: "{{ steps.fetch_ticket.output }}"
+        rating_comment: "{{ flow.input.rating_comment }}"
+        hubspot_notes: "{{ steps.lookup_hubspot.output.notes }}"
+      output:
+        variable: result
+        format: json
+    - id: alert_owner
+      type: http
+      description: Post the CSAT alert to Slack, tagging the account owner or the fallback channel.
+      friendlyMessage: Alerting the account owner
+      method: POST
+      url: https://slack.com/api/chat.postMessage
+      headers:
+        Content-Type: application/json
+      body:
+        channel: "{{ secret.SLACK_CSAT_CHANNEL }}"
+        text: "{{ steps.summarize_ticket.output.slack_message }}"
+      auth:
+        type: bearer
+        tokenRef: SLACK_BOT_TOKEN
+      input: {}
+      output:
+        variable: result
+        format: json
+      timeoutMs: 15000
+      retry:
+        maxAttempts: 3
+        backoff: exponential
+        delayMs: 250

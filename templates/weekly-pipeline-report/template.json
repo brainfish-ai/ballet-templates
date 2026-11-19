@@ -1,0 +1,57 @@
+{
+  "id": "weekly-pipeline-report",
+  "title": "Weekly Pipeline Report",
+  "summary": "Pull HubSpot deals every Monday, compute stage totals and week-over-week change, append to Google Sheets, generate AI commentary, and post to Slack.",
+  "category": "sales",
+  "persona": "sales-ops",
+  "tags": ["sales", "pipeline", "hubspot", "google-sheets", "slack", "schedule", "llm"],
+  "difficulty": "intermediate",
+  "trigger": "Schedule (every Monday at 9am)",
+  "integrations": ["hubspot", "google-sheets", "slack"],
+  "primaryKeyword": "weekly pipeline report slack google sheets",
+  "seoTitle": "Weekly Pipeline Report from HubSpot to Slack and Google Sheets",
+  "answer": "This template runs every Monday morning, fetches all open deals from HubSpot (or Salesforce if you swap the integration), computes stage-by-stage totals (count and value), calculates week-over-week change by comparing to the previous week's totals stored in Google Sheets, appends the new week's data to a Google Sheets tracking log, uses an AI agent to write a 3-line executive summary with key insights and trends, and posts the commentary plus stage breakdown to a designated Slack channel so your sales team starts the week aligned on pipeline health.",
+  "faq": [
+    {
+      "q": "Can HubSpot or Salesforce generate pipeline reports natively?",
+      "a": "Both CRMs offer pipeline dashboards and reports, but they do not combine week-over-week trend analysis, Google Sheets logging for historical tracking, AI-generated commentary, and automated Slack delivery in one workflow. This template delivers a complete, repeatable weekly pipeline ritual."
+    },
+    {
+      "q": "How is week-over-week change calculated?",
+      "a": "The workflow reads the previous week's totals from Google Sheets (appended by the last run), subtracts them from the current week's totals, and computes percentage change for each stage. The first run has no prior data, so changes are marked as new baseline."
+    },
+    {
+      "q": "What if I use Salesforce instead of HubSpot?",
+      "a": "Swap the fetch_deals step to call Salesforce APIs or use metaphor.integration with salesforce if available. The rest of the workflow (Google Sheets, AI commentary, Slack) remains the same. The template includes a generic input schema so you can adapt it to any CRM."
+    },
+    {
+      "q": "What does the AI commentary include?",
+      "a": "The AI agent reads the stage totals and week-over-week changes, then writes a 3-line summary highlighting the most significant trends, for example: Pipeline grew 12% this week to $1.2M. Discovery stage up 25% with 8 new opps. Closed-Won conversion held steady at 18%."
+    },
+    {
+      "q": "Can I customize the schedule or Slack channel?",
+      "a": "Yes. Edit the schedule trigger in playbook.yaml to change the day or time (for example, Friday afternoons instead of Monday mornings). Set the Slack channel via the SLACK_PIPELINE_CHANNEL secret."
+    }
+  ],
+  "sampleOutput": "Slack message: Weekly Pipeline Report (Nov 18). Pipeline: $1.2M across 47 deals (up 12% from last week). Discovery: 15 deals / $320K (up 25%). Proposal: 18 deals / $580K (down 5%). Closed-Won: 8 deals / $240K (steady). AI insight: Strong top-of-funnel growth, but proposal stage needs attention. Built by the Brainfish team.",
+  "setupMinutes": 20,
+  "whatYouNeed": "HubSpot account with API access (or Salesforce), Google Sheets with API access and a tracking sheet created, Slack workspace with bot token and chat:write scope, Slack channel for pipeline reports",
+  "failureHandling": "The workflow runs on a schedule, so failures do not block subsequent runs. If HubSpot, Google Sheets, or Slack API calls fail, the workflow retries up to 3 times with exponential backoff (250ms initial delay). Failed runs appear in history with error details. If Google Sheets is unavailable, the report posts to Slack without historical comparison.",
+  "nativeVsTemplate": "Use HubSpot or Salesforce dashboards if you only need static pipeline views. Use this template when you want automated weekly reports with AI-generated insights, historical tracking in Google Sheets for trend analysis, and Slack delivery so your team sees pipeline health without logging into the CRM.",
+  "related": ["crm-hygiene", "win-loss-by-competitor"],
+  "secrets": [
+    { "name": "HUBSPOT_ACCESS_TOKEN", "description": "HubSpot private app access token with deals scope. Or swap for Salesforce credentials if using Salesforce." },
+    { "name": "GOOGLE_SHEETS_API_KEY", "description": "Google Sheets API key or service account credentials with spreadsheets scope." },
+    { "name": "GOOGLE_SHEET_ID", "description": "The Google Sheet ID where weekly pipeline data is logged (from the sheet URL)." },
+    { "name": "SLACK_BOT_TOKEN", "description": "Slack bot token with chat:write scope." },
+    { "name": "SLACK_PIPELINE_CHANNEL", "description": "Slack channel ID or name to post pipeline reports to, for example #sales." }
+  ],
+  "setup": [
+    "Add the five secrets above and invite the Slack bot to the pipeline channel.",
+    "Create a Google Sheet with columns: Week Ending, Total Deals, Total Value, Discovery Deals, Discovery Value, Proposal Deals, Proposal Value, Closed Deals, Closed Value. Share it with your service account email or make it editable via the API key.",
+    "Publish the playbook with the weekly schedule enabled (default: Mondays at 9am).",
+    "The first run establishes a baseline with no week-over-week comparison. Subsequent weeks calculate changes.",
+    "To use Salesforce, edit the fetch_deals step to call Salesforce APIs."
+  ],
+  "lastValidated": "2026-11-19"
+}

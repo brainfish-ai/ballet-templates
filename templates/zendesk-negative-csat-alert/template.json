@@ -1,0 +1,55 @@
+{
+  "id": "zendesk-negative-csat-alert",
+  "title": "Zendesk Negative CSAT Alert",
+  "summary": "Detect bad Zendesk satisfaction ratings, look up HubSpot account context, generate an AI summary of the ticket, and ping the account owner in Slack with deduplication.",
+  "category": "support",
+  "tags": ["zendesk", "csat", "satisfaction", "hubspot", "slack", "webhook", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Zendesk webhook (satisfaction rating received)",
+  "integrations": ["zendesk", "hubspot", "slack"],
+  "primaryKeyword": "zendesk bad satisfaction rating slack alert",
+  "seoTitle": "Zendesk Negative CSAT Alerts to Slack with HubSpot Context",
+  "answer": "This template listens for Zendesk satisfaction rating webhooks, filters for bad or good_with_comment ratings (scores 1 or 2, or 3 with negative feedback), looks up the requester in HubSpot to find the account owner and recent notes, uses an AI agent to summarize the ticket and the customer's frustration, posts a Slack alert tagging the account owner (or a fallback channel), and deduplicates alerts so the same ticket only triggers one notification per 24-hour period.",
+  "faq": [
+    {
+      "q": "Can Zendesk send CSAT alerts to Slack natively?",
+      "a": "Zendesk's Slack app posts general ticket updates but does not filter for negative satisfaction ratings, look up account context in your CRM, or deduplicate alerts. This template combines CSAT detection, HubSpot enrichment, AI summarization, and controlled Slack notifications in one workflow."
+    },
+    {
+      "q": "What counts as a bad satisfaction rating?",
+      "a": "By default, ratings of bad (1 or 2 stars) or good_with_comment (3 stars but with negative feedback text) trigger the alert. You can customize this in the filter_rating step to include only the lowest ratings or adjust the threshold."
+    },
+    {
+      "q": "How does deduplication work?",
+      "a": "The workflow tracks ticket IDs that triggered an alert in the last 24 hours using an in-memory cache per run. If you need persistent deduplication across workflow restarts, connect a Ballet data table to store alerted ticket IDs with timestamps."
+    },
+    {
+      "q": "What happens if the requester is not found in HubSpot?",
+      "a": "The workflow logs a warning and still posts the Slack alert with Zendesk ticket details only. The alert goes to the fallback channel since no account owner email is available."
+    },
+    {
+      "q": "Can I customize the AI summary?",
+      "a": "Yes. Edit the ticket-summarizer agent instructions to change the summary style, length, or focus. For example, you can emphasize action items, highlight specific frustration keywords, or include resolution suggestions."
+    }
+  ],
+  "sampleOutput": "Slack message: Negative CSAT Alert: Ticket #5678 from Sarah at Acme Corp (owned by @jane). Rating: Bad. Summary: Customer frustrated by slow response time (48 hours) and incomplete answer to API integration question. Resolution: Escalate to engineering. View ticket.",
+  "setupMinutes": 12,
+  "whatYouNeed": "Zendesk account with admin access and CSAT enabled, Zendesk API token, HubSpot account with API access, Slack workspace with bot token and chat:write scope, Slack channel for CSAT alerts",
+  "failureHandling": "The Zendesk webhook responds immediately to avoid timeouts. If HubSpot or Slack API calls fail, the workflow retries up to 3 times with exponential backoff (250ms initial delay). Failed runs appear in history with error details. Idempotency via Zendesk ticket ID prevents duplicate alerts.",
+  "nativeVsTemplate": "Use Zendesk's built-in CSAT notifications if you only need basic email alerts. Use this template when you want Slack alerts with HubSpot account context, AI-generated ticket summaries, account owner tagging, and deduplication so your CS team sees negative feedback instantly without noise.",
+  "related": ["zendesk-ticket-triage", "freshdesk-ticket-summary", "support-reply-drafter"],
+  "secrets": [
+    { "name": "ZENDESK_API_TOKEN", "description": "Zendesk API token used to register the webhook and fetch ticket details." },
+    { "name": "ZENDESK_SUBDOMAIN", "description": "Your Zendesk subdomain, for example acme for acme.zendesk.com." },
+    { "name": "HUBSPOT_ACCESS_TOKEN", "description": "HubSpot private app access token with contacts and companies scopes." },
+    { "name": "SLACK_BOT_TOKEN", "description": "Slack bot token with chat:write scope." },
+    { "name": "SLACK_CSAT_CHANNEL", "description": "Slack channel ID or name to post CSAT alerts to, for example #customer-success." }
+  ],
+  "setup": [
+    "Add the five secrets above and invite the Slack bot to the CSAT alerts channel.",
+    "Enable satisfaction ratings in Zendesk (Admin > Tickets > Satisfaction).",
+    "Publish the playbook; Ballet registers the Zendesk webhook for you.",
+    "Test by submitting a bad satisfaction rating on a test ticket and watching the run."
+  ],
+  "lastValidated": "2026-11-19"
+}

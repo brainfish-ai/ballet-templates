@@ -1,0 +1,57 @@
+{
+  "id": "stripe-failed-payment-dunning",
+  "title": "Stripe Failed Payment Dunning",
+  "summary": "Detect Stripe payment failures, apply retry and escalation rules, update HubSpot, send Slack alerts, and draft a customer email needing approval before sending.",
+  "category": "sales",
+  "tags": ["stripe", "payment", "dunning", "hubspot", "slack", "gmail", "webhook", "llm"],
+  "difficulty": "intermediate",
+  "trigger": "Stripe webhook (invoice.payment_failed)",
+  "integrations": ["stripe", "hubspot", "slack", "gmail"],
+  "primaryKeyword": "stripe failed payment slack alert hubspot",
+  "seoTitle": "Stripe Payment Failure Dunning with HubSpot and Slack",
+  "answer": "This template listens for Stripe invoice.payment_failed webhooks, applies configurable retry and escalation rules based on failure count and invoice amount, looks up the customer in HubSpot, updates a payment status property, posts a Slack alert to the account owner or billing team channel, and drafts a customer-facing email with payment retry instructions. The drafted email requires manual approval before sending, preventing automated messages from going out during sensitive situations.",
+  "faq": [
+    {
+      "q": "Can Stripe handle dunning automatically?",
+      "a": "Stripe offers Smart Retries and email templates for failed payments, but it does not integrate with your CRM, Slack alerts to account owners, or require manual approval before customer emails are sent. This template combines payment failure detection, CRM updates, team notifications, and controlled customer communication in one workflow."
+    },
+    {
+      "q": "How do retry and escalation rules work?",
+      "a": "The code step checks the failure count and invoice amount. For example, failures 1 to 2 trigger internal Slack alerts only, failure 3 sends a customer email draft for approval, and failure 4 escalates to a high-priority Slack ping with executive visibility. You can customize these rules in the apply_dunning_rules step."
+    },
+    {
+      "q": "Why does the customer email require approval?",
+      "a": "Manual approval prevents automated emails from reaching customers during disputes, temporary card issues, or when a renewal conversation is already in progress. The drafted email appears in your Gmail drafts folder for review and editing before sending."
+    },
+    {
+      "q": "What information is updated in HubSpot?",
+      "a": "The workflow updates a custom payment_status property on the contact or company record (e.g. payment_failed, retry_scheduled, escalated) and logs a note with failure details. You can create additional workflows in HubSpot that trigger on this property change."
+    },
+    {
+      "q": "What happens if the customer is not found in HubSpot?",
+      "a": "The workflow logs a warning and still posts the Slack alert with Stripe customer details. The email draft is not created since there is no contact email to address it to."
+    }
+  ],
+  "sampleOutput": "Slack message: Payment Failed: Acme Corp invoice $499 declined (3rd attempt). HubSpot updated. Customer email drafted for review in Gmail. Draft ID: 18f1a2b3c4d5e6f7.",
+  "setupMinutes": 15,
+  "whatYouNeed": "Stripe account with webhook signing secret, HubSpot account with API access and custom payment_status property, Slack workspace with bot token and chat:write scope, Gmail account connected with drafts scope",
+  "failureHandling": "The Stripe webhook responds immediately to avoid timeouts. If HubSpot, Slack, or Gmail API calls fail, the workflow retries up to 3 times with exponential backoff (250ms initial delay). Failed runs appear in history with error details. Idempotency via Stripe event ID prevents duplicate alerts and drafts.",
+  "nativeVsTemplate": "Use Stripe's built-in dunning when you only need automatic payment retries and templated emails. Use this template when you need CRM integration, Slack alerts to account owners, escalation rules tied to invoice value and failure count, and manual approval for customer emails to maintain control over sensitive billing communications.",
+  "related": ["stripe-churn-alert", "renewal-radar"],
+  "secrets": [
+    { "name": "STRIPE_WEBHOOK_SECRET", "description": "Stripe webhook signing secret from your Stripe dashboard." },
+    { "name": "STRIPE_API_KEY", "description": "Stripe secret API key starting with sk_live_ or sk_test_." },
+    { "name": "HUBSPOT_ACCESS_TOKEN", "description": "HubSpot private app access token with contacts, companies, and notes scopes." },
+    { "name": "SLACK_BOT_TOKEN", "description": "Slack bot token with chat:write scope." },
+    { "name": "SLACK_BILLING_CHANNEL", "description": "Slack channel ID or name to post payment failure alerts to, for example #billing-alerts." }
+  ],
+  "setup": [
+    "Add the five secrets above and invite the Slack bot to the billing alerts channel.",
+    "Create a custom HubSpot property called payment_status (text field) on contacts and companies.",
+    "Connect Gmail with drafts scope.",
+    "Publish the playbook and copy the webhook URL from Studio.",
+    "In Stripe dashboard, add the webhook URL and subscribe to invoice.payment_failed events.",
+    "Test by creating a test invoice with a declined test card and watching the run."
+  ],
+  "lastValidated": "2026-11-19"
+}

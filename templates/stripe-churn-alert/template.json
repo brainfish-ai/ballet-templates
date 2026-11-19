@@ -1,0 +1,55 @@
+{
+  "id": "stripe-churn-alert",
+  "title": "Stripe Churn Alert",
+  "summary": "Detect Stripe subscription cancellations, look up the customer in HubSpot, classify the churn reason with AI, and post an alert to Slack with a HubSpot note.",
+  "category": "sales",
+  "tags": ["stripe", "churn", "hubspot", "slack", "webhook", "llm"],
+  "difficulty": "beginner",
+  "trigger": "Stripe webhook (subscription updated with cancel_at_period_end)",
+  "integrations": ["stripe", "hubspot", "slack"],
+  "primaryKeyword": "stripe subscription cancelled churn alert",
+  "seoTitle": "Stripe Subscription Churn Alert to Slack and HubSpot",
+  "answer": "This template listens for Stripe subscription webhooks indicating a cancellation (when cancel_at_period_end is set), looks up the customer and company in HubSpot by email or Stripe customer ID, uses an AI agent to classify the likely churn reason from subscription metadata and customer notes, posts a Slack alert to the account owner or a designated channel, and logs the churn event as a note in HubSpot so your CS team can see the full context in one place.",
+  "faq": [
+    {
+      "q": "Can Stripe or HubSpot send churn alerts natively?",
+      "a": "Stripe can email billing events, and HubSpot offers workflow notifications, but neither combines subscription cancellation detection, AI-powered churn reason classification, Slack alerts to account owners, and automatic CRM note logging in one workflow. This template delivers instant, context-rich churn alerts."
+    },
+    {
+      "q": "How does the AI classify churn reasons?",
+      "a": "The AI agent reads the subscription plan name, cancellation feedback from Stripe metadata (if you collect it), the customer's payment history flags, and any HubSpot notes about the account, then classifies the churn as price, product, service, competitor, or other. You can customize the classification logic by editing the agent instructions."
+    },
+    {
+      "q": "What if the customer is not found in HubSpot?",
+      "a": "The workflow logs a warning and still posts the Slack alert with Stripe customer details. You can add a fallback step to create a new HubSpot contact automatically if needed."
+    },
+    {
+      "q": "How does the Slack alert identify the account owner?",
+      "a": "The workflow reads the HubSpot owner assigned to the company or contact. If a Slack user email matches the owner's HubSpot email, the alert tags that user. Otherwise, it posts to the channel you specify."
+    },
+    {
+      "q": "Does this template prevent the cancellation?",
+      "a": "No. The template notifies your team when a cancellation occurs so they can follow up before the subscription ends. Stripe still processes the cancellation at the end of the billing period."
+    }
+  ],
+  "sampleOutput": "Slack message: Churn Alert: Acme Corp cancelled Pro plan ($299/mo). Reason: Price sensitivity. Subscription ends Dec 31. HubSpot note posted. View in HubSpot.",
+  "setupMinutes": 12,
+  "whatYouNeed": "Stripe account with webhook signing secret, HubSpot account with API access, Slack workspace with bot token and chat:write scope, Slack channel for churn alerts",
+  "failureHandling": "The Stripe webhook responds immediately to avoid timeouts. If HubSpot or Slack API calls fail, the workflow retries up to 3 times with exponential backoff (250ms initial delay). Failed runs appear in history with error details. Idempotency via Stripe event ID prevents duplicate alerts.",
+  "nativeVsTemplate": "Use Stripe's built-in email notifications if you only need simple cancellation alerts. Use this template when you want AI-powered churn reason classification, Slack alerts to account owners, and automatic HubSpot logging so your CS team has full context without switching tools.",
+  "related": ["stripe-failed-payment-dunning", "renewal-radar"],
+  "secrets": [
+    { "name": "STRIPE_WEBHOOK_SECRET", "description": "Stripe webhook signing secret from your Stripe dashboard." },
+    { "name": "STRIPE_API_KEY", "description": "Stripe secret API key starting with sk_live_ or sk_test_." },
+    { "name": "HUBSPOT_ACCESS_TOKEN", "description": "HubSpot private app access token with contacts, companies, and notes scopes." },
+    { "name": "SLACK_BOT_TOKEN", "description": "Slack bot token with chat:write scope." },
+    { "name": "SLACK_CHURN_CHANNEL", "description": "Slack channel ID or name to post churn alerts to, for example #customer-success." }
+  ],
+  "setup": [
+    "Add the five secrets above and invite the Slack bot to the churn alert channel.",
+    "Publish the playbook and copy the webhook URL from Studio.",
+    "In Stripe dashboard, add the webhook URL and subscribe to customer.subscription.updated events.",
+    "Test by cancelling a test subscription and watching the run."
+  ],
+  "lastValidated": "2026-11-19"
+}

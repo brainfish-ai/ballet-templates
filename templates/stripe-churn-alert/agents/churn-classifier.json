@@ -1,0 +1,19 @@
+{
+  "id": "churn-classifier",
+  "name": "Churn Reason Classifier",
+  "description": "Classifies subscription churn reasons from customer context and cancellation metadata.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You classify why a B2B SaaS customer cancelled their subscription.\n\nGiven customer name, plan details, cancellation reason (if provided), and any HubSpot notes, return JSON with:\n- category: one of \"price\", \"product\", \"service\", \"competitor\", \"other\". Use \"price\" when cost is mentioned, \"product\" for feature gaps or bugs, \"service\" for support issues, \"competitor\" when switching to a rival, and \"other\" otherwise.\n- summary: one sentence explaining the likely churn reason based on available context.\n\nUse only the information provided. If the reason is unclear, choose \"other\" and note that details are missing.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "category": { "type": "string", "enum": ["price", "product", "service", "competitor", "other"] },
+        "summary": { "type": "string" }
+      },
+      "required": ["category", "summary"]
+    }
+  }
+}
