@@ -32,10 +32,11 @@ Agents (created for you on import; edit them in Studio):
 ## Setup
 
 1. Connect the Stripe, HubSpot, and Slack Bot integrations in Ballet once.
-2. Invite the Slack bot to your churn alert channel.
-3. Publish the playbook and copy the webhook URL from Studio.
-4. In Stripe dashboard, add the webhook URL and subscribe to customer.subscription.updated and customer.subscription.deleted events.
-5. Test by cancelling a test subscription and watching the run.
+2. In HubSpot, create a custom contact property 'stripe_churn_notes' (single-line text) under Settings > Properties > Contact Properties to store churn notes.
+3. Invite the Slack bot to your churn alert channel.
+4. Publish the playbook and copy the webhook URL from Studio.
+5. In Stripe dashboard, add the webhook URL and subscribe to customer.subscription.updated and customer.subscription.deleted events.
+6. Test by cancelling a test subscription and watching the run.
 
 ## Files
 

@@ -9,11 +9,11 @@
   "integrations": ["stripe", "hubspot", "slack_bot", "gmail"],
   "primaryKeyword": "stripe failed payment slack alert hubspot",
   "seoTitle": "Stripe Payment Failure Dunning with HubSpot and Slack",
-  "answer": "This template listens for Stripe invoice.payment_failed webhooks, applies configurable retry and escalation rules based on failure count and invoice amount, looks up the customer in HubSpot, updates a payment status property, posts a Slack alert to the account owner or billing team channel, and drafts a customer-facing email with payment retry instructions. The drafted email requires manual approval before sending, preventing automated messages from going out during sensitive situations.",
+  "answer": "This template listens for Stripe invoice.payment_failed webhooks, applies configurable retry and escalation rules based on failure count and invoice amount, looks up the customer in HubSpot, updates a payment status property, posts a Slack alert to the billing team channel with per-run deduplication, and drafts a customer-facing email with payment retry instructions. The drafted email requires manual approval before sending, preventing automated messages from going out during sensitive situations.",
   "faq": [
     {
       "q": "Can Stripe handle dunning automatically?",
-      "a": "Stripe offers Smart Retries and email templates for failed payments, but it does not integrate with your CRM, Slack alerts to account owners, or require manual approval before customer emails are sent. This template combines payment failure detection, CRM updates, team notifications, and controlled customer communication in one workflow."
+      "a": "Stripe offers Smart Retries and email templates for failed payments, but it does not integrate with your CRM, Slack alerts, or require manual approval before customer emails are sent. This template combines payment failure detection, CRM updates, team notifications, and controlled customer communication in one workflow."
     },
     {
       "q": "How do retry and escalation rules work?",
@@ -36,11 +36,12 @@
   "setupMinutes": 15,
   "whatYouNeed": "Stripe integration connected in Ballet, HubSpot integration connected with custom payment_status property on contacts and companies, Slack Bot integration connected and invited to billing alerts channel, Gmail integration connected",
   "failureHandling": "The Stripe webhook responds immediately to avoid timeouts. If HubSpot, Slack, or Gmail API calls fail, the workflow retries automatically. Failed runs appear in history with error details.",
-  "nativeVsTemplate": "Use Stripe's built-in dunning when you only need automatic payment retries and templated emails. Use this template when you need CRM integration, Slack alerts to account owners, escalation rules tied to invoice value and failure count, and manual approval for customer emails to maintain control over sensitive billing communications.",
+  "nativeVsTemplate": "Use Stripe's built-in dunning when you only need automatic payment retries and templated emails. Use this template when you need CRM integration, Slack alerts, escalation rules tied to invoice value and failure count, and manual approval for customer emails to maintain control over sensitive billing communications.",
   "related": ["stripe-churn-alert", "renewal-radar"],
   "secrets": [],
   "setup": [
     "Connect the Stripe, HubSpot, Slack Bot, and Gmail integrations in Ballet once.",
+    "In HubSpot, create a custom contact property 'stripe_payment_notes' (single-line text) under Settings > Properties > Contact Properties to store payment failure notes.",
     "Create a custom HubSpot property called payment_status (text field) on contacts and companies.",
     "Invite the Slack bot to your billing alerts channel.",
     "Publish the playbook and copy the webhook URL from Studio.",

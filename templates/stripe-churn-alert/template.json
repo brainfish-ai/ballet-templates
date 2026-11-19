@@ -9,7 +9,7 @@
   "integrations": ["stripe", "hubspot", "slack_bot"],
   "primaryKeyword": "stripe subscription cancelled churn alert",
   "seoTitle": "Stripe Subscription Churn Alert to Slack and HubSpot",
-  "answer": "This template listens for Stripe subscription webhooks indicating a cancellation (when cancel_at_period_end is set), looks up the customer and company in HubSpot by email or Stripe customer ID, uses an AI agent to classify the likely churn reason from subscription metadata and customer notes, posts a Slack alert to the account owner or a designated channel, and logs the churn event as a note in HubSpot so your CS team can see the full context in one place.",
+  "answer": "This template listens for Stripe subscription webhooks indicating a cancellation (when cancel_at_period_end is set), looks up the customer and company in HubSpot by email or Stripe customer ID, uses an AI agent to classify the likely churn reason from subscription metadata and customer notes, posts a Slack alert to a designated channel with per-run deduplication, and logs the churn event as a note in HubSpot so your CS team can see the full context in one place.",
   "faq": [
     {
       "q": "Can Stripe or HubSpot send churn alerts natively?",
@@ -24,8 +24,8 @@
       "a": "The workflow logs a warning and still posts the Slack alert with Stripe customer details. You can add a fallback step to create a new HubSpot contact automatically if needed."
     },
     {
-      "q": "How does the Slack alert identify the account owner?",
-      "a": "The workflow reads the HubSpot owner assigned to the company or contact. If a Slack user email matches the owner's HubSpot email, the alert tags that user. Otherwise, it posts to the channel you specify."
+      "q": "How does the Slack alert work?",
+      "a": "The workflow posts the alert to the channel you specify. Per-run deduplication prevents duplicate alerts within one run."
     },
     {
       "q": "Does this template prevent the cancellation?",
@@ -36,11 +36,12 @@
   "setupMinutes": 12,
   "whatYouNeed": "Stripe integration connected in Ballet, HubSpot integration connected, Slack Bot integration connected, and invite the Slack bot to your churn alert channel",
   "failureHandling": "The Stripe webhook responds immediately to avoid timeouts. If HubSpot or Slack API calls fail, the workflow retries automatically. Failed runs appear in history with error details.",
-  "nativeVsTemplate": "Use Stripe's built-in email notifications if you only need simple cancellation alerts. Use this template when you want AI-powered churn reason classification, Slack alerts to account owners, and automatic HubSpot logging so your CS team has full context without switching tools.",
+  "nativeVsTemplate": "Use Stripe's built-in email notifications if you only need simple cancellation alerts. Use this template when you want AI-powered churn reason classification, Slack alerts, and automatic HubSpot logging so your CS team has full context without switching tools.",
   "related": ["stripe-failed-payment-dunning", "renewal-radar"],
   "secrets": [],
   "setup": [
     "Connect the Stripe, HubSpot, and Slack Bot integrations in Ballet once.",
+    "In HubSpot, create a custom contact property 'stripe_churn_notes' (single-line text) under Settings > Properties > Contact Properties to store churn notes.",
     "Invite the Slack bot to your churn alert channel.",
     "Publish the playbook and copy the webhook URL from Studio.",
     "In Stripe dashboard, add the webhook URL and subscribe to customer.subscription.updated and customer.subscription.deleted events.",

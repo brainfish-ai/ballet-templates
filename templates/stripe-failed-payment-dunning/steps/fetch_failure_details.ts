@@ -27,13 +27,30 @@ if (!customerResult.ok) {
 
 const customer = customerResult.data;
 
-// Get failure reason from payment intent (read from invoice.payments array, fallback to payment_intent)
+// Get failure reason from payment intent
 let failure_reason = 'Unknown';
-const payment_intent_id = invoiceData.payments?.[0]?.id || invoiceData.payment_intent;
 
-if (payment_intent_id) {
+// First try to get payment intent from invoice_payments endpoint with expansion
+const invoicePaymentsResult = await metaphor.integration('stripe', 'api.get', {
+  path: '/v1/invoice_payments',
+  query: { 
+    invoice: invoice_id,
+    'expand[]': 'data.payment.payment_intent'
+  },
+});
+
+let paymentIntentId = null;
+
+if (invoicePaymentsResult.ok && invoicePaymentsResult.data?.data?.data?.[0]?.payment?.payment_intent) {
+  paymentIntentId = invoicePaymentsResult.data.data.data[0].payment.payment_intent;
+} else if (invoiceData.payment_intent) {
+  // Fallback to invoice.payment_intent if present
+  paymentIntentId = invoiceData.payment_intent;
+}
+
+if (paymentIntentId) {
   const paymentIntentResult = await metaphor.integration('stripe', 'paymentIntents.get', {
-    paymentIntentId: payment_intent_id,
+    paymentIntentId: typeof paymentIntentId === 'string' ? paymentIntentId : paymentIntentId.id,
   });
 
   if (paymentIntentResult.ok) {

@@ -21,18 +21,24 @@ if (skipped) {
   const target_type = contact_id ? 'contacts' : 'companies';
   
   if (target_type === 'contacts') {
-    const updateResult = await metaphor.integration('hubspot', 'contacts.update', {
-      contactId: target_id,
-      properties: {
-        stripe_churn_notes: note_body,
-      },
-    });
+    try {
+      const updateResult = await metaphor.integration('hubspot', 'contacts.update', {
+        contactId: target_id,
+        properties: {
+          stripe_churn_notes: note_body,
+        },
+      });
 
-    if (!updateResult.ok) {
-      throw new Error(`HubSpot contact update failed: ${updateResult.error?.message ?? JSON.stringify(updateResult.error)}`);
+      if (!updateResult.ok) {
+        console.warn('Failed to update HubSpot property (ensure stripe_churn_notes exists):', updateResult.error?.message ?? JSON.stringify(updateResult.error));
+        result = { logged: false, message: 'HubSpot update failed (property may not exist)' };
+      } else {
+        result = { logged: true, target_type, target_id };
+      }
+    } catch (err) {
+      console.warn('Failed to update HubSpot property (ensure stripe_churn_notes exists):', err);
+      result = { logged: false, message: 'HubSpot update failed (property may not exist)' };
     }
-
-    result = { logged: true, target_type, target_id };
   } else {
     // For companies, we just log that we can't update
     result = { logged: false, message: 'Cannot update company properties via contacts.update. Contact only supported.' };

@@ -1,3 +1,6 @@
+// Note: Generic HubSpot webhooks send an array with objectId.
+// For generic webhook: const deal_id = Array.isArray(input_data) ? input_data[0]?.objectId : input_data.deal_id;
+
 const { deal_id, cs_team_emails } = input_data as { 
   deal_id: string;
   cs_team_emails?: string[];

@@ -42,16 +42,20 @@ if (customer_email && customer_email !== 'unknown') {
 if (contact_id) {
   // Update contact payment status (user must create custom 'payment_status' property in HubSpot)
   // Also update a custom property for notes since api.get POST doesn't work
-  const updateResult = await metaphor.integration('hubspot', 'contacts.update', {
-    contactId: contact_id,
-    properties: {
-      payment_status,
-      stripe_payment_notes: `Stripe Payment Failure\n\n${failure_summary}\n\nLogged automatically by Ballet.`,
-    },
-  });
+  try {
+    const updateResult = await metaphor.integration('hubspot', 'contacts.update', {
+      contactId: contact_id,
+      properties: {
+        payment_status,
+        stripe_payment_notes: `Stripe Payment Failure\n\n${failure_summary}\n\nLogged automatically by Ballet.`,
+      },
+    });
 
-  if (!updateResult.ok) {
-    throw new Error(`HubSpot contact update failed: ${updateResult.error?.message ?? JSON.stringify(updateResult.error)}`);
+    if (!updateResult.ok) {
+      console.warn('Failed to update HubSpot property (ensure stripe_payment_notes exists):', updateResult.error?.message ?? JSON.stringify(updateResult.error));
+    }
+  } catch (err) {
+    console.warn('Failed to update HubSpot property (ensure stripe_payment_notes exists):', err);
   }
 }
 

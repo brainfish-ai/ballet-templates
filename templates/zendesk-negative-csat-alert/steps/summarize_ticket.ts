@@ -1,4 +1,4 @@
-const { ticket, rating_comment, hubspot_notes } = input_data as {
+const { ticket, rating_comment, hubspot_notes, skipped } = input_data as {
   ticket: {
     ticket_id: string;
     subject: string;
@@ -9,7 +9,14 @@ const { ticket, rating_comment, hubspot_notes } = input_data as {
   };
   rating_comment?: string;
   hubspot_notes?: string;
+  skipped?: boolean;
 };
+
+let result;
+
+if (skipped) {
+  result = { skipped: true, summary: '', suggested_action: '', slack_message: '' };
+} else {
 
 const prompt = `Ticket #${ticket.ticket_id}: ${ticket.subject}
 Description: ${ticket.description}
@@ -27,8 +34,9 @@ const suggested_action = String(res?.suggested_action ?? 'Follow up with the cus
 
 const slack_message = `:warning: *Negative CSAT Alert*\n*Ticket*: #${ticket.ticket_id} - ${ticket.subject}\n*Priority*: ${ticket.priority}\n*Feedback*: ${rating_comment ?? 'No comment'}\n*Summary*: ${summary}\n*Suggested Action*: ${suggested_action}\nView ticket: ${ticket.ticket_url}`;
 
-const result = {
-  summary,
-  suggested_action,
-  slack_message,
-};
+  result = {
+    summary,
+    suggested_action,
+    slack_message,
+  };
+}

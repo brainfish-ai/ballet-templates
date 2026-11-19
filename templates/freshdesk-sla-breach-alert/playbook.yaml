@@ -16,8 +16,12 @@ spec:
       slack_channel:
         type: string
         description: "Slack channel ID or name to post alerts to, for example #support-escalations."
+      freshdesk_domain:
+        type: string
+        description: "Your Freshdesk domain (e.g. company.freshdesk.com)"
     required:
       - slack_channel
+      - freshdesk_domain
   steps:
     - id: check_sla
       type: code
@@ -39,6 +43,7 @@ spec:
       input:
         tickets: "{{ steps.check_sla.output.tickets }}"
         slack_channel: "{{ flow.input.slack_channel }}"
+        freshdesk_domain: "{{ flow.input.freshdesk_domain }}"
       output:
         variable: result
         format: json

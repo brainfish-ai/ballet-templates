@@ -32,11 +32,12 @@ Agents (created for you on import; edit them in Studio):
 ## Setup
 
 1. Connect the Stripe, HubSpot, Slack Bot, and Gmail integrations in Ballet once.
-2. Create a custom HubSpot property called payment_status (text field) on contacts and companies.
-3. Invite the Slack bot to your billing alerts channel.
-4. Publish the playbook and copy the webhook URL from Studio.
-5. In Stripe dashboard, add the webhook URL and subscribe to invoice.payment_failed events.
-6. Test by creating a test invoice with a declined test card and watching the run.
+2. In HubSpot, create a custom contact property 'stripe_payment_notes' (single-line text) under Settings > Properties > Contact Properties to store payment failure notes.
+3. Create a custom HubSpot property called payment_status (text field) on contacts and companies.
+4. Invite the Slack bot to your billing alerts channel.
+5. Publish the playbook and copy the webhook URL from Studio.
+6. In Stripe dashboard, add the webhook URL and subscribe to invoice.payment_failed events.
+7. Test by creating a test invoice with a declined test card and watching the run.
 
 ## Files
 

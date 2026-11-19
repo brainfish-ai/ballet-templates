@@ -1,7 +1,7 @@
 {
   "id": "freshdesk-sla-breach-alert",
   "title": "Freshdesk SLA Breach Alert",
-  "summary": "Scheduled check of Freshdesk tickets near or over SLA, deduplicates already-alerted tickets, sends Slack alert to owner or channel.",
+  "summary": "Scheduled check of Freshdesk tickets near or over SLA, with per-run deduplication, sends Slack alert to owner or channel.",
   "category": "support",
   "tags": ["freshdesk", "support", "sla", "slack", "schedule"],
   "difficulty": "beginner",
@@ -9,7 +9,7 @@
   "integrations": ["freshdesk", "slack_bot"],
   "primaryKeyword": "freshdesk sla breach slack notification",
   "seoTitle": "Freshdesk SLA Breach Alerts to Slack in Real Time",
-  "answer": "This template queries Freshdesk for open tickets within 2 hours of their SLA due date or already overdue, deduplicates tickets already alerted in the last 24 hours, then posts Slack notifications to a designated channel with breach countdown or overdue hours. Attach a schedule in Studio (for example every 15 minutes) so support managers see which tickets need immediate attention to avoid SLA violations and maintain service commitments.",
+  "answer": "This template queries Freshdesk for open tickets within 2 hours of their SLA due date or already overdue, with per-run deduplication to prevent duplicate alerts within one run, then posts Slack notifications to a designated channel with breach countdown or overdue hours. Attach a schedule in Studio (for example every 15 minutes) so support managers see which tickets need immediate attention to avoid SLA violations and maintain service commitments.",
   "faq": [
     {
       "q": "Can Freshdesk send SLA breach alerts to Slack natively?",

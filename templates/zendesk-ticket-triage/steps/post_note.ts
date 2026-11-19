@@ -4,11 +4,23 @@ const { ticket_id, priority, tags } = input_data as {
   tags: string[];
 };
 
+// Get existing ticket to read current tags
+const ticketResult = await metaphor.integration('zendesk', 'tickets.get', {
+  id: parseInt(ticket_id, 10),
+});
+
+if (!ticketResult.ok) {
+  throw new Error(`Failed to fetch ticket: ${ticketResult.error?.message ?? JSON.stringify(ticketResult.error)}`);
+}
+
+const existingTags = ticketResult.data?.ticket?.tags || [];
+const mergedTags = [...new Set([...existingTags, ...tags])];
+
 // Update ticket priority and tags (flat structure, not nested)
 const updateResult = await metaphor.integration('zendesk', 'tickets.update', {
   id: parseInt(ticket_id, 10),
   priority,
-  tags,
+  tags: mergedTags,
 });
 
 if (!updateResult.ok) {
@@ -30,5 +42,5 @@ const result = {
   updated: true,
   ticket_id,
   priority,
-  tags,
+  tags: mergedTags,
 };

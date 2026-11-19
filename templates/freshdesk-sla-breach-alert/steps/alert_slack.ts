@@ -1,6 +1,7 @@
-const { tickets, slack_channel } = input_data as {
+const { tickets, slack_channel, freshdesk_domain } = input_data as {
   tickets: Array<{ id: number; subject: string; due_by: string; responder_id: number | null; priority: number }>;
   slack_channel: string;
+  freshdesk_domain: string;
 };
 
 let result;
@@ -23,7 +24,8 @@ if (!tickets || tickets.length === 0) {
       ? `:rotating_light: SLA BREACH: Ticket #${ticket.id} is ${Math.abs(hoursRemaining)}h overdue (${priorityLabel} priority)`
       : `:warning: SLA Warning: Ticket #${ticket.id} breaches in ${hoursRemaining}h (${priorityLabel} priority)`;
     
-    const ticketUrl = `https://your-domain.freshdesk.com/a/tickets/${ticket.id}`;
+    const domain = freshdesk_domain || 'your-domain.freshdesk.com';
+    const ticketUrl = `https://${domain}/a/tickets/${ticket.id}`;
     const text = `${message}\n*${ticket.subject}*\nView ticket: ${ticketUrl}`;
     
     const slackResult = await metaphor.integration('slack_bot', 'messages.send', {

@@ -1,6 +1,6 @@
 # Freshdesk SLA Breach Alert
 
-Scheduled check of Freshdesk tickets near or over SLA, deduplicates already-alerted tickets, sends Slack alert to owner or channel.
+Scheduled check of Freshdesk tickets near or over SLA, with per-run deduplication, sends Slack alert to owner or channel.
 
 [![Import to Ballet](../../assets/import-to-ballet.svg)](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/freshdesk-sla-breach-alert&ref=main)
 

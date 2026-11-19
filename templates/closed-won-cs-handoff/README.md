@@ -34,7 +34,7 @@ Agents (created for you on import; edit them in Studio):
 
 1. Connect the HubSpot, Slack Bot, and Google Drive integrations in Ballet once.
 2. Publish the playbook and copy the webhook URL from Studio.
-3. In HubSpot, create a workflow that triggers when deal stage changes to closed won and sends a webhook to the Ballet URL with deal_id, deal_name, close_date, arr, owner_email fields.
+3. In HubSpot, create a workflow that triggers when deal stage changes to closed won. The workflow should send a webhook to the Ballet URL. If using a generic HubSpot webhook, the payload will be an array like [{ objectId: '123', ... }]. Add a mapping step that extracts flow.input[0].objectId, calls hubspot deals.get to fetch deal details including deal_name, and passes cs_team_emails from the playbook input.
 4. Test with a deal moved to closed won.
 5. When the approval step appears, review the handoff summary and approve to proceed with team invites and document creation.
 

@@ -35,14 +35,14 @@
   "sampleOutput": "Slack channel cs-acme-corp created. Message posted: CS Handoff Summary. Welcome to Acme Corp! ARR: $48,000, closed Nov 15, 2026. High priority account. Success criteria: Complete onboarding by Dec 15, schedule executive business review in Q1, identify 2 expansion opportunities. Note: Champion is the VP of Ops, keep them engaged.",
   "setupMinutes": 20,
   "whatYouNeed": "HubSpot integration connected in Ballet, Slack Bot integration connected with channels:manage, conversations:write, users:read.email scopes, Google Drive integration connected",
-  "failureHandling": "The workflow fails if required HubSpot fields are missing, stopping before the Slack channel is created. If Slack channel creation fails (duplicate name), the run logs the error. If approval is denied, the CS team is not invited. No automatic retries; you can manually rerun the playbook after fixing issues.",
+  "failureHandling": "The workflow stops with an error if required fields are missing or API calls fail. Errors appear in run history for review and manual retry.",
   "nativeVsTemplate": "Use HubSpot's built-in workflows if you only need to send email notifications or create tasks when a deal closes. Use this template when you want AI-generated handoff context, Slack channel automation, Google Drive documentation, and a human-in-the-loop approval gate to ensure quality handoffs from sales to customer success.",
   "related": ["salesforce-lead-enrichment", "renewal-radar", "account-icp-scoring"],
   "secrets": [],
   "setup": [
     "Connect the HubSpot, Slack Bot, and Google Drive integrations in Ballet once.",
     "Publish the playbook and copy the webhook URL from Studio.",
-    "In HubSpot, create a workflow that triggers when deal stage changes to closed won and sends a webhook to the Ballet URL with deal_id, deal_name, close_date, arr, owner_email fields.",
+    "In HubSpot, create a workflow that triggers when deal stage changes to closed won. The workflow should send a webhook to the Ballet URL. If using a generic HubSpot webhook, the payload will be an array like [{ objectId: '123', ... }]. Add a mapping step that extracts flow.input[0].objectId, calls hubspot deals.get to fetch deal details including deal_name, and passes cs_team_emails from the playbook input.",
     "Test with a deal moved to closed won.",
     "When the approval step appears, review the handoff summary and approve to proceed with team invites and document creation."
   ],

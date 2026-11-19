@@ -4,20 +4,26 @@ const eventType = webhook.event || webhook.type || '';
 const subscription = webhook.object || {};
 const previous = webhook.raw?.previous_attributes || webhook.raw?.data?.previous_attributes || {};
 
-// Check if this is a cancellation event - only alert when cancel_at_period_end changed false->true
-const isDeleted = eventType === 'customer.subscription.deleted';
-const wasCancelledJustNow = subscription.cancel_at_period_end === true && previous.cancel_at_period_end === false;
-const isCancellation = isDeleted || wasCancelledJustNow;
-
-let result;
-
-if (!isCancellation) {
+// For customer.subscription.deleted, skip if cancel_at_period_end was already true
+if (eventType === 'customer.subscription.deleted' && subscription.cancel_at_period_end === true) {
   result = {
     skipped: true,
-    reason: 'Not a cancellation event or cancel_at_period_end was already true',
-    event_type: eventType,
+    reason: 'Subscription deleted but cancellation was already scheduled (already alerted)',
   };
-} else {
+} else if (eventType === 'customer.subscription.updated') {
+  // For customer.subscription.updated, only alert when cancel_at_period_end changed false -> true
+  const isCancelled = subscription.cancel_at_period_end === true || subscription.status === 'canceled';
+  const wasAlreadyCancelled = previous.cancel_at_period_end === true;
+  
+  if (!isCancelled || wasAlreadyCancelled) {
+    result = {
+      skipped: true,
+      reason: 'Not a new cancellation',
+    };
+  }
+}
+
+if (!result) {
 
   const subscription_id = subscription.id;
   const customer_id = subscription.customer;
@@ -39,6 +45,12 @@ if (!isCancellation) {
   const period_end = subscription.current_period_end ?? subscription.items?.data?.[0]?.current_period_end ?? subscription.ended_at;
   const subscription_end = period_end ? new Date(period_end * 1000).toISOString() : 'N/A';
 
+  const cancellation_reason = subscription.cancellation_details?.feedback 
+    || subscription.cancellation_details?.comment 
+    || subscription.cancellation_details?.reason 
+    || subscription.metadata?.cancellation_reason 
+    || 'not provided';
+
   result = {
     skipped: false,
     subscription_id,
@@ -49,6 +61,6 @@ if (!isCancellation) {
     amount: plan?.amount || 0,
     currency: plan?.currency?.toUpperCase() || 'USD',
     subscription_end,
-    cancellation_reason: subscription.cancellation_details?.reason || subscription.metadata?.cancellation_reason || 'not provided',
+    cancellation_reason,
   };
 }
