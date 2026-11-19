@@ -7,6 +7,37 @@
   "difficulty": "beginner",
   "trigger": "Zendesk webhook (ticket created)",
   "integrations": ["zendesk"],
+  "primaryKeyword": "zendesk ai ticket triage template",
+  "seoTitle": "Auto-Triage Zendesk Tickets with AI Priority Tags",
+  "answer": "This template automatically classifies new Zendesk support tickets using an AI agent that reads the subject and description, assigns a priority level (low, normal, high, urgent), and tags the ticket based on topic, then posts the classification as an internal note. The workflow runs via Zendesk webhook the moment a ticket is created, ensuring instant triage without manual review.",
+  "faq": [
+    {
+      "q": "Can Zendesk do AI ticket triage natively?",
+      "a": "Zendesk offers basic automation triggers and macros, but it does not include built-in AI classification that reads ticket content and assigns priority and tags in one step. This template uses a custom LLM agent to deliver instant, context-aware triage."
+    },
+    {
+      "q": "What information does the AI use to classify tickets?",
+      "a": "The AI agent reads the ticket subject and description sent via webhook. You can customize the classification instructions in the agent config to match your support categories and priority rules."
+    },
+    {
+      "q": "How fast does the triage run after a ticket is created?",
+      "a": "The Zendesk webhook triggers the workflow within seconds of ticket creation. The AI classification typically completes in 1 to 3 seconds, and the priority and tags are written back immediately."
+    },
+    {
+      "q": "What happens if the AI cannot classify a ticket?",
+      "a": "The workflow includes retry logic with exponential backoff. If classification fails after 3 attempts, the ticket remains untagged and you will see the error in the run history. You can configure fallback rules or alerts."
+    },
+    {
+      "q": "Can I customize the priority levels and tags?",
+      "a": "Yes. Edit the ticket-classifier agent instructions to define your own priority rules and tag taxonomy. The agent will follow your custom classification logic."
+    }
+  ],
+  "sampleOutput": "Internal note posted to Zendesk ticket: Auto-triage tags: billing, urgent, needs-engineering-review",
+  "setupMinutes": 10,
+  "whatYouNeed": "Zendesk account with admin access, Zendesk API token, Zendesk subdomain",
+  "failureHandling": "The HTTP step retries up to 3 times with exponential backoff (250ms initial delay). If webhook registration fails, Ballet logs the error and you can republish the playbook. Failed classification runs appear in run history with error details.",
+  "nativeVsTemplate": "Use Zendesk's built-in triggers if you only need simple keyword-based routing or priority rules. Use this template when you want AI-powered classification that understands ticket context, learns from your custom instructions, and adapts to complex triage logic that cannot be expressed in Zendesk's rule builder.",
+  "related": ["freshdesk-ticket-summary", "support-reply-drafter", "l1-ticket-triage"],
   "secrets": [
     { "name": "ZENDESK_API_TOKEN", "description": "Zendesk API token used to register the webhook and update tickets." },
     { "name": "ZENDESK_SUBDOMAIN", "description": "Your Zendesk subdomain, for example `acme` for acme.zendesk.com." }
@@ -15,5 +46,6 @@
     "Connect Zendesk and add the two secrets above.",
     "Publish the playbook; Ballet registers the Zendesk webhook for you.",
     "Create a test ticket and watch the run in Studio."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

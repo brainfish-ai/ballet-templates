@@ -7,6 +7,37 @@
   "difficulty": "intermediate",
   "trigger": "Manual run, or attach a weekly schedule in Studio",
   "integrations": [],
+  "primaryKeyword": "linear slack digest mcp",
+  "seoTitle": "Linear Weekly Digest to Slack via MCP",
+  "answer": "This template calls the Linear MCP server to fetch issues updated in the last 7 days for a specified team, uses an AI agent to write a short weekly digest summarizing issue counts, status changes and top priorities, then posts the digest to a Slack channel via the Slack MCP server. The workflow demonstrates MCP server integration and can be scheduled to run weekly for automatic team updates.",
+  "faq": [
+    {
+      "q": "Can Linear or Slack send digests natively?",
+      "a": "Linear offers notification settings and Slack can receive webhook posts, but they do not combine to produce AI-summarized weekly digests. This template uses MCP servers to read Linear data and post to Slack with custom formatting in one workflow."
+    },
+    {
+      "q": "What is an MCP server?",
+      "a": "MCP (Model Context Protocol) servers expose tools that AI agents can call to read and write data in external services like Linear, Slack, GitHub and more. This template shows how to use two MCP servers in one playbook."
+    },
+    {
+      "q": "How do I connect Linear and Slack MCP servers?",
+      "a": "In Ballet Studio, open MCP Servers and connect Linear and Slack from the registry using OAuth. No API keys to paste. Keep the server IDs as linear and slack so the playbook can reference them."
+    },
+    {
+      "q": "What if my MCP server tool names differ?",
+      "a": "MCP server schemas evolve. If your Linear or Slack server uses different tool names or arguments, check Studio's tool list for the exact schema and update the calls in steps/fetch_issues.ts and steps/post_digest.ts."
+    },
+    {
+      "q": "Can I schedule this to run weekly?",
+      "a": "Yes. Add a weekly schedule trigger to the playbook in Studio (for example, every Monday at 9am). The digest will be posted to Slack automatically each week."
+    }
+  ],
+  "sampleOutput": "Slack message in #engineering: Linear Weekly Digest for ENG team: 12 issues updated, 5 completed, 3 in progress, 4 new. Top priority: API performance fixes. Built by the Brainfish team.",
+  "setupMinutes": 10,
+  "whatYouNeed": "Linear MCP server connected (OAuth), Slack MCP server connected (OAuth), Linear team key, Slack channel ID",
+  "failureHandling": "If the Linear MCP server call fails, the workflow logs the error and stops. If the Slack MCP server call fails, the digest is not posted and the error is logged. No built-in retries since MCP server errors are often authentication or permission issues. Check run history for failure details.",
+  "nativeVsTemplate": "Use Linear's built-in notifications when you only need individual issue updates. Use this template when you want a weekly AI-summarized digest that combines issue counts, status changes and priorities in one Slack message, and you want to demonstrate MCP server integration.",
+  "related": ["mcp-slack-thread-to-linear", "daily-api-digest-slack"],
   "mcpServers": [
     { "id": "linear", "tools": ["list_issues"] },
     { "id": "slack", "tools": ["slack_send_message"] }
@@ -17,5 +48,6 @@
     "Run the playbook with your team key and a Slack channel id.",
     "If a tool name or argument differs in your MCP server version, adjust the call in steps/*.ts (use Studio's tool list for the exact names).",
     "Add a weekly schedule once the output looks right."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

@@ -7,6 +7,37 @@
   "difficulty": "intermediate",
   "trigger": "Salesforce webhook (Lead created)",
   "integrations": ["salesforce"],
+  "primaryKeyword": "salesforce lead enrichment automation",
+  "seoTitle": "Salesforce Lead Enrichment with AI Research",
+  "answer": "This template receives a webhook when a Lead is created in Salesforce (via a Salesforce Flow you configure), searches the web to research the company's business model, recent news and market position, uses an AI agent to write a short brief and fit score, then writes the brief to the Lead's Description field and the rating to the Rating field via the Salesforce API. The workflow retries updates up to 3 times and authenticates the webhook with a bearer token.",
+  "faq": [
+    {
+      "q": "Can Salesforce enrich leads natively?",
+      "a": "Salesforce offers Data.com (deprecated) and third-party enrichment apps that add firmographic data, but they do not include AI research that reads a company's website and writes a custom brief and fit score. This template delivers contextual enrichment with your own scoring logic."
+    },
+    {
+      "q": "How do I set up the Salesforce webhook?",
+      "a": "In Salesforce, create a Flow triggered on Lead creation that sends an HTTP POST to the playbook's webhook URL with lead_id, company, email, and title in the request body. Set the Authorization header to Bearer YOUR_SALESFORCE_WEBHOOK_TOKEN."
+    },
+    {
+      "q": "What is included in the brief?",
+      "a": "The AI agent writes a 2-3 sentence brief summarizing what the company does, who they serve, and why they might be a fit for your product. Edit the write_brief step agent instructions to customize the brief format and scoring criteria."
+    },
+    {
+      "q": "What is the Rating field?",
+      "a": "Salesforce's standard Lead Rating field (Hot, Warm, Cold). The AI agent assigns a rating based on company fit, or you can map the fit score to your own custom field by editing the update_lead step."
+    },
+    {
+      "q": "What happens if web search or Salesforce API fails?",
+      "a": "If company research fails, the brief notes that research was unavailable and the rating defaults to Cold. The Salesforce update step retries up to 3 times with exponential backoff. If all retries fail, the error is logged and the Lead remains unenriched."
+    }
+  ],
+  "sampleOutput": "Lead Description updated: Acme Corp is a B2B SaaS platform for project management, serving mid-market teams. Raised $10M Series A in Q3 2026. Good fit for collaboration features. Rating: Warm. Built by the Brainfish team.",
+  "setupMinutes": 15,
+  "whatYouNeed": "Salesforce instance URL, Salesforce OAuth access token with Lead update permission, bearer token for webhook authentication, Salesforce Flow configured to send Lead data on creation",
+  "failureHandling": "If web search or company research fails, the brief notes this and the rating defaults to Cold. The Salesforce update HTTP step retries up to 3 times with exponential backoff starting at 500ms. If all retries fail, the workflow logs the error and the Lead remains unenriched. Check run history for failures.",
+  "nativeVsTemplate": "Use Salesforce enrichment apps when you only need firmographic data (employee count, industry, revenue). Use this template when you want AI-powered research that reads a company's website, understands their business, and writes a custom brief and fit score based on your own criteria.",
+  "related": ["account-icp-scoring", "crm-hygiene"],
   "secrets": [
     { "name": "SALESFORCE_WEBHOOK_TOKEN", "description": "Bearer token Salesforce sends in the Authorization header when calling the webhook." },
     { "name": "SALESFORCE_INSTANCE_URL", "description": "Your instance URL, for example `https://acme.my.salesforce.com`." },
@@ -17,5 +48,6 @@
     "Publish the playbook and copy its webhook URL.",
     "In Salesforce, create a Flow on Lead creation that sends an outbound message or HTTP callout with lead_id, company, email and title.",
     "Create a test Lead and check the Description field."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

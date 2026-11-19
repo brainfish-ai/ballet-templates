@@ -8,6 +8,37 @@
   "difficulty": "intermediate",
   "trigger": "Manual run (deal property name, lookback in days)",
   "integrations": ["hubspot"],
+  "primaryKeyword": "win loss competitor analysis",
+  "seoTitle": "HubSpot Win Loss by Competitor with AI",
+  "answer": "This template reads up to 1,000 closed deals from your HubSpot portal in the last 90 days (configurable), groups them by a competitor property you specify, calculates win rate and total revenue per competitor, and uses an AI agent to identify the top won and lost reasons from HubSpot's closed_won_reason and closed_lost_reason fields. The report shows where you win, where you lose, and what to change to improve competitive positioning.",
+  "faq": [
+    {
+      "q": "Can HubSpot analyze win loss by competitor natively?",
+      "a": "HubSpot reports can show deal outcomes, but they do not group by competitor, calculate win rates per competitor, and summarize the top reasons you win or lose against each one. This template delivers a complete competitive win loss analysis with actionable insights."
+    },
+    {
+      "q": "How does the template know which deals competed against which competitor?",
+      "a": "You provide the internal name of the HubSpot deal property that records the competitor (for example competitor or primary_competitor). The template reads that property on every closed deal. Deals where it is empty are counted under No competitor recorded."
+    },
+    {
+      "q": "What if my team does not use closed_won_reason and closed_lost_reason?",
+      "a": "The template reads HubSpot's standard closed_won_reason and closed_lost_reason properties. If your team uses different property names, edit the load_deals step to reference your custom fields."
+    },
+    {
+      "q": "Can I analyze more than 1,000 deals?",
+      "a": "The template reads up to 1,000 closed deals per run to keep execution fast. To analyze more, increase the limit in the load_deals step code or run the template multiple times with different date ranges."
+    },
+    {
+      "q": "How do I schedule this to run monthly?",
+      "a": "Add a monthly schedule trigger to the playbook and set the competitor property and lookback days as default inputs. The report will appear in run history each month. You can email it by adding a final email step."
+    }
+  ],
+  "sampleOutput": "Win Loss Report: 90 days, 47 closed deals. vs Acme: 12 deals, 67% win rate, $240K won. Top won reason: faster onboarding. Top lost reason: price. vs Rival.io: 8 deals, 25% win rate, $80K won. Top lost reason: more integrations. Recommendation: Improve integration story against Rival.io. Built by the Brainfish team.",
+  "setupMinutes": 5,
+  "whatYouNeed": "HubSpot connected, internal name of the deal property that records competitor, closed_won_reason and closed_lost_reason properties populated on deals",
+  "failureHandling": "If HubSpot API calls fail, the workflow logs the error and stops. No retries since this is a manual run. Deals with an empty competitor property are counted under No competitor recorded. If no deals have closed_won_reason or closed_lost_reason, the report notes this.",
+  "nativeVsTemplate": "Use HubSpot reports when you only need to see aggregate win rates or deal counts. Use this template when you want a competitive win loss analysis grouped by competitor, with AI-summarized reasons you win or lose and recommendations on what to change to improve competitive positioning.",
+  "related": ["competitor-teardown", "competitor-watch"],
   "secrets": [],
   "setup": [
     "Import the template and connect HubSpot.",
@@ -19,5 +50,6 @@
     "The competitor comes from one deal property you name. Deals where it is empty are counted under \"No competitor recorded\"; if it is empty on every deal, the report says so instead of guessing.",
     "Won and lost reasons come from HubSpot's `closed_won_reason` and `closed_lost_reason` properties.",
     "Reads up to 1,000 closed deals per run."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

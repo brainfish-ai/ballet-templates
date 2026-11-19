@@ -7,6 +7,37 @@
   "difficulty": "beginner",
   "trigger": "Freshdesk webhook (ticket created)",
   "integrations": ["freshdesk"],
+  "primaryKeyword": "freshdesk ai ticket summary automation",
+  "seoTitle": "Auto-Summarize Freshdesk Tickets with AI Private Notes",
+  "answer": "This template runs when a new Freshdesk ticket is created, reads the subject and description, generates a three-bullet AI summary highlighting the customer's issue, context, and any action items, then posts the summary as a private note visible only to support agents. The summary helps agents triage and respond faster without reading long ticket descriptions.",
+  "faq": [
+    {
+      "q": "Can Freshdesk summarize tickets natively?",
+      "a": "Freshdesk does not include built-in AI summarization. It offers canned responses and macros, but those do not auto-generate context-aware summaries from ticket content. This template uses a custom LLM agent to create instant summaries."
+    },
+    {
+      "q": "Are the summaries visible to customers?",
+      "a": "No. The summaries are added as private notes, visible only to support agents in your Freshdesk workspace. Customers never see them."
+    },
+    {
+      "q": "How fast does the summary appear after a ticket is created?",
+      "a": "The Freshdesk automation rule triggers the webhook immediately on ticket creation. The AI summary typically completes in 1 to 3 seconds, and the private note is written back within 5 seconds total."
+    },
+    {
+      "q": "Can I customize what the summary includes?",
+      "a": "Yes. Edit the ticket-summarizer agent instructions to change the summary format, tone, or content. You can ask for more bullets, sentiment analysis, urgency flags, or specific topics to highlight."
+    },
+    {
+      "q": "What happens if the API call to Freshdesk fails?",
+      "a": "The HTTP step retries up to 3 times with exponential backoff. If all retries fail, the error appears in run history. The ticket remains in Freshdesk without the summary note, and you can manually rerun the playbook."
+    }
+  ],
+  "sampleOutput": "Private note in Freshdesk: AI Summary: Customer cannot log in after password reset. Tried clearing cache. Using Chrome on Windows. Action: Check password reset flow and verify email delivery logs.",
+  "setupMinutes": 15,
+  "whatYouNeed": "Freshdesk account with admin access, Freshdesk API key, Freshdesk automation rule configured to call webhook on ticket creation",
+  "failureHandling": "The HTTP step retries up to 3 times with exponential backoff (250ms initial delay). If Freshdesk webhook validation fails, Ballet rejects the request. If summarization or note posting fails, the run appears in history with error details.",
+  "nativeVsTemplate": "Use Freshdesk canned responses if you need pre-written replies. Use this template when you want AI-generated summaries tailored to each ticket's content, saving agents time on long or complex tickets where reading the full description slows triage.",
+  "related": ["zendesk-ticket-triage", "support-reply-drafter", "l1-ticket-triage"],
   "secrets": [
     { "name": "FRESHDESK_WEBHOOK_SECRET", "description": "Shared secret used to verify inbound Freshdesk webhooks (HMAC-SHA256)." },
     { "name": "FRESHDESK_DOMAIN", "description": "Your Freshdesk subdomain, for example `acme` for acme.freshdesk.com." },
@@ -18,5 +49,6 @@
     "Publish the playbook and copy its webhook URL from Studio.",
     "In Freshdesk, create an automation rule on ticket creation that calls the webhook with the ticket fields.",
     "Create a test ticket and watch the run in Studio."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

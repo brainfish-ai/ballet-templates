@@ -8,6 +8,37 @@
   "difficulty": "beginner",
   "trigger": "Manual run (list of competitors); schedule it weekly",
   "integrations": ["google-calendar", "gmail"],
+  "primaryKeyword": "competitor watch battlecard digest",
+  "seoTitle": "Weekly Competitor News & Meeting Battlecards via AI",
+  "answer": "This template searches the web for news about up to 5 competitors from the last 7 days, matches your Google Calendar meetings in the next 7 days where a competitor is mentioned (by attendee domain or meeting title), then generates a weekly digest email with competitor updates and a battlecard for each matched meeting. Battlecards include positioning, differentiation points and objection handling tailored to that competitor.",
+  "faq": [
+    {
+      "q": "Can competitive intelligence tools create meeting battlecards natively?",
+      "a": "Most competitive intelligence platforms deliver weekly digests, but they do not connect to your calendar to generate context-specific battlecards for upcoming sales calls. This template links intelligence gathering to meeting prep in one workflow."
+    },
+    {
+      "q": "How are meetings matched to competitors?",
+      "a": "The workflow scans your Google Calendar for events in the next 7 days where an attendee email domain or the meeting title contains a competitor name. Simple string matching can miss meetings or produce false positives, so review the list."
+    },
+    {
+      "q": "What information is included in a battlecard?",
+      "a": "Each battlecard includes the meeting time, attendees, competitor name, their positioning, your differentiation angles, common objections and handling tips. Edit the competitor-watch-analyst agent to add or change sections."
+    },
+    {
+      "q": "Can I track more than 5 competitors?",
+      "a": "The template supports up to 5 competitors and 10 battlecards per run to keep execution fast. For more competitors, run it multiple times or increase the limits in the code steps."
+    },
+    {
+      "q": "How do I schedule this to run automatically?",
+      "a": "Add a weekly schedule trigger to the playbook (for example, every Monday at 8am), set your competitor list as the default input, and the digest will be emailed to you or your team automatically."
+    }
+  ],
+  "sampleOutput": "Email subject: Competitor Watch for Nov 18-25. Body: Acme launched AI-powered search this week. Rival.io announced $20M Series B. Upcoming meetings: Nov 20 10am with BigCorp (Acme mentioned). Battlecard: Acme positions on speed, we differentiate on accuracy. Handle objection: They have more integrations by highlighting our API flexibility.",
+  "setupMinutes": 5,
+  "whatYouNeed": "Google Calendar connected, Gmail connected, list of up to 5 competitor names or websites",
+  "failureHandling": "The workflow does not retry on failure since it is a manual or scheduled run. If web search, calendar or Gmail API calls fail, the error appears in run history and the digest is not sent. Competitors with no news in the last 7 days appear with a note in the digest.",
+  "nativeVsTemplate": "Use a competitive intelligence platform when you only need news monitoring. Use this template when you want automated digest emails plus meeting-specific battlecards that connect competitor intelligence to your calendar, saving your sales and marketing teams prep time before every competitive call.",
+  "related": ["competitor-teardown", "win-loss-by-competitor", "meeting-prep-brief"],
   "secrets": [],
   "setup": [
     "Import the template and connect Google Calendar and Gmail.",
@@ -20,5 +51,6 @@
     "Reports the last 7 days of news on every run. Templates can't keep state between runs yet, so it can't show only what changed since the last digest.",
     "A meeting gets a battlecard when an attendee's email domain or the meeting title matches a competitor. Matching on names is simple and can miss meetings or flag the wrong ones.",
     "Up to 5 competitors and 10 battlecards per run, to keep the run fast."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }
