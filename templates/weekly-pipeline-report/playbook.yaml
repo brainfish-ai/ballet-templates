@@ -18,7 +18,10 @@ spec:
         description: Google Sheet ID for historical tracking (from the sheet URL)
       slack_channel:
         type: string
-        description: Slack channel ID or name for pipeline reports (e.g. #sales-pipeline)
+        description: "Slack channel ID or name for pipeline reports (e.g. #sales-pipeline)"
+    required:
+      - google_sheet_id
+      - slack_channel
   steps:
     - id: fetch_deals
       type: code

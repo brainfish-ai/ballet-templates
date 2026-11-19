@@ -15,7 +15,7 @@ spec:
         description: Alert when SLA breach is within this many hours. Defaults to 2.
       slack_channel:
         type: string
-        description: Slack channel ID or name to post alerts to, for example #support-escalations.
+        description: "Slack channel ID or name to post alerts to, for example #support-escalations."
     required:
       - slack_channel
   steps:

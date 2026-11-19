@@ -19,7 +19,8 @@ spec:
       codeFile: steps/classify.ts
       description: Use an LLM to assign a priority and tags to the ticket.
       friendlyMessage: Reading the ticket
-      input: "{{ flow.input }}"
+      input:
+        event: "{{ flow.input }}"
       output:
         variable: result
         format: json

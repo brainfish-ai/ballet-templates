@@ -25,7 +25,7 @@ const res = await metaphor.agent('ticket-summarizer', { prompt });
 const summary = String(res?.summary ?? 'Customer left negative feedback. Review ticket for details.').slice(0, 300);
 const suggested_action = String(res?.suggested_action ?? 'Follow up with the customer').slice(0, 200);
 
-const slack_message = `:warning: **Negative CSAT Alert**\n**Ticket**: #${ticket.ticket_id} - ${ticket.subject}\n**Priority**: ${ticket.priority}\n**Feedback**: ${rating_comment ?? 'No comment'}\n**Summary**: ${summary}\n**Suggested Action**: ${suggested_action}\nView ticket: ${ticket.ticket_url}`;
+const slack_message = `:warning: *Negative CSAT Alert*\n*Ticket*: #${ticket.ticket_id} - ${ticket.subject}\n*Priority*: ${ticket.priority}\n*Feedback*: ${rating_comment ?? 'No comment'}\n*Summary*: ${summary}\n*Suggested Action*: ${suggested_action}\nView ticket: ${ticket.ticket_url}`;
 
 const result = {
   summary,

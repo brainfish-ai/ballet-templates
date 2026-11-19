@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 import { loadTemplates, validateTemplate, templatesDir } from './lib.mjs';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { execSync } from 'child_process';
 
 const dir = process.argv[2] ?? templatesDir;
 const templates = loadTemplates(dir);
@@ -21,8 +24,27 @@ for (const t of templates) {
   }
 }
 
+// Check for un-awaited metaphor calls
+console.log('\nChecking for un-awaited metaphor calls...');
+try {
+  const result = execSync(
+    'grep -rn "metaphor\\.\\(integration\\|waitForInput\\|agent\\)" templates/ --include="*.ts" | grep -v "await" || true',
+    { encoding: 'utf8' }
+  );
+  
+  if (result.trim()) {
+    console.error('\nERROR: Found un-awaited metaphor calls:');
+    console.error(result);
+    failed += 1;
+  } else {
+    console.log('✓ All metaphor calls have await');
+  }
+} catch (error) {
+  console.error('Warning: Could not check for un-awaited metaphor calls');
+}
+
 if (failed > 0) {
-  console.error(`\n${failed} of ${templates.length} templates failed validation.`);
+  console.error(`\n${failed} validation errors found.`);
   process.exit(1);
 }
-console.log(`\nAll ${templates.length} templates are valid.`);
+console.log(`\n✓ All ${templates.length} templates are valid.`);

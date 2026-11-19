@@ -6,7 +6,7 @@ let notes = '';
 
 if (requester_email && requester_email !== 'unknown') {
   // Search for contact by email
-  const searchResult = metaphor.integration('hubspot', 'contacts.search', {
+  const searchResult = await metaphor.integration('hubspot', 'contacts.search', {
     filterGroups: [{
       filters: [{ propertyName: 'email', operator: 'EQ', value: requester_email }]
     }],
@@ -21,11 +21,11 @@ if (requester_email && requester_email !== 'unknown') {
 
     // Get owner email if available
     if (contact.properties?.hubspot_owner_id) {
-      const ownerResult = metaphor.integration('hubspot', 'api.get', {
+      const ownerResult = await metaphor.integration('hubspot', 'api.get', {
         path: `/crm/v3/owners/${contact.properties.hubspot_owner_id}`,
       });
       if (ownerResult.ok) {
-        owner_email = ownerResult.data?.email || null;
+        owner_email = ownerResult.data?.data?.email || null;
       }
     }
   }

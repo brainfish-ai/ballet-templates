@@ -28,7 +28,7 @@ const current_week = {
 let previous_week: typeof current_week | null = null;
 
 // Get previous week's data from Google Sheets
-const sheetResult = metaphor.integration('google_sheets', 'values.get', {
+const sheetResult = await metaphor.integration('google_sheets', 'values.get', {
   spreadsheetId: google_sheet_id,
   range: 'Sheet1!A:Z',
 });

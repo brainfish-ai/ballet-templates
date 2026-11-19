@@ -1,23 +1,45 @@
 const { report_date } = input_data as { report_date?: string };
 
-// Search for all open deals in HubSpot
-const dealResult = metaphor.integration('hubspot', 'deals.search', {
+// Search for all open deals in HubSpot (with pagination)
+const allDeals: any[] = [];
+let after: string | undefined;
+
+do {
+  const dealResult = await metaphor.integration('hubspot', 'deals.search', {
+    filterGroups: [{
+      filters: [
+        { propertyName: 'hs_is_closed', operator: 'EQ', value: 'false' },
+      ],
+    }],
+    properties: ['dealname', 'amount', 'dealstage', 'closedate', 'pipeline', 'hubspot_owner_id'],
+    limit: 100,
+    after,
+  });
+
+  if (!dealResult.ok) {
+    throw new Error(`Failed to fetch deals: ${dealResult.error?.message ?? JSON.stringify(dealResult.error)}`);
+  }
+
+  allDeals.push(...(dealResult.data?.results || []));
+  after = dealResult.data?.paging?.next?.after;
+} while (after);
+
+// Also fetch closed-won deals
+const closedDealsResult = await metaphor.integration('hubspot', 'deals.search', {
   filterGroups: [{
     filters: [
-      { propertyName: 'hs_is_closed', operator: 'EQ', value: 'false' },
+      { propertyName: 'hs_is_closed_won', operator: 'EQ', value: 'true' },
     ],
   }],
   properties: ['dealname', 'amount', 'dealstage', 'closedate', 'pipeline', 'hubspot_owner_id'],
   limit: 100,
 });
 
-if (!dealResult.ok) {
-  throw new Error(`Failed to fetch deals: ${dealResult.error}`);
+if (closedDealsResult.ok) {
+  allDeals.push(...(closedDealsResult.data?.results || []));
 }
 
-const dealData = dealResult.data?.results || [];
-
-const deals = dealData.map((d: any) => ({
+const deals = allDeals.map((d: any) => ({
   id: d.id,
   name: d.properties.dealname,
   amount: parseFloat(d.properties.amount || '0'),

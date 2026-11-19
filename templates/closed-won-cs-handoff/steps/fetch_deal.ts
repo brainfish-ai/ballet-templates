@@ -1,14 +1,17 @@
-const { deal_id } = input_data as { deal_id: string };
+const { deal_id, cs_team_emails } = input_data as { 
+  deal_id: string;
+  cs_team_emails?: string[];
+};
 
 // Get full deal details from HubSpot with associations
-const dealResult = metaphor.integration('hubspot', 'deals.get', {
+const dealResult = await metaphor.integration('hubspot', 'deals.get', {
   dealId: deal_id,
   properties: ['dealname', 'amount', 'closedate', 'hubspot_owner_id', 'hs_priority', 'notes_last_updated'],
   associations: ['contacts', 'companies'],
 });
 
 if (!dealResult.ok) {
-  throw new Error(`Failed to fetch deal: ${dealResult.error}`);
+  throw new Error(`Failed to fetch deal: ${dealResult.error?.message ?? JSON.stringify(dealResult.error)}`);
 }
 
 const dealData = dealResult.data;
@@ -21,9 +24,6 @@ const missingFields = requiredFields.filter(f => !deal[f]);
 if (missingFields.length > 0) {
   throw new Error(`Missing required handoff fields: ${missingFields.join(', ')}`);
 }
-
-// In a real implementation, fetch CS team emails from HubSpot or a config
-const cs_team_emails = ['cs-team@example.com'];
 
 const result = {
   deal: {

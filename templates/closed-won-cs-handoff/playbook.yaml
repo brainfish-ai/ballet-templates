@@ -16,6 +16,7 @@ spec:
     properties:
       deal_id:
         type: string
+        description: Deal ID from HubSpot webhook (use flow.input[0].objectId for generic HubSpot webhook)
       deal_name:
         type: string
       close_date:
@@ -24,9 +25,15 @@ spec:
         type: number
       owner_email:
         type: string
+      cs_team_emails:
+        type: array
+        items:
+          type: string
+        description: List of CS team member emails to invite to handoff channel
     required:
       - deal_id
       - deal_name
+      - cs_team_emails
   steps:
     - id: fetch_deal
       type: code
@@ -36,6 +43,7 @@ spec:
       friendlyMessage: Fetching deal details
       input:
         deal_id: "{{ flow.input.deal_id }}"
+        cs_team_emails: "{{ flow.input.cs_team_emails }}"
       output:
         variable: result
         format: json
@@ -94,7 +102,7 @@ spec:
       friendlyMessage: Inviting CS team
       input:
         channel_id: "{{ steps.create_channel.output.channel_id }}"
-        cs_team_emails: "{{ steps.fetch_deal.output.cs_team_emails }}"
+        cs_team_emails: "{{ flow.input.cs_team_emails }}"
       output:
         variable: result
         format: json

@@ -43,7 +43,7 @@ if (amount_due >= 50000) {
 
 const failure_summary = `Payment failed (attempt ${attempt_count}). Amount: ${amount_formatted}. Reason: ${failure_reason}. ${next_payment_attempt ? `Next retry: ${next_payment_attempt}` : 'No retry scheduled.'} Status: ${payment_status}.`;
 
-const slack_message = `${slack_urgency}\n**Payment Failed**: ${customer_name}\n**Invoice**: ${amount_formatted} (attempt ${attempt_count})\n**Reason**: ${failure_reason}\n**Status**: ${payment_status}\n${next_payment_attempt ? `Next retry: ${next_payment_attempt}` : 'No retry scheduled.'}\n${should_draft_email ? 'Customer email drafted for review in Gmail.' : 'Internal alert only.'}\nView invoice: ${invoice_url}`;
+const slack_message = `${slack_urgency}\n*Payment Failed*: ${customer_name}\n*Invoice*: ${amount_formatted} (attempt ${attempt_count})\n*Reason*: ${failure_reason}\n*Status*: ${payment_status}\n${next_payment_attempt ? `Next retry: ${next_payment_attempt}` : 'No retry scheduled.'}\n${should_draft_email ? 'Customer email will be sent after approval.' : 'Internal alert only.'}\nView invoice: ${invoice_url}`;
 
 const result = {
   payment_status,
