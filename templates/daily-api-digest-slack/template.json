@@ -29,7 +29,7 @@
     },
     {
       "q": "Can I post to multiple Slack channels?",
-      "a": "The template posts to one channel per run. To post to multiple channels, duplicate the post_digest step and set a different SLACK_DIGEST_CHANNEL secret, or extend the workflow to loop over a list of channels."
+      "a": "The template posts to one channel per run. To post to multiple channels, duplicate the post_digest step and set a different slack_channel input, or extend the workflow to loop over a list of channels."
     }
   ],
   "sampleOutput": "Slack message in #ops: Daily Digest for Nov 19: 47 new records, 12 updated. Top change: Acme Corp upgraded to Enterprise. 3 records flagged for review.",
@@ -46,7 +46,7 @@
     "Connect the Slack Bot integration in Ballet once and invite the bot to your digest channel.",
     "Update the fetch_data step with your API URL and authentication method (the template defaults to bearer token).",
     "Run the playbook once manually to check the digest.",
-    "Set up a daily schedule using an external scheduler or cron job to trigger the playbook via API, or use Ballet's scheduling feature if available."
+    "Attach a schedule in Studio (for example daily at 9 AM) to automate the digest."
   ],
   "lastValidated": null
 }

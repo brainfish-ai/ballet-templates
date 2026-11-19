@@ -178,7 +178,7 @@
         "schedule"
       ],
       "difficulty": "beginner",
-      "trigger": "Manual (set up 15-minute schedule with external scheduler or cron)",
+      "trigger": "Manual (attach a schedule in Studio, for example every 15 minutes)",
       "integrations": [
         "freshdesk",
         "slack_bot"

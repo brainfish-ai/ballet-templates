@@ -8,7 +8,7 @@ Scheduled check of Freshdesk tickets near or over SLA, deduplicates already-aler
 |---|---|
 | Category | Support |
 | Difficulty | beginner |
-| Trigger | Manual (set up 15-minute schedule with external scheduler or cron) |
+| Trigger | Manual (attach a schedule in Studio, for example every 15 minutes) |
 | Steps | 2 |
 
 ## What it does
@@ -26,7 +26,7 @@ Integrations: `freshdesk`, `slack_bot`
 
 1. Connect the Freshdesk and Slack Bot integrations in Ballet once.
 2. Invite the Slack bot to your alert channel.
-3. Publish the playbook and run it manually, or set up a 15-minute schedule using an external scheduler or cron job to trigger the playbook via API.
+3. Publish the playbook and run it manually, or attach a schedule in Studio (for example every 15 minutes).
 4. Set slack_channel input to your channel ID or name.
 5. Optionally adjust alert_threshold_hours to your SLA buffer.
 6. Each run checks for breaching tickets and posts alerts to Slack.

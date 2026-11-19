@@ -37,7 +37,7 @@ Agents (created for you on import; edit them in Studio):
 1. Connect the Slack Bot integration in Ballet once and invite the bot to your digest channel.
 2. Update the fetch_data step with your API URL and authentication method (the template defaults to bearer token).
 3. Run the playbook once manually to check the digest.
-4. Set up a daily schedule using an external scheduler or cron job to trigger the playbook via API, or use Ballet's scheduling feature if available.
+4. Attach a schedule in Studio (for example daily at 9 AM) to automate the digest.
 
 ## Files
 

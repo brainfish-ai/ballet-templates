@@ -35,7 +35,7 @@
   "sampleOutput": "Slack message: Churn Alert: Acme Corp cancelled Pro plan ($299/mo). Reason: Price sensitivity. Subscription ends Dec 31. HubSpot note posted. View in HubSpot.",
   "setupMinutes": 12,
   "whatYouNeed": "Stripe integration connected in Ballet, HubSpot integration connected, Slack Bot integration connected, and invite the Slack bot to your churn alert channel",
-  "failureHandling": "The Stripe webhook responds immediately to avoid timeouts. If HubSpot or Slack API calls fail, the workflow retries automatically. Failed runs appear in history with error details. Idempotency via Stripe event ID prevents duplicate alerts.",
+  "failureHandling": "The Stripe webhook responds immediately to avoid timeouts. If HubSpot or Slack API calls fail, the workflow retries automatically. Failed runs appear in history with error details.",
   "nativeVsTemplate": "Use Stripe's built-in email notifications if you only need simple cancellation alerts. Use this template when you want AI-powered churn reason classification, Slack alerts to account owners, and automatic HubSpot logging so your CS team has full context without switching tools.",
   "related": ["stripe-failed-payment-dunning", "renewal-radar"],
   "secrets": [],

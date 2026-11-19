@@ -35,7 +35,7 @@
   "sampleOutput": "Slack message: Payment Failed: Acme Corp invoice $499 declined (3rd attempt). HubSpot updated. Customer email drafted for review in Gmail. Draft ID: 18f1a2b3c4d5e6f7.",
   "setupMinutes": 15,
   "whatYouNeed": "Stripe integration connected in Ballet, HubSpot integration connected with custom payment_status property on contacts and companies, Slack Bot integration connected and invited to billing alerts channel, Gmail integration connected",
-  "failureHandling": "The Stripe webhook responds immediately to avoid timeouts. If HubSpot, Slack, or Gmail API calls fail, the workflow retries automatically. Failed runs appear in history with error details. Idempotency via Stripe event ID prevents duplicate alerts.",
+  "failureHandling": "The Stripe webhook responds immediately to avoid timeouts. If HubSpot, Slack, or Gmail API calls fail, the workflow retries automatically. Failed runs appear in history with error details.",
   "nativeVsTemplate": "Use Stripe's built-in dunning when you only need automatic payment retries and templated emails. Use this template when you need CRM integration, Slack alerts to account owners, escalation rules tied to invoice value and failure count, and manual approval for customer emails to maintain control over sensitive billing communications.",
   "related": ["stripe-churn-alert", "renewal-radar"],
   "secrets": [],

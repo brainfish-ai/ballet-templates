@@ -5,11 +5,11 @@
   "category": "support",
   "tags": ["freshdesk", "support", "sla", "slack", "schedule"],
   "difficulty": "beginner",
-  "trigger": "Manual (set up 15-minute schedule with external scheduler or cron)",
+  "trigger": "Manual (attach a schedule in Studio, for example every 15 minutes)",
   "integrations": ["freshdesk", "slack_bot"],
   "primaryKeyword": "freshdesk sla breach slack notification",
   "seoTitle": "Freshdesk SLA Breach Alerts to Slack in Real Time",
-  "answer": "This template runs every 15 minutes, queries Freshdesk for open tickets within 2 hours of their SLA due date or already overdue, deduplicates tickets already alerted in the last 24 hours, then posts Slack notifications to a designated channel with breach countdown or overdue hours. Support managers see which tickets need immediate attention to avoid SLA violations and maintain service commitments.",
+  "answer": "This template queries Freshdesk for open tickets within 2 hours of their SLA due date or already overdue, deduplicates tickets already alerted in the last 24 hours, then posts Slack notifications to a designated channel with breach countdown or overdue hours. Attach a schedule in Studio (for example every 15 minutes) so support managers see which tickets need immediate attention to avoid SLA violations and maintain service commitments.",
   "faq": [
     {
       "q": "Can Freshdesk send SLA breach alerts to Slack natively?",
@@ -42,7 +42,7 @@
   "setup": [
     "Connect the Freshdesk and Slack Bot integrations in Ballet once.",
     "Invite the Slack bot to your alert channel.",
-    "Publish the playbook and run it manually, or set up a 15-minute schedule using an external scheduler or cron job to trigger the playbook via API.",
+    "Publish the playbook and run it manually, or attach a schedule in Studio (for example every 15 minutes).",
     "Set slack_channel input to your channel ID or name.",
     "Optionally adjust alert_threshold_hours to your SLA buffer.",
     "Each run checks for breaching tickets and posts alerts to Slack."

@@ -35,10 +35,13 @@ async function testStep(templateName, stepName, stepFile, inputData) {
     code = code.replace(/\s+as\s+[A-Za-z0-9_<>[\],\s|&]+;/g, ';'); // Remove `as Type;`
     code = code.replace(/\s+as\s+any/g, ''); // Remove `as any`
     
+    // Check if code already declares result
+    const declaresResult = /\blet\s+result\b/.test(code) || /\bconst\s+result\b/.test(code);
+    
     // Create an async function wrapper
     const wrappedCode = `
       return (async function(input_data) {
-        let result;
+        ${declaresResult ? '' : 'let result;'}
         ${code}
         return result;
       })(input_data);
