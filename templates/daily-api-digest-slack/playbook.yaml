@@ -12,7 +12,9 @@ spec:
     properties:
       slack_channel:
         type: string
-        description: Slack channel ID or name for daily digest (e.g. #general)
+        description: "Slack channel ID or name for daily digest (e.g. #general)"
+    required:
+      - slack_channel
   steps:
     - id: fetch_data
       type: http
@@ -41,7 +43,7 @@ spec:
       description: Reduce the records to counts and a short written digest.
       friendlyMessage: Writing the digest
       input:
-        records: "{{ steps.fetch_data.output.body }}"
+        records: "{{ steps.fetch_data.output }}"
       output:
         variable: result
         format: json

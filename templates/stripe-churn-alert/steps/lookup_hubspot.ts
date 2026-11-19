@@ -1,13 +1,18 @@
-const { customer_email, customer_name } = input_data as { customer_email: string; customer_name: string };
+const { customer_email, customer_name, skipped } = input_data as { customer_email?: string; customer_name?: string; skipped?: boolean | string };
 
-let contact_id: string | null = null;
-let company_id: string | null = null;
-let owner_email: string | null = null;
-let notes = '';
+let result;
 
-if (customer_email && customer_email !== 'unknown') {
+if (skipped === true || skipped === 'true') {
+  result = { skipped: true };
+} else {
+  let contact_id: string | null = null;
+  let company_id: string | null = null;
+  let owner_email: string | null = null;
+  let latest_source = '';
+
+  if (customer_email && customer_email !== 'unknown') {
   // Search for contact by email
-  const searchResult = metaphor.integration('hubspot', 'contacts.search', {
+  const searchResult = await metaphor.integration('hubspot', 'contacts.search', {
     filterGroups: [{
       filters: [{ propertyName: 'email', operator: 'EQ', value: customer_email }]
     }],
@@ -19,7 +24,7 @@ if (customer_email && customer_email !== 'unknown') {
     const contactId = searchResult.data.results[0].id;
     
     // Get full contact details with associations
-    const contactResult = metaphor.integration('hubspot', 'contacts.get', {
+    const contactResult = await metaphor.integration('hubspot', 'contacts.get', {
       contactId,
       properties: ['firstname', 'lastname', 'email', 'hubspot_owner_id', 'hs_latest_source'],
       associations: ['companies'],
@@ -28,15 +33,15 @@ if (customer_email && customer_email !== 'unknown') {
     if (contactResult.ok) {
       const contact = contactResult.data;
       contact_id = contact.id;
-      notes = contact.properties?.hs_latest_source || '';
+      latest_source = contact.properties?.hs_latest_source || '';
 
       // Get owner email if available
       if (contact.properties?.hubspot_owner_id) {
-        const ownerResult = metaphor.integration('hubspot', 'api.get', {
+        const ownerResult = await metaphor.integration('hubspot', 'api.get', {
           path: `/crm/v3/owners/${contact.properties.hubspot_owner_id}`,
         });
         if (ownerResult.ok) {
-          owner_email = ownerResult.data?.email || null;
+          owner_email = ownerResult.data?.data?.email || null;
         }
       }
 
@@ -46,12 +51,13 @@ if (customer_email && customer_email !== 'unknown') {
       }
     }
   }
-}
+  }
 
-const result = {
-  contact_id,
-  company_id,
-  owner_email,
-  notes,
-  found: !!contact_id,
-};
+  result = {
+    contact_id,
+    company_id,
+    owner_email,
+    latest_source,
+    found: !!contact_id,
+  };
+}

@@ -20,7 +20,7 @@ spec:
     properties:
       slack_channel:
         type: string
-        description: Slack channel ID or name for churn alerts (e.g. #customer-success)
+        description: "Slack channel ID or name for churn alerts (e.g. #customer-success)"
     required:
       - slack_channel
   steps:
@@ -30,7 +30,8 @@ spec:
       codeFile: steps/check_cancellation.ts
       description: Verify the subscription is cancelled and fetch customer details from Stripe.
       friendlyMessage: Checking the cancellation
-      input: "{{ flow.input }}"
+      input:
+        event: "{{ flow.input }}"
       output:
         variable: result
         format: json
@@ -43,6 +44,7 @@ spec:
       input:
         customer_email: "{{ steps.check_cancellation.output.customer_email }}"
         customer_name: "{{ steps.check_cancellation.output.customer_name }}"
+        skipped: "{{ steps.check_cancellation.output.skipped }}"
       output:
         variable: result
         format: json
@@ -54,7 +56,8 @@ spec:
       friendlyMessage: Analyzing the churn reason
       input:
         subscription: "{{ steps.check_cancellation.output }}"
-        hubspot_notes: "{{ steps.lookup_hubspot.output.notes }}"
+        hubspot_notes: "{{ steps.lookup_hubspot.output.latest_source }}"
+        skipped: "{{ steps.check_cancellation.output.skipped }}"
       output:
         variable: result
         format: json
@@ -67,6 +70,7 @@ spec:
       input:
         slack_message: "{{ steps.classify_churn.output.slack_message }}"
         slack_channel: "{{ flow.input.slack_channel }}"
+        skipped: "{{ steps.classify_churn.output.skipped }}"
       output:
         variable: result
         format: json
@@ -81,6 +85,7 @@ spec:
         company_id: "{{ steps.lookup_hubspot.output.company_id }}"
         churn_summary: "{{ steps.classify_churn.output.summary }}"
         subscription_end: "{{ steps.check_cancellation.output.subscription_end }}"
+        skipped: "{{ steps.classify_churn.output.skipped }}"
       output:
         variable: result
         format: json

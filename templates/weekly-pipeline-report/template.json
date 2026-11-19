@@ -1,7 +1,7 @@
 {
   "id": "weekly-pipeline-report",
   "title": "Weekly Pipeline Report",
-  "summary": "Pull HubSpot deals every Monday, compute stage totals and week-over-week change, append to Google Sheets, generate AI commentary, and post to Slack.",
+  "summary": "Pull HubSpot deals on a schedule, compute stage totals and week-over-week change, append to Google Sheets, generate AI commentary, and post to Slack.",
   "category": "sales",
   "tags": ["sales", "pipeline", "hubspot", "google-sheets", "slack", "schedule", "llm"],
   "difficulty": "intermediate",
@@ -9,7 +9,7 @@
   "integrations": ["hubspot", "google_sheets", "slack_bot"],
   "primaryKeyword": "weekly pipeline report slack google sheets",
   "seoTitle": "Weekly Pipeline Report from HubSpot to Slack and Google Sheets",
-  "answer": "This template runs every Monday morning, fetches all open deals from HubSpot (or Salesforce if you swap the integration), computes stage-by-stage totals (count and value), calculates week-over-week change by comparing to the previous week's totals stored in Google Sheets, appends the new week's data to a Google Sheets tracking log, uses an AI agent to write a 3-line executive summary with key insights and trends, and posts the commentary plus stage breakdown to a designated Slack channel so your sales team starts the week aligned on pipeline health.",
+  "answer": "This template fetches all open deals from HubSpot on a schedule you attach in Studio (for example weekly on Monday at 9 AM), computes stage-by-stage totals (count and value), calculates week-over-week change by comparing to the previous week's totals stored in Google Sheets, appends the new week's data to a Google Sheets tracking log, uses an AI agent to write a 3-line executive summary with key insights and trends, and posts the commentary plus stage breakdown to a designated Slack channel so your sales team starts the week aligned on pipeline health.",
   "faq": [
     {
       "q": "Can HubSpot or Salesforce generate pipeline reports natively?",
@@ -20,16 +20,16 @@
       "a": "The workflow reads the previous week's totals from Google Sheets (appended by the last run), subtracts them from the current week's totals, and computes percentage change for each stage. The first run has no prior data, so changes are marked as new baseline."
     },
     {
-      "q": "What if I use Salesforce instead of HubSpot?",
-      "a": "Swap the fetch_deals step to call Salesforce APIs or use metaphor.integration with salesforce if available. The rest of the workflow (Google Sheets, AI commentary, Slack) remains the same. The template includes a generic input schema so you can adapt it to any CRM."
+      "q": "Can I customize the schedule?",
+      "a": "Yes. Attach a schedule in Studio to change the day or time (for example, Friday afternoons instead of Monday mornings). The first run establishes a baseline with no week-over-week comparison. Subsequent runs calculate changes."
     },
     {
       "q": "What does the AI commentary include?",
       "a": "The AI agent reads the stage totals and week-over-week changes, then writes a 3-line summary highlighting the most significant trends, for example: Pipeline grew 12% this week to $1.2M. Discovery stage up 25% with 8 new opps. Closed-Won conversion held steady at 18%."
     },
     {
-      "q": "Can I customize the schedule or Slack channel?",
-      "a": "Yes. Edit the schedule trigger in playbook.yaml to change the day or time (for example, Friday afternoons instead of Monday mornings). Set the Slack channel via the SLACK_PIPELINE_CHANNEL secret."
+      "q": "How do I change the Slack channel?",
+      "a": "Set the slack_channel input when running the playbook. You can configure this in Studio or pass it via the trigger payload."
     }
   ],
   "sampleOutput": "Slack message: Weekly Pipeline Report (Nov 18). Pipeline: $1.2M across 47 deals (up 12% from last week). Discovery: 15 deals / $320K (up 25%). Proposal: 18 deals / $580K (down 5%). Closed-Won: 8 deals / $240K (steady). AI insight: Strong top-of-funnel growth, but proposal stage needs attention. Built by the Brainfish team.",
@@ -43,9 +43,8 @@
     "Connect the HubSpot, Google Sheets, and Slack Bot integrations in Ballet once.",
     "Create a Google Sheet with columns: Week Ending, Total Deals, Total Value, Discovery Deals, Discovery Value, Proposal Deals, Proposal Value, Closed Deals, Closed Value. Note the Sheet ID from its URL.",
     "Invite the Slack bot to your pipeline reports channel.",
-    "Publish the playbook and run it manually, or set up a weekly schedule (e.g. Mondays at 9am) using an external scheduler or cron job to trigger the playbook via API.",
-    "The first run establishes a baseline with no week-over-week comparison. Subsequent weeks calculate changes.",
-    "To use Salesforce, edit the fetch_deals step to call Salesforce integration."
+    "Publish the playbook and run it manually, or attach a schedule in Studio (for example weekly on Monday at 9 AM).",
+    "The first run establishes a baseline with no week-over-week comparison. Subsequent weeks calculate changes."
   ],
   "lastValidated": null
 }

@@ -168,7 +168,7 @@
     {
       "id": "freshdesk-sla-breach-alert",
       "title": "Freshdesk SLA Breach Alert",
-      "summary": "Scheduled check of Freshdesk tickets near or over SLA, deduplicates already-alerted tickets, sends Slack alert to owner or channel.",
+      "summary": "Scheduled check of Freshdesk tickets near or over SLA, with per-run deduplication, sends Slack alert to owner or channel.",
       "category": "support",
       "tags": [
         "freshdesk",
@@ -178,7 +178,7 @@
         "schedule"
       ],
       "difficulty": "beginner",
-      "trigger": "Manual (set up 15-minute schedule with external scheduler or cron)",
+      "trigger": "Manual (attach a schedule in Studio, for example every 15 minutes)",
       "integrations": [
         "freshdesk",
         "slack_bot"
@@ -570,7 +570,7 @@
     {
       "id": "weekly-pipeline-report",
       "title": "Weekly Pipeline Report",
-      "summary": "Pull HubSpot deals every Monday, compute stage totals and week-over-week change, append to Google Sheets, generate AI commentary, and post to Slack.",
+      "summary": "Pull HubSpot deals on a schedule, compute stage totals and week-over-week change, append to Google Sheets, generate AI commentary, and post to Slack.",
       "category": "sales",
       "tags": [
         "sales",

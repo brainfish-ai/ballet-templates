@@ -24,10 +24,14 @@
     "validate": "node scripts/validate.mjs",
     "build": "node scripts/build.mjs",
     "check": "node scripts/validate.mjs && node scripts/build.mjs --check",
+    "test": "node tests/run-all-steps.test.cjs",
     "sync": "node scripts/sync-repos.mjs",
     "publish:shares": "node scripts/publish-shares.mjs"
   },
   "dependencies": {
     "yaml": "^2.8.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2"
   }
 }

@@ -7,10 +7,11 @@ const { should_draft, customer_email, customer_name, invoice_url, amount_due, cu
   currency: string;
 };
 
+let result;
+
 if (!should_draft || !customer_email || customer_email === 'unknown') {
-  const result = { drafted: false, sent: false, message: 'Email draft skipped per dunning rules or missing customer email.' };
-  return;
-}
+  result = { drafted: false, sent: false, message: 'Email draft skipped per dunning rules or missing customer email.' };
+} else {
 
 const amount_formatted = `${currency} ${(amount_due / 100).toFixed(2)}`;
 
@@ -27,7 +28,7 @@ const email_body = String(res?.email_body ?? `Hi ${customer_name},\n\nWe noticed
 const subject = `Payment Update Needed: ${amount_formatted} invoice`;
 
 // Request approval before sending
-const approval = metaphor.waitForInput({
+const approval = await metaphor.waitForInput({
   prompt: `Review and approve email to ${customer_name} (${customer_email})`,
   details: `Subject: ${subject}\n\n${email_body}`,
   schema: {
@@ -46,28 +47,28 @@ const approval = metaphor.waitForInput({
   },
 });
 
-if (!approval.approved) {
-  const result = { drafted: true, sent: false, message: 'Email not sent: approval denied.' };
-  return;
+  if (!approval.approved) {
+    result = { drafted: true, sent: false, message: 'Email not sent: approval denied.' };
+  } else {
+    const final_body = approval.edited_body || email_body;
+
+    // Send the email
+    const sendResult = await metaphor.integration('gmail', 'messages.send', {
+      to: [customer_email],
+      subject,
+      body: final_body,
+      contentType: 'text',
+    });
+
+    if (!sendResult.ok) {
+      throw new Error(`Failed to send email: ${sendResult.error?.message ?? JSON.stringify(sendResult.error)}`);
+    }
+
+    result = {
+      drafted: true,
+      sent: true,
+      to: customer_email,
+      message: `Email sent to ${customer_email}`,
+    };
+  }
 }
-
-const final_body = approval.edited_body || email_body;
-
-// Send the email
-const sendResult = metaphor.integration('gmail', 'messages.send', {
-  to: [customer_email],
-  subject,
-  body: final_body,
-  contentType: 'text/plain',
-});
-
-if (!sendResult.ok) {
-  throw new Error(`Failed to send email: ${sendResult.error}`);
-}
-
-const result = {
-  drafted: true,
-  sent: true,
-  to: customer_email,
-  message: `Email sent to ${customer_email}`,
-};

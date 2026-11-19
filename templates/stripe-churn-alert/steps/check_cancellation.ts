@@ -1,40 +1,66 @@
 // Read from flow.input which contains the native Stripe webhook payload
-const webhook = input_data as any;
+const webhook = (input_data as any).event || input_data;
+const eventType = webhook.event || webhook.type || '';
 const subscription = webhook.object || {};
 const previous = webhook.raw?.previous_attributes || webhook.raw?.data?.previous_attributes || {};
 
-// Check if this is a cancellation event
-const isCancelled = subscription.cancel_at_period_end === true || subscription.status === 'canceled';
-
-if (!isCancelled) {
-  throw new Error('Subscription not cancelled. Exiting workflow.');
+// For customer.subscription.deleted, skip if cancel_at_period_end was already true
+if (eventType === 'customer.subscription.deleted' && subscription.cancel_at_period_end === true) {
+  result = {
+    skipped: true,
+    reason: 'Subscription deleted but cancellation was already scheduled (already alerted)',
+  };
+} else if (eventType === 'customer.subscription.updated') {
+  // For customer.subscription.updated, only alert when cancel_at_period_end changed false -> true
+  const isCancelled = subscription.cancel_at_period_end === true || subscription.status === 'canceled';
+  const wasAlreadyCancelled = previous.cancel_at_period_end === true;
+  
+  if (!isCancelled || wasAlreadyCancelled) {
+    result = {
+      skipped: true,
+      reason: 'Not a new cancellation',
+    };
+  }
 }
 
-const subscription_id = subscription.id;
-const customer_id = subscription.customer;
+if (!result) {
 
-// Get full customer details from Stripe
-const customerResult = metaphor.integration('stripe', 'customers.get', {
-  customerId: customer_id,
-});
+  const subscription_id = subscription.id;
+  const customer_id = subscription.customer;
 
-if (!customerResult.ok) {
-  throw new Error(`Failed to fetch customer: ${customerResult.error}`);
+  // Get full customer details from Stripe
+  const customerResult = await metaphor.integration('stripe', 'customers.get', {
+    customerId: customer_id,
+  });
+
+  if (!customerResult.ok) {
+    throw new Error(`Failed to fetch customer: ${customerResult.error?.message ?? JSON.stringify(customerResult.error)}`);
+  }
+
+  const customer = customerResult.data;
+  const plan = subscription.items?.data?.[0]?.plan || subscription.plan;
+  const plan_name = plan?.nickname || `${plan?.currency?.toUpperCase()} ${(plan?.amount || 0) / 100}/${plan?.interval}`;
+
+  // Handle current_period_end from subscription or items.data[0]
+  const period_end = subscription.current_period_end ?? subscription.items?.data?.[0]?.current_period_end ?? subscription.ended_at;
+  const subscription_end = period_end ? new Date(period_end * 1000).toISOString() : 'N/A';
+
+  const cancellation_reason = subscription.cancellation_details?.feedback 
+    || subscription.cancellation_details?.comment 
+    || subscription.cancellation_details?.reason 
+    || subscription.metadata?.cancellation_reason 
+    || 'not provided';
+
+  result = {
+    skipped: false,
+    subscription_id,
+    customer_id,
+    customer_email: customer.email || 'unknown',
+    customer_name: customer.name || 'Unknown Customer',
+    plan_name,
+    amount: plan?.amount || 0,
+    currency: plan?.currency?.toUpperCase() || 'USD',
+    subscription_end,
+    cancellation_reason,
+  };
 }
-
-const customer = customerResult.data;
-const plan = subscription.items?.data?.[0]?.plan || subscription.plan;
-const plan_name = plan?.nickname || `${plan?.currency?.toUpperCase()} ${(plan?.amount || 0) / 100}/${plan?.interval}`;
-const subscription_end = new Date((subscription.current_period_end || subscription.ended_at) * 1000).toISOString();
-
-const result = {
-  subscription_id,
-  customer_id,
-  customer_email: customer.email || 'unknown',
-  customer_name: customer.name || 'Unknown Customer',
-  plan_name,
-  amount: plan?.amount || 0,
-  currency: plan?.currency?.toUpperCase() || 'USD',
-  subscription_end,
-  cancellation_reason: subscription.cancellation_details?.reason || subscription.metadata?.cancellation_reason || 'not provided',
-};

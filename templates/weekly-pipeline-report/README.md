@@ -1,6 +1,6 @@
 # Weekly Pipeline Report
 
-Pull HubSpot deals every Monday, compute stage totals and week-over-week change, append to Google Sheets, generate AI commentary, and post to Slack.
+Pull HubSpot deals on a schedule, compute stage totals and week-over-week change, append to Google Sheets, generate AI commentary, and post to Slack.
 
 [![Import to Ballet](../../assets/import-to-ballet.svg)](https://app.ballet.dev/import?repo=brainfish-ai/ballet-templates&path=templates/weekly-pipeline-report&ref=main)
 
@@ -34,9 +34,8 @@ Agents (created for you on import; edit them in Studio):
 1. Connect the HubSpot, Google Sheets, and Slack Bot integrations in Ballet once.
 2. Create a Google Sheet with columns: Week Ending, Total Deals, Total Value, Discovery Deals, Discovery Value, Proposal Deals, Proposal Value, Closed Deals, Closed Value. Note the Sheet ID from its URL.
 3. Invite the Slack bot to your pipeline reports channel.
-4. Publish the playbook and run it manually, or set up a weekly schedule (e.g. Mondays at 9am) using an external scheduler or cron job to trigger the playbook via API.
+4. Publish the playbook and run it manually, or attach a schedule in Studio (for example weekly on Monday at 9 AM).
 5. The first run establishes a baseline with no week-over-week comparison. Subsequent weeks calculate changes.
-6. To use Salesforce, edit the fetch_deals step to call Salesforce integration.
 
 ## Files
 

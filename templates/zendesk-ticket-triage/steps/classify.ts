@@ -1,5 +1,5 @@
 // Read from native Zendesk webhook payload
-const webhook = input_data as any;
+const webhook = (input_data as any).event || input_data;
 const ticket = webhook.ticket || {};
 
 const ticket_id = ticket.id || '';

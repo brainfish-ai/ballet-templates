@@ -4,15 +4,30 @@ const { deals, report_date, google_sheet_id } = input_data as {
   google_sheet_id: string;
 };
 
+// Fetch pipeline stages and map IDs to labels
+const pipelinesResult = await metaphor.integration('hubspot', 'api.get', {
+  path: '/crm/v3/pipelines/deals',
+});
+
+const stageMap: Record<string, string> = {};
+if (pipelinesResult.ok && pipelinesResult.data?.data?.results) {
+  for (const pipeline of pipelinesResult.data.data.results) {
+    for (const stage of pipeline.stages || []) {
+      stageMap[stage.id] = stage.label;
+    }
+  }
+}
+
 const stageGroups: Record<string, { count: number; value: number }> = {};
 
 deals.forEach(deal => {
-  const stage = deal.stage || 'unknown';
-  if (!stageGroups[stage]) {
-    stageGroups[stage] = { count: 0, value: 0 };
+  const stageId = deal.stage || 'unknown';
+  const stageLabel = stageMap[stageId] || stageId;
+  if (!stageGroups[stageLabel]) {
+    stageGroups[stageLabel] = { count: 0, value: 0 };
   }
-  stageGroups[stage].count += 1;
-  stageGroups[stage].value += deal.amount;
+  stageGroups[stageLabel].count += 1;
+  stageGroups[stageLabel].value += deal.amount;
 });
 
 const total_count = deals.length;
@@ -28,7 +43,7 @@ const current_week = {
 let previous_week: typeof current_week | null = null;
 
 // Get previous week's data from Google Sheets
-const sheetResult = metaphor.integration('google_sheets', 'values.get', {
+const sheetResult = await metaphor.integration('google_sheets', 'values.get', {
   spreadsheetId: google_sheet_id,
   range: 'Sheet1!A:Z',
 });

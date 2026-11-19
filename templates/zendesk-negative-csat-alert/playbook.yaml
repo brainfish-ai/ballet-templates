@@ -12,12 +12,17 @@ spec:
       integrationId: zendesk
       token: ""
       responseMode: immediate
+      events:
+        - satisfaction_rating.created
+        - satisfaction_rating.updated
   inputSchema:
     type: object
     properties:
       slack_channel:
         type: string
-        description: Slack channel ID or name for CSAT alerts (e.g. #customer-success)
+        description: "Slack channel ID or name for CSAT alerts (e.g. #customer-success)"
+    required:
+      - slack_channel
   steps:
     - id: filter_rating
       type: code
@@ -25,7 +30,8 @@ spec:
       codeFile: steps/filter_rating.ts
       description: Check if the rating qualifies as negative and deserves an alert.
       friendlyMessage: Filtering the rating
-      input: "{{ flow.input }}"
+      input:
+        event: "{{ flow.input }}"
       output:
         variable: result
         format: json
@@ -62,6 +68,7 @@ spec:
         ticket: "{{ steps.fetch_ticket.output }}"
         rating_comment: "{{ steps.filter_rating.output.rating_comment }}"
         hubspot_notes: "{{ steps.lookup_hubspot.output.notes }}"
+        skipped: "{{ steps.fetch_ticket.output.skipped }}"
       output:
         variable: result
         format: json
@@ -74,6 +81,8 @@ spec:
       input:
         slack_message: "{{ steps.summarize_ticket.output.slack_message }}"
         slack_channel: "{{ flow.input.slack_channel }}"
+        owner_email: "{{ steps.lookup_hubspot.output.owner_email }}"
+        skipped: "{{ steps.summarize_ticket.output.skipped }}"
       output:
         variable: result
         format: json
