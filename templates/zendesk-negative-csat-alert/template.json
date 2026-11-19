@@ -9,7 +9,7 @@
   "integrations": ["zendesk", "hubspot", "slack_bot"],
   "primaryKeyword": "zendesk bad satisfaction rating slack alert",
   "seoTitle": "Zendesk Negative CSAT Alerts to Slack with HubSpot Context",
-  "answer": "This template listens for Zendesk satisfaction rating webhooks, filters for bad or good_with_comment ratings (scores 1 or 2, or 3 with negative feedback), looks up the requester in HubSpot to find the account owner and recent notes, uses an AI agent to summarize the ticket and the customer's frustration, posts a Slack alert tagging the account owner (or a fallback channel), and deduplicates alerts so the same ticket only triggers one notification per 24-hour period.",
+  "answer": "This template listens for Zendesk satisfaction rating webhooks, filters for bad ratings only (truly negative feedback, not offered or good ratings), looks up the requester in HubSpot to find the account owner and recent context, uses an AI agent to summarize the ticket and the customer's frustration, posts a Slack alert @mentioning the account owner if found (or posts to a fallback channel), and provides per-run deduplication so the same webhook event does not trigger duplicate alerts within one run.",
   "faq": [
     {
       "q": "Can Zendesk send CSAT alerts to Slack natively?",
@@ -17,11 +17,11 @@
     },
     {
       "q": "What counts as a bad satisfaction rating?",
-      "a": "By default, ratings of bad (1 or 2 stars) or good_with_comment (3 stars but with negative feedback text) trigger the alert. You can customize this in the filter_rating step to include only the lowest ratings or adjust the threshold."
+      "a": "Only ratings explicitly scored as bad trigger the alert. Offered ratings (not yet submitted by the customer), good ratings, and good ratings with comments are not treated as negative and do not fire alerts. You can customize the filter_rating step if your team has different criteria for escalation."
     },
     {
       "q": "How does deduplication work?",
-      "a": "The workflow tracks ticket IDs that triggered an alert in the last 24 hours using an in-memory cache per run. If you need persistent deduplication across workflow restarts, connect a Ballet data table to store alerted ticket IDs with timestamps."
+      "a": "Per-run deduplication prevents the same webhook event from triggering duplicate alerts within one run (idempotency by event). However, the same ticket can trigger alerts on subsequent runs if customers submit additional ratings. For persistent cross-run deduplication, connect a Ballet data table to track alerted ticket IDs."
     },
     {
       "q": "What happens if the requester is not found in HubSpot?",
@@ -35,7 +35,7 @@
   "sampleOutput": "Slack message: Negative CSAT Alert: Ticket #5678 from Sarah at Acme Corp (owned by @jane). Rating: Bad. Summary: Customer frustrated by slow response time (48 hours) and incomplete answer to API integration question. Resolution: Escalate to engineering. View ticket.",
   "setupMinutes": 12,
   "whatYouNeed": "Zendesk integration connected in Ballet with CSAT enabled, HubSpot integration connected, Slack Bot integration connected and invited to CSAT alerts channel",
-  "failureHandling": "The Zendesk webhook responds immediately to avoid timeouts. If HubSpot or Slack API calls fail, the workflow retries automatically. Failed runs appear in history with error details. Idempotency via Zendesk ticket ID prevents duplicate alerts.",
+  "failureHandling": "The Zendesk webhook responds immediately to avoid timeouts. If HubSpot or Slack API calls fail, the workflow includes retry logic with exponential backoff. Failed runs appear in history with error details. Per-run deduplication by webhook event prevents duplicate alerts within one run, but the same ticket can trigger alerts on multiple runs if needed for persistent deduplication across runs.",
   "nativeVsTemplate": "Use Zendesk's built-in CSAT notifications if you only need basic email alerts. Use this template when you want Slack alerts with HubSpot account context, AI-generated ticket summaries, account owner tagging, and deduplication so your CS team sees negative feedback instantly without noise.",
   "related": ["zendesk-ticket-triage", "freshdesk-ticket-summary", "support-reply-drafter"],
   "secrets": [],

@@ -17,7 +17,7 @@
     },
     {
       "q": "How does deduplication work?",
-      "a": "The template tracks which ticket IDs were alerted in the previous run. Each ticket is alerted once per 24-hour period, so your Slack channel does not get spammed with repeat alerts for the same overdue ticket."
+      "a": "Per-run deduplication prevents the same ticket from being alerted multiple times within a single run. However, without persistent storage, the same ticket may be alerted on every scheduled run until resolved. To implement cross-run deduplication, connect a Ballet data table to store alerted ticket IDs."
     },
     {
       "q": "Can I customize the alert threshold?",
