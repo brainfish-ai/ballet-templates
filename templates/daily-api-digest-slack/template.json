@@ -6,16 +6,47 @@
   "tags": ["scheduled", "api", "slack", "digest", "llm"],
   "difficulty": "beginner",
   "trigger": "Manual run, or attach a daily schedule in Studio",
-  "integrations": ["slack"],
+  "integrations": ["slack_bot"],
+  "primaryKeyword": "api digest slack automation",
+  "seoTitle": "Daily API Digest to Slack with AI Summaries",
+  "answer": "This template fetches records from any JSON API endpoint with bearer authentication, uses an AI agent to summarize counts and key changes into a short written digest, then posts the digest to a Slack channel. The workflow retries API calls up to 5 times with exponential backoff, and you can attach a daily schedule in Studio to automate morning digests for your team.",
+  "faq": [
+    {
+      "q": "Can Slack or workflow tools do this natively?",
+      "a": "Slack can receive webhook posts and Zapier or Make can pull API data on a schedule, but they do not include AI summarization that turns raw JSON into a readable digest. This template combines API fetching, LLM summarization and Slack posting in one workflow."
+    },
+    {
+      "q": "What JSON APIs does this work with?",
+      "a": "Any public or private JSON API that accepts bearer token authentication and returns a JSON array or object. Edit the fetch_data step if your API requires query parameters, custom headers, or a different auth method."
+    },
+    {
+      "q": "How do I customize the digest format?",
+      "a": "Edit the summarize step code to change how the AI agent processes the JSON records. You can add filters, groupings, or custom formatting before the text is sent to Slack."
+    },
+    {
+      "q": "What happens if the API call fails?",
+      "a": "The fetch_data step retries up to 5 times with exponential backoff starting at 500ms. If all retries fail, the workflow stops and logs the error. No digest is posted to Slack."
+    },
+    {
+      "q": "Can I post to multiple Slack channels?",
+      "a": "The template posts to one channel per run. To post to multiple channels, duplicate the post_digest step and set a different SLACK_DIGEST_CHANNEL secret, or extend the workflow to loop over a list of channels."
+    }
+  ],
+  "sampleOutput": "Slack message in #ops: Daily Digest for Nov 19: 47 new records, 12 updated. Top change: Acme Corp upgraded to Enterprise. 3 records flagged for review.",
+  "setupMinutes": 5,
+  "whatYouNeed": "JSON API endpoint URL and bearer token for that API, Slack Bot integration connected and invited to digest channel",
+  "failureHandling": "The HTTP fetch step retries up to 5 times with exponential backoff starting at 500ms. If it fails after all retries, the workflow stops and logs the error. Scheduling continues on the next trigger.",
+  "nativeVsTemplate": "Use a no-code automation tool like Zapier when you only need to post raw API data to Slack without transformation. Use this template when you want AI-powered summarization that turns JSON records into readable insights, with built-in retries and scheduling.",
+  "related": ["generic-webhook-relay"],
   "secrets": [
     { "name": "DIGEST_API_URL", "description": "Full URL of the JSON endpoint to read, without the query string." },
-    { "name": "DIGEST_API_TOKEN", "description": "Bearer token for that API." },
-    { "name": "SLACK_BOT_TOKEN", "description": "Slack bot token with the `chat:write` scope." },
-    { "name": "SLACK_DIGEST_CHANNEL", "description": "Channel id or name to post to, for example `#ops`." }
+    { "name": "DIGEST_API_TOKEN", "description": "Bearer token for that API." }
   ],
   "setup": [
-    "Add the four secrets above.",
+    "Connect the Slack Bot integration in Ballet once and invite the bot to your digest channel.",
+    "Update the fetch_data step with your API URL and authentication method (the template defaults to bearer token).",
     "Run the playbook once manually to check the digest.",
-    "In Studio, add a schedule (for example `0 9 * * *`) to run it every morning."
-  ]
+    "Set up a daily schedule using an external scheduler or cron job to trigger the playbook via API, or use Ballet's scheduling feature if available."
+  ],
+  "lastValidated": null
 }

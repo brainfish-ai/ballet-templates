@@ -8,6 +8,37 @@
   "difficulty": "beginner",
   "trigger": "Manual run (pasted list or CSV of renewals); schedule it weekly",
   "integrations": ["google-calendar", "gmail"],
+  "primaryKeyword": "renewal risk alert template",
+  "seoTitle": "Renewal Risk Scoring with Calendar Brief via AI",
+  "answer": "This template takes a CSV of upcoming customer renewals, scores each account's churn risk using an AI agent that considers renewal date, ARR, your notes, and whether a customer call is scheduled, then matches any calls in the next 7 days from your Google Calendar and generates a pre-call brief for each. The complete renewal radar with risk scores and call briefs is emailed to you or your team.",
+  "faq": [
+    {
+      "q": "How does the AI determine renewal risk?",
+      "a": "The AI agent reads your notes field, days until renewal, ARR value, and whether a customer call is booked. You can customize the risk scoring logic by editing the renewal-risk-analyst agent instructions to match your CS playbook."
+    },
+    {
+      "q": "Where does the renewal list come from?",
+      "a": "You paste a CSV with columns: account, domain, renewal_date, arr, notes. Only account and renewal_date are required. To automate it, swap the first step for a CRM query or Stripe subscription lookup."
+    },
+    {
+      "q": "How are customer calls matched to renewals?",
+      "a": "The template scans your Google Calendar for events in the next 7 days where an attendee email domain matches the renewal's domain. Accounts without a domain field are never matched to a call."
+    },
+    {
+      "q": "Can I schedule this to run weekly?",
+      "a": "Yes. Add a weekly schedule trigger and set your renewal CSV as the default input. The radar will be emailed to you every Monday (or your chosen day) automatically."
+    },
+    {
+      "q": "What is included in the pre-call brief?",
+      "a": "For each matched call, the AI writes a brief with account context, renewal risk factors, suggested talking points, and next actions. The brief appears in the emailed radar under the renewal row."
+    }
+  ],
+  "sampleOutput": "Email subject: Renewal Radar for Nov 18-25. Body includes: Acme Corp | Renewal: Dec 15 | ARR: $24,000 | Risk: Medium | Call: Nov 20 10am. Brief: Champion left in Q3, no executive sponsor confirmed. Suggest booking EBR before renewal date.",
+  "setupMinutes": 5,
+  "whatYouNeed": "Google Calendar connected, Gmail connected, CSV of renewals (account, renewal_date required; domain, arr, notes optional)",
+  "failureHandling": "The template does not retry on failure since it is a manual or scheduled run. If Calendar or Gmail API calls fail, the error appears in run history. Missing domains skip calendar matching but still score risk and appear in the radar.",
+  "nativeVsTemplate": "Use a spreadsheet if you only need to manually track renewals. Use this template when you want automated risk scoring, AI-generated call briefs, and calendar integration so your CS team knows exactly which accounts need attention and what to say on upcoming calls.",
+  "related": ["account-icp-scoring", "meeting-prep-brief"],
   "secrets": [],
   "setup": [
     "Import the template and connect Google Calendar and Gmail.",
@@ -21,5 +52,6 @@
     "Risk is scored from your notes, the renewal date, ARR and whether a call is booked. It does not read product usage or support tickets.",
     "Customer calls are matched by attendee email domain in the next 7 days. Accounts without a domain never match a call.",
     "Up to 50 renewals per run."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

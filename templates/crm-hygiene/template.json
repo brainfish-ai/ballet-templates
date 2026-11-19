@@ -8,6 +8,37 @@
   "difficulty": "beginner",
   "trigger": "Manual run; schedule it weekly",
   "integrations": ["hubspot"],
+  "primaryKeyword": "hubspot crm hygiene report",
+  "seoTitle": "HubSpot CRM Hygiene Report with Cleanup Plan",
+  "answer": "This template scans up to 2,000 contacts and 2,000 companies in your HubSpot portal, identifies duplicate records (exact email or domain matches), missing required fields, unowned records, and stale records not modified in the last 180 days (configurable), then produces a prioritized cleanup report. The AI agent ranks issues by impact and provides example records to fix first. The workflow is read-only and never modifies your CRM data.",
+  "faq": [
+    {
+      "q": "Can HubSpot audit data quality natively?",
+      "a": "HubSpot provides duplicate management tools and data quality views, but it does not produce a single prioritized cleanup plan that combines duplicates, missing fields, unowned records and staleness in one report. This template delivers a complete hygiene assessment with actionable next steps."
+    },
+    {
+      "q": "What counts as a duplicate?",
+      "a": "For contacts, exact email matches (case-insensitive). For companies, exact domain matches (case-insensitive, ignoring a leading www). Fuzzy matching on name or partial similarity is not included."
+    },
+    {
+      "q": "How do I define which fields are required?",
+      "a": "Edit the scan_records step code to list the properties you consider required, for example: email, firstname, lastname for contacts, and domain, name for companies. The report will flag records missing any of them."
+    },
+    {
+      "q": "Does the template fix issues automatically?",
+      "a": "No. The template only reads from HubSpot and produces a report. It does not merge duplicates, assign owners, or update records. You review the findings and clean up manually or with HubSpot workflows."
+    },
+    {
+      "q": "Can I schedule this to run weekly?",
+      "a": "Yes. Add a weekly schedule trigger to the playbook. The report will run automatically and appear in your run history. You can email it by adding a final email step."
+    }
+  ],
+  "sampleOutput": "Hygiene Report: 2,000 contacts scanned, 47 duplicates (23 pairs), 312 missing email, 89 unowned, 156 stale (180+ days). Priority: Merge duplicate contacts first (example: john.doe@acme.com appears twice). Then assign unowned high-value accounts. Built by the Brainfish team.",
+  "setupMinutes": 3,
+  "whatYouNeed": "HubSpot account with admin or super admin access, HubSpot connected to Ballet",
+  "failureHandling": "If HubSpot API calls fail, the workflow logs the error and stops. No retries since this is a manual or scheduled read-only run. Very large portals (over 2,000 contacts or companies) are only partially scanned; increase the limit in the code if needed.",
+  "nativeVsTemplate": "Use HubSpot's built-in duplicate management when you only need to merge a few contacts or companies manually. Use this template when you want a comprehensive hygiene audit across duplicates, missing fields, unowned records and staleness, with prioritized recommendations on what to fix first and why.",
+  "related": ["salesforce-lead-enrichment"],
   "secrets": [],
   "setup": [
     "Import the template and connect HubSpot.",
@@ -19,5 +50,6 @@
     "Report only: it lists what to fix but does not merge, assign or update records.",
     "Reads up to 2,000 contacts and 2,000 companies per run, in HubSpot's default order, so very large portals are only partly checked.",
     "Duplicates are exact matches on email (contacts) and domain (companies), ignoring case and a leading www."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

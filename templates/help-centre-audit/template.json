@@ -8,10 +8,42 @@
   "difficulty": "beginner",
   "trigger": "Manual run (help centre URL)",
   "integrations": [],
+  "primaryKeyword": "help centre audit deflection",
+  "seoTitle": "Help Centre Audit with Contact Deflection Gaps",
+  "answer": "This template reads your help centre homepage and searches for the most visible articles, then uses an AI agent to identify likely reasons customers contact support, coverage gaps where key questions are not answered, and the top 3 fixes to improve ticket deflection. You can optionally provide a list of the questions customers ask most to improve the gap analysis and get more actionable recommendations.",
+  "faq": [
+    {
+      "q": "Can help desk platforms audit content natively?",
+      "a": "Most help desk platforms show article view counts and search terms, but they do not analyze which common customer questions are missing from your help centre or recommend which articles to write next. This template delivers a strategic content audit with prioritized fixes."
+    },
+    {
+      "q": "What articles does the template analyze?",
+      "a": "The workflow reads your help centre homepage and searches for the most visible articles linked from it. It does not crawl every article in your help centre. Edit the read_help_centre step to add specific article URLs if needed."
+    },
+    {
+      "q": "How do I improve the gap analysis?",
+      "a": "Pass a list of the questions customers ask most (from support tickets, live chat transcripts, or search logs) when you run the template. The AI agent will check whether your help centre answers them and flag gaps."
+    },
+    {
+      "q": "What is included in the top 3 fixes?",
+      "a": "The audit prioritizes fixes by deflection impact: which articles to write or update first to prevent the most support contacts. Each fix includes the topic, why it matters, and what to cover."
+    },
+    {
+      "q": "Can I schedule this to run quarterly?",
+      "a": "Yes, but the template is designed for manual runs. To automate it, add a schedule trigger and set your help centre URL as the default input. The audit will appear in run history each time."
+    }
+  ],
+  "sampleOutput": "Audit: Likely contact drivers: password reset (no article), billing questions (article outdated), API errors (article too technical). Top 3 fixes: 1. Write a step-by-step password reset guide for non-technical users. 2. Update billing FAQ with 2024 pricing changes. 3. Simplify API error article with screenshots. Built by the Brainfish team.",
+  "setupMinutes": 2,
+  "whatYouNeed": "Help centre or documentation homepage URL, optional list of top customer questions",
+  "failureHandling": "If the help centre URL cannot be reached or parsed, the workflow logs the error and stops. No retries since this is a manual run. The audit continues with available articles even if some linked pages fail to load.",
+  "nativeVsTemplate": "Use your help desk's analytics when you only need to see which articles are viewed most. Use this template when you want a strategic audit that identifies content gaps, estimates deflection impact, and recommends what to write or fix next based on likely customer contact drivers.",
+  "related": ["l1-ticket-triage", "support-reply-drafter"],
   "secrets": [],
   "setup": [
     "Import the template. No apps or secrets are required.",
     "Run it with your help centre URL, and optionally the questions customers ask most.",
     "Edit the `help-centre-auditor` agent to match your product and support policies."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

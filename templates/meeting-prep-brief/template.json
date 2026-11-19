@@ -8,6 +8,37 @@
   "difficulty": "beginner",
   "trigger": "Manual run; schedule it daily before your first meeting",
   "integrations": ["google-calendar"],
+  "primaryKeyword": "meeting prep brief automation",
+  "seoTitle": "Meeting Prep Briefs with Google Calendar & AI",
+  "answer": "This template reads your Google Calendar for tomorrow's events, filters for external meetings (where at least one attendee email domain differs from yours), researches each company's website and recent news, then writes a one-page brief per meeting with attendee context, company background, and suggested talking points. You can provide optional context about what you sell to make talking points more relevant. The workflow processes up to 8 meetings per run.",
+  "faq": [
+    {
+      "q": "Can CRMs or calendar tools prep meetings natively?",
+      "a": "Most CRMs show account records when you click a meeting, but they do not automatically research the company's website, read recent news, and write talking points for every external meeting. This template delivers complete prep briefs without manual lookup."
+    },
+    {
+      "q": "How are external meetings identified?",
+      "a": "A meeting counts as external when at least one attendee's email domain differs from yours. Meetings with only internal attendees are skipped. Meetings with free-mail attendees (gmail.com, outlook.com, etc.) are researched by person name, not company."
+    },
+    {
+      "q": "What information is included in each brief?",
+      "a": "Each brief includes meeting time, attendees, company name, what the company does, recent news or funding, your relevant talking points (based on context you provide), and suggested questions. Edit the meeting-prep-researcher agent to add or change sections."
+    },
+    {
+      "q": "Does the template read my CRM?",
+      "a": "No. Research uses each company's public website and web search. It does not connect to your CRM. To include CRM data, extend the playbook to call your CRM API and pass account context to the researcher agent."
+    },
+    {
+      "q": "Can I schedule this to run daily?",
+      "a": "Yes. Add a daily schedule trigger to the playbook (for example, every day at 7am). Briefs for tomorrow's meetings will be ready before your first call. You can email them by adding a final email step."
+    }
+  ],
+  "sampleOutput": "Brief for Nov 20 10am with Acme Corp: Attendees: Jane Doe (CEO), john@acme.com (CTO). Company: B2B SaaS, AI-powered project management, 50 employees, raised $10M Series A in Q3 2026. Talking points: They recently launched Gantt charts; highlight our real-time collaboration features. Questions: Ask about their AI roadmap and integration priorities. Built by the Brainfish team.",
+  "setupMinutes": 3,
+  "whatYouNeed": "Google Calendar connected, optional one or two sentences describing what you sell",
+  "failureHandling": "If Google Calendar API calls fail, the workflow logs the error and stops. If a company website cannot be reached or web search fails, the brief notes this and continues with available information. No retries since this is a manual or scheduled run. Up to 8 meetings per run.",
+  "nativeVsTemplate": "Use your CRM's calendar integration when you only need to see account records for scheduled meetings. Use this template when you want automated research briefs that read company websites, recent news, and generate talking points for every external meeting without manual lookup.",
+  "related": ["account-icp-scoring", "renewal-radar", "competitor-watch"],
   "secrets": [],
   "setup": [
     "Import the template and connect Google Calendar.",
@@ -19,5 +50,6 @@
     "A meeting counts as external when at least one attendee's email domain differs from yours. Meetings with only free-mail attendees (gmail.com, outlook.com and similar) are researched by person, not company.",
     "Research uses each company's website and a web search; it does not read your CRM.",
     "Up to 8 meetings per run."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

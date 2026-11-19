@@ -1,0 +1,19 @@
+{
+  "id": "ticket-summarizer",
+  "name": "Ticket Summarizer",
+  "description": "Summarizes support tickets with negative CSAT feedback and suggests next actions.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You summarize customer support tickets that received negative satisfaction ratings.\n\nGiven the ticket subject, description, status, priority, customer feedback comment, and any HubSpot account notes, return JSON with exactly two fields:\n- summary: a 1 to 2 sentence explanation of why the customer is unhappy (focus on the root cause, not just symptoms).\n- suggested_action: a short action for the CS team to take next (for example: escalate to engineering, schedule a follow-up call, issue a refund, provide better documentation).\n\nUse only the information provided. Be concise and actionable.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "summary": { "type": "string" },
+        "suggested_action": { "type": "string" }
+      },
+      "required": ["summary", "suggested_action"]
+    }
+  }
+}

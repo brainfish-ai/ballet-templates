@@ -7,10 +7,42 @@
   "difficulty": "beginner",
   "trigger": "Manual run",
   "integrations": [],
+  "primaryKeyword": "support reply drafter ai",
+  "seoTitle": "AI Support Reply Drafter with Public Docs",
+  "answer": "This template takes a customer message (from a ticket, email, or chat), optionally searches public documentation when the AI agent decides it needs more context, then drafts a polite, accurate reply you can review and send. You can provide optional product context (plan, known issues, account notes) and set the tone (friendly, formal, concise). The workflow never sends the reply automatically and always lets you review before posting.",
+  "faq": [
+    {
+      "q": "Can help desk platforms draft replies natively?",
+      "a": "Most help desk platforms offer canned responses and macros, but they do not include AI that reads the customer's message, searches documentation when needed, and writes a contextual draft reply. This template delivers personalized drafts with source-aware answers."
+    },
+    {
+      "q": "Does the template search my internal knowledge base?",
+      "a": "The template searches public web documentation when the AI agent decides it needs context. It does not connect to internal knowledge bases. To add internal search, extend the research step to call your knowledge base API."
+    },
+    {
+      "q": "How do I customize the tone?",
+      "a": "Pass a tone parameter when you run the template (friendly, formal, concise, etc.). Edit the support-reply-writer agent instructions to define your default tone, brand voice, and support policies."
+    },
+    {
+      "q": "Does the template send the reply automatically?",
+      "a": "No. The workflow only drafts the reply. You review it and send it manually from your help desk or email client. To auto-send, extend the playbook with an email or help desk API step."
+    },
+    {
+      "q": "What product context should I provide?",
+      "a": "Include the customer's plan, known issues affecting them, recent account activity, or anything the AI agent should consider when drafting. More context improves accuracy and personalization."
+    }
+  ],
+  "sampleOutput": "Draft reply: Hi Alex, thanks for reaching out about the billing issue. I can see your account was charged twice on Nov 15. I've escalated this to our billing team and you'll receive a refund within 3 business days. Let me know if you have any questions in the meantime. Sources: Help Centre article on refunds. Built by the Brainfish team.",
+  "setupMinutes": 2,
+  "whatYouNeed": "Customer message text, optional product context, optional tone preference",
+  "failureHandling": "If web search or documentation lookup fails, the AI agent drafts a reply based on available information and notes that sources were unavailable. The workflow does not retry since this is a manual run. Review the draft before sending.",
+  "nativeVsTemplate": "Use help desk macros when you have simple, repetitive responses. Use this template when you want AI to read the customer's question, search relevant documentation, and draft a personalized reply that addresses their specific issue with accurate, source-aware answers.",
+  "related": ["l1-ticket-triage", "help-centre-audit", "zendesk-ticket-triage"],
   "secrets": [],
   "setup": [
     "Import the template. No secrets are required.",
     "Run it from Studio with a customer message and optional product notes.",
     "Edit the `support-reply-writer` agent to add your own tone and policies."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

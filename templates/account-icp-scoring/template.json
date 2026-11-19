@@ -8,10 +8,42 @@
   "difficulty": "beginner",
   "trigger": "Manual run (list of company URLs)",
   "integrations": [],
+  "primaryKeyword": "account icp scoring template",
+  "seoTitle": "Score Accounts Against ICP with AI Research",
+  "answer": "This template takes a list of up to 10 company websites, reads each company's public site to understand their business model, size, target market and positioning, then scores every account against your ideal customer profile and ranks them by fit. The AI agent produces an opening line for each prospect that references their specific business context, ready to paste into outreach.",
+  "faq": [
+    {
+      "q": "Can my CRM score accounts against ICP natively?",
+      "a": "Most CRMs offer lead scoring based on property values like industry or employee count, but they do not research a company's website to understand what they do and how they fit your ICP. This template reads public information and applies custom scoring logic you define."
+    },
+    {
+      "q": "Where does the company research come from?",
+      "a": "The AI agent visits each website you provide and reads the homepage and key pages to understand the company. You can customize the ICP scoring criteria in the icp-scorer agent instructions."
+    },
+    {
+      "q": "How do I define my ideal customer profile?",
+      "a": "Pass a one-line ICP description when you run the template, for example: B2B SaaS, 50-500 employees, sells to support teams. Edit the icp-scorer agent to bake in permanent scoring rules and weightings."
+    },
+    {
+      "q": "What is included in the output?",
+      "a": "The template returns a ranked list of accounts with company name, fit score (0-100), the reasons for the score, and a personalized opening line you can use in outreach. Accounts are sorted by descending fit score."
+    },
+    {
+      "q": "Can I use this with a CSV of accounts from my CRM?",
+      "a": "Yes. Export a list with company website URLs, paste them into the template, and the research and scoring runs on all of them. You can then import the scores back into your CRM as a custom property."
+    }
+  ],
+  "sampleOutput": "Acme Corp | Score: 92 | Fit: B2B SaaS, 200 employees, targets support teams with AI-powered ticketing. Opening line: Noticed you recently launched a new AI feature for support teams. We help companies like yours deflect 40% of repetitive tickets with intelligent automation.",
+  "setupMinutes": 2,
+  "whatYouNeed": "List of company website URLs (up to 10 per run), optional ICP description",
+  "failureHandling": "If a company website cannot be reached or parsed, that account is skipped and appears in the output with a note. The workflow continues with remaining accounts. No retries are built in since this is a manual run.",
+  "nativeVsTemplate": "Use built-in CRM lead scoring when you have structured fields (industry, size, location) and simple rules. Use this template when you need AI-powered research that reads a company's website, understands what they do, and applies nuanced ICP fit logic that cannot be captured in property-based scoring rules.",
+  "related": ["renewal-radar", "meeting-prep-brief", "salesforce-lead-enrichment"],
   "secrets": [],
   "setup": [
     "Import the template. No apps or secrets are required.",
     "Run it with up to 10 company websites, and optionally a description of your ideal customer.",
     "Edit the `icp-scorer` agent to bake in your own ICP and scoring rules."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

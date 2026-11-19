@@ -11,7 +11,6 @@ spec:
       provider: salesforce
       token: ""
       responseMode: immediate
-      credentialRef: SALESFORCE_WEBHOOK_TOKEN
       objectType: Lead
   inputSchema:
     type: object
@@ -54,25 +53,15 @@ spec:
         variable: result
         format: json
     - id: update_lead
-      type: http
+      type: code
+      language: typescript
+      codeFile: steps/update_lead.ts
       description: Write the brief back to the Lead record.
       friendlyMessage: Updating the lead
-      method: PATCH
-      url: "{{ secret.SALESFORCE_INSTANCE_URL }}/services/data/v60.0/sobjects/Lead/{{ flow.input.lead_id }}"
-      headers:
-        Content-Type: application/json
-      body:
-        Description: "{{ steps.write_brief.output.brief }}"
-        Rating: "{{ steps.write_brief.output.rating }}"
-      auth:
-        type: bearer
-        tokenRef: SALESFORCE_ACCESS_TOKEN
-      input: {}
+      input:
+        lead_id: "{{ flow.input.lead_id }}"
+        brief: "{{ steps.write_brief.output.brief }}"
+        rating: "{{ steps.write_brief.output.rating }}"
       output:
         variable: result
-        format: text
-      timeoutMs: 20000
-      retry:
-        maxAttempts: 3
-        backoff: exponential
-        delayMs: 500
+        format: json

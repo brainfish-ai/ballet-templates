@@ -1,0 +1,80 @@
+const { customer_email, payment_status, failure_summary } = input_data as {
+  customer_email: string;
+  payment_status: string;
+  failure_summary: string;
+};
+
+let contact_id: string | null = null;
+let company_id: string | null = null;
+
+if (customer_email && customer_email !== 'unknown') {
+  // Search for contact by email
+  const searchResult = metaphor.integration('hubspot', 'contacts.search', {
+    filterGroups: [{
+      filters: [{ propertyName: 'email', operator: 'EQ', value: customer_email }]
+    }],
+    properties: ['email', 'hubspot_owner_id'],
+    limit: 1,
+  });
+
+  if (searchResult.ok && searchResult.data?.results?.length > 0) {
+    const contactId = searchResult.data.results[0].id;
+    
+    // Get full contact details with associations
+    const contactResult = metaphor.integration('hubspot', 'contacts.get', {
+      contactId,
+      properties: ['email', 'hubspot_owner_id'],
+      associations: ['companies'],
+    });
+
+    if (contactResult.ok) {
+      const contact = contactResult.data;
+      contact_id = contact.id;
+
+      // Get associated company
+      if (contact.associations?.companies?.results?.length > 0) {
+        company_id = contact.associations.companies.results[0].id;
+      }
+    }
+  }
+}
+
+if (contact_id) {
+  // Update contact payment status
+  const updateResult = metaphor.integration('hubspot', 'contacts.update', {
+    contactId: contact_id,
+    properties: {
+      payment_status,
+    },
+  });
+
+  if (!updateResult.ok) {
+    throw new Error(`HubSpot contact update failed: ${updateResult.error}`);
+  }
+
+  // Create note
+  const noteResult = metaphor.integration('hubspot', 'api.get', {
+    path: '/crm/v3/objects/notes',
+    method: 'POST',
+    body: {
+      properties: {
+        hs_note_body: `Stripe Payment Failure\n\n${failure_summary}\n\nLogged automatically by Ballet.`,
+        hs_timestamp: new Date().toISOString(),
+      },
+      associations: [{
+        to: { id: contact_id },
+        types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 202 }],
+      }],
+    },
+  });
+
+  if (!noteResult.ok) {
+    throw new Error(`HubSpot note creation failed: ${noteResult.error}`);
+  }
+}
+
+const result = {
+  contact_id,
+  company_id,
+  updated: !!contact_id,
+};

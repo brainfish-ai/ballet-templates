@@ -7,6 +7,37 @@
   "difficulty": "intermediate",
   "trigger": "Manual run",
   "integrations": [],
+  "primaryKeyword": "slack thread to linear issue",
+  "seoTitle": "Convert Slack Threads to Linear Issues via MCP",
+  "answer": "This template calls the Slack MCP server to read a thread by channel ID and parent timestamp, uses an AI agent to draft a clear Linear issue title and description from the conversation (including steps to reproduce, expected vs actual behavior, and context), then creates the issue via the Linear MCP server. The workflow demonstrates MCP integration for capturing bug reports or feature requests from Slack discussions without manual copy-paste.",
+  "faq": [
+    {
+      "q": "Can Linear or Slack create issues from threads natively?",
+      "a": "Slack and Linear offer basic integrations, but they do not include AI that reads a thread, extracts structure (steps to reproduce, expected behavior, etc.), and writes a well-formed issue. This template uses MCP servers and an AI agent to produce clear, actionable Linear issues."
+    },
+    {
+      "q": "What is an MCP server?",
+      "a": "MCP (Model Context Protocol) servers expose tools that AI agents can call to read and write data in external services like Slack, Linear, GitHub and more. This template shows how to chain two MCP servers in one playbook."
+    },
+    {
+      "q": "How do I find the channel ID and thread timestamp?",
+      "a": "In Slack, right-click a message and choose Copy Link. The link format is https://workspace.slack.com/archives/CHANNEL_ID/pTHREAD_TS. The parent timestamp is the thread_ts (the p-prefixed timestamp in the URL)."
+    },
+    {
+      "q": "What if my MCP server tool names differ?",
+      "a": "MCP server schemas evolve. If your Slack or Linear server uses different tool names or arguments, check Studio's tool list for the exact schema and update the calls in steps/read_thread.ts and steps/create_issue.ts."
+    },
+    {
+      "q": "Can I automate this for every thread?",
+      "a": "This template is designed for manual runs. To automate, you would need a Slack event webhook that triggers on thread creation and passes the thread details. Extend the playbook to handle Slack events if needed."
+    }
+  ],
+  "sampleOutput": "Linear issue created in ENG team: Title: API returns 500 on /users endpoint with invalid auth token. Description: Steps to reproduce: 1. Call /users with an expired token. 2. Observe 500 response instead of 401. Expected: 401 Unauthorized. Actual: 500 Internal Server Error. Context: Reported by @user in #engineering on Nov 19. Built by the Brainfish team.",
+  "setupMinutes": 10,
+  "whatYouNeed": "Slack MCP server connected (OAuth), Linear MCP server connected (OAuth), Slack channel ID, thread parent timestamp, Linear team key",
+  "failureHandling": "If the Slack MCP server call fails, the workflow logs the error and stops. If the Linear MCP server call fails, the issue is not created and the error is logged. No built-in retries since MCP server errors are often authentication or permission issues. Check run history for failure details.",
+  "nativeVsTemplate": "Use Slack and Linear's built-in integrations when you only need to manually create an issue from a message. Use this template when you want AI to read a full thread, extract structure, and produce a clear, actionable Linear issue with steps to reproduce, expected behavior, and context.",
+  "related": ["mcp-linear-weekly-digest", "github-issue-triage"],
   "mcpServers": [
     { "id": "slack", "tools": ["slack_read_thread"] },
     { "id": "linear", "tools": ["save_issue"] }
@@ -16,5 +47,6 @@
     "In Studio, open MCP Servers and connect Slack and Linear from the registry. Keep the server ids `slack` and `linear`.",
     "Run the playbook with a channel id, the thread's parent timestamp, and your Linear team.",
     "If a tool name or argument differs in your MCP server version, adjust the call in steps/*.ts (use Studio's tool list for the exact names)."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

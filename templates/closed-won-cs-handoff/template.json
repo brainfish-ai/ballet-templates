@@ -1,0 +1,54 @@
+{
+  "id": "closed-won-cs-handoff",
+  "title": "Closed Won CS Handoff",
+  "summary": "When a HubSpot deal moves to closed won, check required handoff fields, AI writes handoff summary, creates Slack channel, requires approval before inviting customer-facing people.",
+  "category": "sales",
+  "tags": ["hubspot", "sales", "customer-success", "slack", "webhook", "llm", "approval"],
+  "difficulty": "intermediate",
+  "trigger": "HubSpot webhook (deal stage changed to closed won)",
+  "integrations": ["hubspot", "slack_bot", "google_drive"],
+  "primaryKeyword": "closed won handoff to customer success automation",
+  "seoTitle": "Automate Closed Won to CS Handoff with Slack and AI",
+  "answer": "This template triggers when a HubSpot deal moves to closed won, fetches the deal details and validates required handoff fields are complete, uses an AI agent to write a customer success handoff summary with key context and 90-day success criteria, creates a dedicated Slack channel and posts the summary, then requires human approval before inviting the CS team so you can review the handoff before customer-facing people join.",
+  "faq": [
+    {
+      "q": "Can HubSpot hand off deals to customer success automatically?",
+      "a": "HubSpot can send deal stage change notifications and create tasks, but it does not auto-generate handoff summaries, create Slack channels, or require approval gates. This template adds AI-written context, Slack workspace integration, and a review step to ensure clean handoffs."
+    },
+    {
+      "q": "Why is approval required before inviting the CS team?",
+      "a": "The approval step lets you review the AI-generated handoff summary and Slack channel before customer-facing CS team members are invited. This prevents incomplete or incorrect handoffs from reaching the team and gives you a chance to edit the summary."
+    },
+    {
+      "q": "What required handoff fields are checked?",
+      "a": "The template validates that the deal has dealname, amount, and closedate. If any are missing, the workflow fails early with an error message. You can customize the required fields in the fetch_deal step."
+    },
+    {
+      "q": "Can I customize the handoff summary content?",
+      "a": "Yes. Edit the cs-handoff-writer agent instructions to change what the summary includes. For example, add product details, implementation timeline, or champion contact info based on HubSpot deal properties."
+    },
+    {
+      "q": "What happens if the Slack channel already exists?",
+      "a": "The Slack API will return an error if a channel with that name already exists. The template normalizes the deal name to a channel-safe format, but if there is a collision, the run fails. You can add logic to append a suffix or check for existing channels."
+    }
+  ],
+  "sampleOutput": "Slack channel cs-acme-corp created. Message posted: CS Handoff Summary. Welcome to Acme Corp! ARR: $48,000, closed Nov 15, 2026. High priority account. Success criteria: Complete onboarding by Dec 15, schedule executive business review in Q1, identify 2 expansion opportunities. Note: Champion is the VP of Ops, keep them engaged.",
+  "setupMinutes": 20,
+  "whatYouNeed": "HubSpot integration connected in Ballet, Slack Bot integration connected with channels:manage, conversations:write, users:read.email scopes, Google Drive integration connected",
+  "failureHandling": "The workflow fails if required HubSpot fields are missing, stopping before the Slack channel is created. If Slack channel creation fails (duplicate name), the run logs the error. If approval is denied, the CS team is not invited. No automatic retries; you can manually rerun the playbook after fixing issues.",
+  "nativeVsTemplate": "Use HubSpot's built-in workflows if you only need to send email notifications or create tasks when a deal closes. Use this template when you want AI-generated handoff context, Slack channel automation, Google Drive documentation, and a human-in-the-loop approval gate to ensure quality handoffs from sales to customer success.",
+  "related": ["salesforce-lead-enrichment", "renewal-radar", "account-icp-scoring"],
+  "secrets": [],
+  "setup": [
+    "Connect the HubSpot, Slack Bot, and Google Drive integrations in Ballet once.",
+    "Publish the playbook and copy the webhook URL from Studio.",
+    "In HubSpot, create a workflow that triggers when deal stage changes to closed won and sends a webhook to the Ballet URL with deal_id, deal_name, close_date, arr, owner_email fields.",
+    "Test with a deal moved to closed won.",
+    "When the approval step appears, review the handoff summary and approve to proceed with team invites and document creation."
+  ],
+  "notes": [
+    "The cs_team_emails list is hardcoded in this template. In production, fetch the CS team from HubSpot deal owner, a config file, or a Ballet data table.",
+    "Slack channel names are limited to 80 characters and can only contain lowercase letters, numbers, hyphens, and underscores. The template normalizes deal names automatically."
+  ],
+  "lastValidated": null
+}

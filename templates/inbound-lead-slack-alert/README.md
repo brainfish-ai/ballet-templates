@@ -14,19 +14,13 @@ Score every form submission that hits a webhook and post it to Slack, flagging h
 ## What it does
 
 1. **score** (code): Score the lead and write a one-line reason.
-2. **notify** (http): Post the lead to Slack, flagged as hot when it scores 7 or higher.
+2. **notify** (code): Post the lead to Slack, flagged as hot when it scores 7 or higher.
 
 ## What you need
 
-Secrets (add them in Studio; values never leave your workspace):
+No secrets required.
 
-| Name | Purpose |
-|---|---|
-| `INBOUND_HMAC_SECRET` | HMAC-SHA256 secret your form tool uses to sign webhook bodies. |
-| `SLACK_BOT_TOKEN` | Slack bot token with the `chat:write` scope. |
-| `SLACK_LEADS_CHANNEL` | Channel id or name to post leads to, for example `#leads`. |
-
-Integrations: `slack`
+Integrations: `slack_bot`
 
 Agents (created for you on import; edit them in Studio):
 
@@ -34,9 +28,10 @@ Agents (created for you on import; edit them in Studio):
 
 ## Setup
 
-1. Add the three secrets above and invite the Slack bot to the channel.
+1. Connect the Slack Bot integration in Ballet once and invite the bot to your lead alerts channel.
 2. Publish the playbook and point your form tool's webhook at the URL shown in Studio.
-3. Submit a test form and watch the run.
+3. Configure your form tool to send HMAC-SHA256 signatures if needed.
+4. Submit a test form and watch the run.
 
 ## Files
 

@@ -7,6 +7,37 @@
   "difficulty": "intermediate",
   "trigger": "GitHub webhook (issues)",
   "integrations": ["github"],
+  "primaryKeyword": "github issue triage automation",
+  "seoTitle": "Auto-Label GitHub Issues with AI via Webhook",
+  "answer": "This template receives a GitHub webhook when an issue is opened, verifies the X-Hub-Signature-256 signature, uses an AI agent to classify the issue as bug, feature request, question or documentation from the title and body, then applies the chosen labels back to the issue via the GitHub API. The workflow ignores other webhook actions (edited, closed, etc.) and only processes newly opened issues with retry logic for label updates.",
+  "faq": [
+    {
+      "q": "Can GitHub Actions do issue triage natively?",
+      "a": "GitHub Actions can apply labels based on simple keyword rules or issue templates, but it does not include AI classification that reads the full issue context and assigns labels intelligently. This template uses an LLM to understand intent and classify issues accurately."
+    },
+    {
+      "q": "What labels does the AI agent apply?",
+      "a": "The default classifier assigns bug, feature, question or docs labels. Edit the classify step code and agent instructions to use your own label taxonomy. The labels must already exist in your GitHub repository."
+    },
+    {
+      "q": "How is the webhook signature verified?",
+      "a": "The webhook trigger verifies the X-Hub-Signature-256 header using the GITHUB_WEBHOOK_SECRET you provide. If the signature does not match, the webhook is rejected with a 401 response and the workflow does not run."
+    },
+    {
+      "q": "What happens if label assignment fails?",
+      "a": "The apply_labels HTTP step retries up to 3 times with exponential backoff starting at 500ms. If all retries fail, the workflow logs the error and the issue remains unlabeled. Check run history for failures."
+    },
+    {
+      "q": "Can I use this on multiple repositories?",
+      "a": "Yes. The same webhook URL and playbook can receive issues from multiple repositories as long as they all use the same GITHUB_WEBHOOK_SECRET. The GITHUB_TOKEN must have Issues write permission on all target repositories."
+    }
+  ],
+  "sampleOutput": "Issue #42 in acme/api opened: 'User authentication fails with 500 error'. AI classification: bug. Labels applied: bug. Built by the Brainfish team.",
+  "setupMinutes": 10,
+  "whatYouNeed": "GitHub webhook secret, GitHub fine-grained token with Issues read and write permission, labels already created in your repository",
+  "failureHandling": "Signature verification failures reject the webhook immediately with a 401 response. The classify step ignores non-opened issues and exits early. The apply_labels HTTP step retries up to 3 times with exponential backoff starting at 500ms. If all retries fail, the workflow logs the error and the issue remains unlabeled. Idempotency via X-GitHub-Delivery deduplicates repeated webhooks.",
+  "nativeVsTemplate": "Use GitHub Actions with simple keyword rules when your issues are clearly structured and follow templates. Use this template when you want AI-powered classification that understands issue context and applies accurate labels without manual keyword configuration.",
+  "related": ["zendesk-ticket-triage", "l1-ticket-triage"],
   "secrets": [
     { "name": "GITHUB_WEBHOOK_SECRET", "description": "The secret you set on the GitHub webhook; used to verify X-Hub-Signature-256." },
     { "name": "GITHUB_TOKEN", "description": "Fine-grained token with Issues: read and write on the target repositories." }
@@ -16,5 +47,6 @@
     "Publish the playbook and copy its webhook URL from Studio.",
     "In the GitHub repo, add a webhook: payload URL from Studio, content type application/json, the same secret, and the Issues event only.",
     "Open a test issue and check the labels."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

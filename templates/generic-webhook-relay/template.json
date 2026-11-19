@@ -7,6 +7,37 @@
   "difficulty": "beginner",
   "trigger": "Generic HMAC webhook",
   "integrations": [],
+  "primaryKeyword": "webhook relay hmac verification",
+  "seoTitle": "Verify, Transform & Relay Webhooks with Retries",
+  "answer": "This template receives any webhook signed with HMAC-SHA256, verifies the signature to ensure authenticity, runs a custom transformation step to reshape the payload (you define the transformation logic in TypeScript), then forwards the transformed event to a downstream service with up to 5 retries and exponential backoff. Idempotency is enforced by the X-Event-Id header to prevent duplicate processing.",
+  "faq": [
+    {
+      "q": "Can API gateways or iPaaS tools do this natively?",
+      "a": "Most API gateways can verify HMAC signatures and forward requests, but they do not offer custom payload transformation logic plus retries in one step. This template combines verification, reshaping and reliable delivery with full control over the transformation."
+    },
+    {
+      "q": "What HMAC signature schemes are supported?",
+      "a": "The template expects HMAC-SHA256 signatures. If your sender uses a different scheme (HMAC-SHA1, HMAC-SHA512, etc.), edit the webhook trigger configuration in playbook.yaml to match the sender's signature profile."
+    },
+    {
+      "q": "How do I customize the payload transformation?",
+      "a": "Edit steps/transform.ts to define how the incoming payload should be reshaped. Common transformations include extracting nested fields, renaming keys, adding static metadata, or filtering out unwanted properties."
+    },
+    {
+      "q": "What happens if the downstream service is unavailable?",
+      "a": "The relay step retries up to 5 times with exponential backoff starting at 500ms. If all retries fail, the workflow logs the error and responds to the sender with a 200 to prevent the sender from retrying (Ballet has already retried internally)."
+    },
+    {
+      "q": "How does idempotency work?",
+      "a": "The template reads the X-Event-Id header from the incoming webhook. If the same event ID arrives again within the idempotency window, Ballet deduplicates it automatically and does not run the workflow a second time."
+    }
+  ],
+  "sampleOutput": "Incoming webhook verified, payload transformed (added metadata field), forwarded to https://downstream.example.com/events with status 201. Built by the Brainfish team.",
+  "setupMinutes": 8,
+  "whatYouNeed": "HMAC-SHA256 secret from the webhook sender, downstream service URL, bearer token for downstream service, transformation logic in TypeScript",
+  "failureHandling": "HMAC verification failures reject the webhook immediately with a 401 response. The relay HTTP step retries up to 5 times with exponential backoff starting at 500ms. If all retries fail, the workflow logs the error, and the sender receives a 200 response to prevent further retries. Idempotency via X-Event-Id deduplicates repeated events.",
+  "nativeVsTemplate": "Use a simple API gateway or reverse proxy when you only need to forward webhooks without transformation. Use this template when you need HMAC verification, custom payload reshaping, and reliable delivery with retries and idempotency in one workflow.",
+  "related": ["daily-api-digest-slack", "github-issue-triage"],
   "secrets": [
     { "name": "INBOUND_HMAC_SECRET", "description": "HMAC-SHA256 secret the sender uses to sign webhook bodies." },
     { "name": "RELAY_TARGET_URL", "description": "Downstream URL to POST the transformed event to." },
@@ -16,5 +47,6 @@
     "Add the three secrets above.",
     "Edit steps/transform.ts to reshape the payload the way the downstream service expects.",
     "Publish and point the sender's webhook at the URL shown in Studio."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

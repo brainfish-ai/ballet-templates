@@ -49,12 +49,126 @@ const triggerSubtitle = primaryIntegration && template.triggerKind === 'webhook'
   : template.trigger;
 
 const hasNeeds = template.secretSpecs.length > 0 || template.mcpServerSpecs.length > 0;
+
+const pageTitle = template.seoTitle || template.title;
+const pageDescription = template.answer || template.summary;
+
+function deriveWhatYouNeed(): string[] {
+  if (template.whatYouNeed) return [template.whatYouNeed];
+  const needs: string[] = [];
+  if (template.integrations.length > 0) {
+    needs.push(template.integrations.map(formatIntegration).join(', ') + ' account' + (template.integrations.length > 1 ? 's' : ''));
+  }
+  if (template.secretSpecs.length > 0) {
+    needs.push(template.secretSpecs.map(s => s.name).join(', '));
+  }
+  if (template.mcpServerSpecs.length > 0) {
+    needs.push(template.mcpServerSpecs.map(m => m.name || m.id).join(', '));
+  }
+  return needs;
+}
+
+const whatYouNeedList = deriveWhatYouNeed();
+
+function getStepLabel(step: typeof template.workflowSteps[0]): string {
+  const hasAgent = step.calls.some(c => c.kind === 'agents');
+  if (hasAgent) return 'AI agent';
+  if (step.type === 'code') return 'Code (deterministic)';
+  return 'Code (deterministic)';
+}
+
+const jsonLd = {
+  breadcrumb: {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Templates",
+        "item": "https://templates.ballet.dev/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": template.useCaseLabel,
+        "item": `https://templates.ballet.dev/?category=${template.useCase}`
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": pageTitle,
+        "item": shareUrl
+      }
+    ]
+  },
+  faq: template.faq && template.faq.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": template.faq.map(item => ({
+      "@type": "Question",
+      "name": item.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.a
+      }
+    }))
+  } : null,
+  howTo: {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": pageTitle,
+    "description": pageDescription,
+    "step": template.workflowSteps.map((step, idx) => ({
+      "@type": "HowToStep",
+      "position": idx + 1,
+      "name": humanizeStepId(step.id),
+      "text": step.description
+    }))
+  },
+  sourceCode: {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "codeRepository": "https://github.com/brainfish-ai/ballet-templates",
+    "programmingLanguage": "TypeScript",
+    "name": pageTitle,
+    "description": pageDescription,
+    "dateModified": template.lastValidated || new Date().toISOString().split('T')[0]
+  },
+  softwareApp: {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Ballet",
+    "applicationCategory": "BusinessApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+};
 ---
 
 <Base
-  title={`${template.title} | Ballet Templates`}
-  description={template.summary}
+  title={`${pageTitle} | Ballet Templates`}
+  description={pageDescription}
 >
+  <Fragment slot="head">
+    <meta property="og:title" content={`${pageTitle} | Ballet Templates`} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={shareUrl} />
+    <meta property="og:type" content="article" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${pageTitle} | Ballet Templates`} />
+    <meta name="twitter:description" content={pageDescription} />
+    
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd.breadcrumb)} />
+    {jsonLd.faq && <script type="application/ld+json" set:html={JSON.stringify(jsonLd.faq)} />}
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd.howTo)} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd.sourceCode)} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd.softwareApp)} />
+  </Fragment>
+
   <SiteHeader showBackToCatalog />
 
   <main id="main" class="detail-main">
@@ -68,11 +182,190 @@ const hasNeeds = template.secretSpecs.length > 0 || template.mcpServerSpecs.leng
           <span>Import template</span>
         </p>
 
-        <h1 class="detail-h1">{template.title}</h1>
-        <p class="detail-summary">{template.summary}</p>
+        <h1 class="detail-h1">{pageTitle}</h1>
+        
+        {template.answer && (
+          <p class="answer-paragraph">{template.answer}</p>
+        )}
+        
+        {whatYouNeedList.length > 0 && (
+          <aside class="what-you-need-box">
+            <h2 class="wyn-heading">What you need</h2>
+            <ul class="wyn-list">
+              {whatYouNeedList.map(item => (
+                <li>{item}</li>
+              ))}
+              {template.setupMinutes && (
+                <li>Setup time: ~{template.setupMinutes} minutes</li>
+              )}
+            </ul>
+          </aside>
+        )}
       </header>
 
-      <div class="detail-grid">
+      {template.workflowSteps.length > 0 && (
+        <section class="numbered-steps-section">
+          <h2 class="section-h2">How it works</h2>
+          <ol class="numbered-steps-list">
+            {template.workflowSteps.map((step) => (
+              <li class="numbered-step">
+                <div class="step-header">
+                  <h3 class="step-title">{humanizeStepId(step.id)}</h3>
+                  <span class="step-label">{getStepLabel(step)}</span>
+                </div>
+                <p class="step-description">{step.description}</p>
+                {step.calls.filter(c => c.kind !== 'http' && c.kind !== 'secret').length > 0 && (
+                  <div class="step-calls">
+                    {step.calls.filter(c => c.kind !== 'http' && c.kind !== 'secret').map(call => (
+                      <span class="step-call-chip">
+                        <Icon
+                          name={
+                            call.kind === 'agents'
+                              ? 'sparkle'
+                              : call.kind === 'mcp'
+                                ? 'plugs-connected'
+                                : 'wrench'
+                          }
+                          size={11}
+                        />
+                        {formatCallTitle(call)}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      {template.sampleOutput && (
+        <section class="sample-output-section">
+          <h2 class="section-h2">Sample output</h2>
+          <pre class="sample-output-block">{template.sampleOutput}</pre>
+        </section>
+      )}
+
+      {template.failureHandling && (
+        <section class="failure-handling-section">
+          <h2 class="section-h2">What happens when something fails</h2>
+          <p class="failure-text">{template.failureHandling}</p>
+        </section>
+      )}
+
+      {template.nativeVsTemplate && (
+        <section class="native-vs-section">
+          <h2 class="section-h2">When the built-in feature is enough</h2>
+          <p class="native-vs-text">{template.nativeVsTemplate}</p>
+        </section>
+      )}
+
+      <section class="comparison-table-section">
+        <h2 class="section-h2">Ballet vs. alternatives for this workflow</h2>
+        <div class="comparison-table-wrap">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Ballet</th>
+                <th>Zapier</th>
+                <th>n8n</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Versioned code steps</td>
+                <td><Icon name="check" size={16} /></td>
+                <td><Icon name="x" size={16} /></td>
+                <td><Icon name="check" size={16} /></td>
+              </tr>
+              <tr>
+                <td>Deterministic vs AI steps labelled</td>
+                <td><Icon name="check" size={16} /></td>
+                <td><Icon name="x" size={16} /></td>
+                <td><Icon name="x" size={16} /></td>
+              </tr>
+              <tr>
+                <td>Human approval step</td>
+                <td><Icon name="check" size={16} /></td>
+                <td><Icon name="minus" size={16} /></td>
+                <td><Icon name="check" size={16} /></td>
+              </tr>
+              <tr>
+                <td>Run history and rollback</td>
+                <td><Icon name="check" size={16} /></td>
+                <td><Icon name="check" size={16} /></td>
+                <td><Icon name="check" size={16} /></td>
+              </tr>
+              <tr>
+                <td>Test before deploy</td>
+                <td><Icon name="check" size={16} /></td>
+                <td><Icon name="minus" size={16} /></td>
+                <td><Icon name="check" size={16} /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {template.faq && template.faq.length > 0 && (
+        <section class="faq-section">
+          <h2 class="section-h2">Frequently asked questions</h2>
+          <dl class="faq-list">
+            {template.faq.map(item => (
+              <div class="faq-item">
+                <dt class="faq-question">{item.q}</dt>
+                <dd class="faq-answer">{item.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      <section class="cta-section">
+        <div class="cta-box">
+          <h2 class="cta-heading">Ready to automate this workflow?</h2>
+          <p class="cta-text">Import this template to your Ballet workspace and start running it in minutes. Free trial, no credit card required.</p>
+          <div class="cta-actions">
+            <a href={template.primaryCtaUrl} target="_blank" rel="noopener" class="btn-cta-primary">
+              <Icon name="download-simple" size={16} />
+              Import this template
+            </a>
+            <a href="https://app.ballet.dev/signup" target="_blank" rel="noopener" class="btn-cta-secondary">
+              Start free trial
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {template.related && template.related.length > 0 && (
+        <section class="related-section">
+          <h2 class="section-h2">Related templates</h2>
+          <ul class="related-list">
+            {template.related.map(relatedId => {
+              const related = getAllTemplates().find(t => t.id === relatedId);
+              return related ? (
+                <li class="related-item">
+                  <a href={`/templates/${related.id}/`} class="related-link">
+                    <strong class="related-title">{related.title}</strong>
+                    <p class="related-summary">{related.summary}</p>
+                  </a>
+                </li>
+              ) : null;
+            })}
+          </ul>
+        </section>
+      )}
+
+      {template.lastValidated && 
+        <footer class="template-footer" data-astro-cid-lxz2y7y6>
+          <p class="validation-note" data-astro-cid-lxz2y7y6>
+            Last validated {template.lastValidated} by the Brainfish team
+          </p>
+        </footer>
+      }
+
+      <div class="detail-grid" data-astro-cid-lxz2y7y6>
         <!-- Left Column: How it works -->
         <section class="detail-left">
           <div class="section-head">
@@ -332,7 +625,7 @@ const hasNeeds = template.secretSpecs.length > 0 || template.mcpServerSpecs.leng
   }
 
   .detail-h1 {
-    margin: 0 0 8px;
+    margin: 0 0 16px;
     font-size: clamp(1.75rem, 2.8vw, 2.25rem);
     font-weight: 600;
     letter-spacing: -0.025em;
@@ -345,6 +638,395 @@ const hasNeeds = template.secretSpecs.length > 0 || template.mcpServerSpecs.leng
     font-size: 16px;
     line-height: 1.5;
     color: var(--muted);
+  }
+
+  .answer-paragraph {
+    margin: 0 0 20px;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink);
+    max-width: 820px;
+  }
+
+  .what-you-need-box {
+    margin: 0 0 32px;
+    padding: 16px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+    max-width: 820px;
+  }
+
+  .wyn-heading {
+    margin: 0 0 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .wyn-list {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    display: grid;
+    gap: 6px;
+  }
+
+  .section-h2 {
+    margin: 0 0 16px;
+    font-size: clamp(1.3rem, 2vw, 1.5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+
+  .numbered-steps-section {
+    margin-bottom: 40px;
+    max-width: 820px;
+  }
+
+  .numbered-steps-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step-counter;
+    display: grid;
+    gap: 16px;
+  }
+
+  .numbered-step {
+    position: relative;
+    padding-left: 48px;
+    counter-increment: step-counter;
+  }
+
+  .numbered-step::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 2px solid var(--brand-soft);
+    background: var(--surface);
+    color: var(--brand-soft);
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .step-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .step-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted-2);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .step-description {
+    margin: 0 0 8px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .step-calls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .step-call-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .sample-output-section,
+  .failure-handling-section,
+  .native-vs-section {
+    margin-bottom: 40px;
+    max-width: 820px;
+  }
+
+  .sample-output-block {
+    margin: 0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink);
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+
+  .failure-text,
+  .native-vs-text {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .comparison-table-section {
+    margin-bottom: 40px;
+    max-width: 820px;
+  }
+
+  .comparison-table-wrap {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .comparison-table thead {
+    background: var(--paper-2);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .comparison-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .comparison-table td {
+    padding: 12px 16px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  .comparison-table tbody tr:first-child td {
+    border-top: 0;
+  }
+
+  .comparison-table td:first-child {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .comparison-table td:not(:first-child) {
+    text-align: center;
+    color: var(--brand-soft);
+  }
+
+  .comparison-table td:not(:first-child) [data-icon="x"] {
+    color: var(--muted-2);
+  }
+
+  .comparison-table td:not(:first-child) [data-icon="minus"] {
+    color: var(--muted);
+  }
+
+  .faq-section {
+    margin-bottom: 40px;
+    max-width: 820px;
+  }
+
+  .faq-list {
+    margin: 0;
+    display: grid;
+    gap: 20px;
+  }
+
+  .faq-item {
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .faq-item:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .faq-question {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .faq-answer {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .cta-section {
+    margin-bottom: 40px;
+    max-width: 820px;
+  }
+
+  .cta-box {
+    padding: 28px 32px;
+    border-radius: 12px;
+    border: 2px solid var(--brand-soft);
+    background: linear-gradient(135deg, var(--surface) 0%, var(--paper-2) 100%);
+    text-align: center;
+  }
+
+  .cta-heading {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .cta-text {
+    margin: 0 0 20px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .cta-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.15s ease;
+  }
+
+  .btn-cta-primary:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn-cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-cta-secondary:hover {
+    border-color: var(--ink);
+  }
+
+  .related-section {
+    margin-bottom: 40px;
+    max-width: 820px;
+  }
+
+  .related-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 12px;
+  }
+
+  .related-item {
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .related-link {
+    display: block;
+    padding: 16px 18px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .related-link:hover {
+    background: var(--paper-2);
+  }
+
+  .related-title {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .related-summary {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .template-footer {
+    margin-bottom: 40px;
+    max-width: 820px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+
+  .validation-note {
+    margin: 0;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--muted-2);
   }
 
   /* Two-column layout matching app.ballet.dev/import */

@@ -1,0 +1,87 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: stripe-failed-payment-dunning
+  name: Stripe Failed Payment Dunning
+  description: Detect Stripe payment failures, apply retry and escalation rules, update HubSpot, send Slack alerts, and draft a customer email needing approval before sending.
+spec:
+  trigger:
+    type: webhook
+    webhook:
+      provider: stripe
+      integrationId: stripe
+      token: ""
+      responseMode: immediate
+      events:
+        - invoice.payment_failed
+  inputSchema:
+    type: object
+    properties:
+      slack_channel:
+        type: string
+        description: Slack channel ID or name for billing alerts (e.g. #billing)
+    required:
+      - slack_channel
+  steps:
+    - id: fetch_failure_details
+      type: code
+      language: typescript
+      codeFile: steps/fetch_failure_details.ts
+      description: Fetch invoice and customer details from Stripe and extract failure metadata.
+      friendlyMessage: Fetching payment failure details
+      input: "{{ flow.input }}"
+      output:
+        variable: result
+        format: json
+    - id: apply_dunning_rules
+      type: code
+      language: typescript
+      codeFile: steps/apply_dunning_rules.ts
+      description: Apply retry and escalation rules based on failure count and invoice amount.
+      friendlyMessage: Applying dunning rules
+      input:
+        failure_details: "{{ steps.fetch_failure_details.output }}"
+      output:
+        variable: result
+        format: json
+    - id: lookup_hubspot
+      type: code
+      language: typescript
+      codeFile: steps/lookup_hubspot.ts
+      description: Find the customer in HubSpot and update the payment_status property.
+      friendlyMessage: Updating HubSpot
+      input:
+        customer_email: "{{ steps.fetch_failure_details.output.customer_email }}"
+        payment_status: "{{ steps.apply_dunning_rules.output.payment_status }}"
+        failure_summary: "{{ steps.apply_dunning_rules.output.failure_summary }}"
+      output:
+        variable: result
+        format: json
+    - id: alert_slack
+      type: code
+      language: typescript
+      codeFile: steps/alert_slack.ts
+      description: Post the payment failure alert to Slack, tagging the account owner or billing team.
+      friendlyMessage: Alerting the team
+      input:
+        slack_message: "{{ steps.apply_dunning_rules.output.slack_message }}"
+        slack_channel: "{{ flow.input.slack_channel }}"
+      output:
+        variable: result
+        format: json
+    - id: draft_customer_email
+      type: code
+      language: typescript
+      codeFile: steps/draft_customer_email.ts
+      description: Draft a customer-facing email with payment retry instructions (requires manual approval).
+      friendlyMessage: Drafting customer email
+      input:
+        should_draft: "{{ steps.apply_dunning_rules.output.should_draft_email }}"
+        customer_email: "{{ steps.fetch_failure_details.output.customer_email }}"
+        customer_name: "{{ steps.fetch_failure_details.output.customer_name }}"
+        invoice_url: "{{ steps.fetch_failure_details.output.invoice_url }}"
+        amount_due: "{{ steps.fetch_failure_details.output.amount_due }}"
+        currency: "{{ steps.fetch_failure_details.output.currency }}"
+      output:
+        variable: result
+        format: json

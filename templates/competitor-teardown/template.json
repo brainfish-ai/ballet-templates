@@ -8,10 +8,42 @@
   "difficulty": "beginner",
   "trigger": "Manual run (competitor URL)",
   "integrations": [],
+  "primaryKeyword": "competitor pricing positioning teardown",
+  "seoTitle": "Competitor Pricing & Positioning Teardown with AI",
+  "answer": "This template reads a competitor's homepage and pricing page, extracts their pricing tiers, positioning statement, target audience, key messaging and feature claims, then produces a structured teardown report with recommended counter-positioning angles. The AI agent analyzes how they position against your product (when you provide context) and suggests where you have differentiation opportunities or pricing advantages.",
+  "faq": [
+    {
+      "q": "Can competitive intelligence tools do this natively?",
+      "a": "Most competitive intelligence platforms track pricing changes over time and alert you to website updates, but they do not read a competitor's messaging and suggest counter-positioning angles. This template combines research with strategic analysis in one workflow."
+    },
+    {
+      "q": "What pages does the template read?",
+      "a": "The workflow reads the competitor's homepage and pricing page. You can edit the read_site step to add more pages like /features or /about if your competitive analysis needs them."
+    },
+    {
+      "q": "How do I customize the teardown focus?",
+      "a": "Edit the competitor-analyst agent instructions to emphasize the dimensions you care about: pricing, feature parity, messaging tone, target segments, GTM motion, or differentiation gaps."
+    },
+    {
+      "q": "Can I run this on multiple competitors at once?",
+      "a": "No. The template processes one competitor per run to keep the teardown focused. Run it multiple times or extend the playbook to loop over a list if you need batch analysis."
+    },
+    {
+      "q": "What happens if the pricing page is not public?",
+      "a": "If pricing requires login or a sales call, the agent notes that in the teardown and analyzes positioning and messaging only. You can manually add known pricing details as input context."
+    }
+  ],
+  "sampleOutput": "Competitor: Acme Insights | Pricing: $49/user/mo (Pro), $99/user/mo (Enterprise) | Positioning: AI-powered analytics for product teams | Target: Mid-market SaaS | Counter angles: They focus on dashboards, we deliver action. Their pricing scales per seat, ours is usage-based and cheaper for small teams. Built by the Brainfish team.",
+  "setupMinutes": 2,
+  "whatYouNeed": "Competitor website URL, optional one-line description of your product",
+  "failureHandling": "If the competitor site cannot be reached or the pricing page is not found, the workflow notes this in the teardown and continues with available information. No retries since this is a manual run.",
+  "nativeVsTemplate": "Use a competitive intelligence platform when you need continuous monitoring and historical tracking. Use this template when you want an on-demand strategic teardown with AI analysis of messaging, positioning fit, and actionable counter-positioning advice.",
+  "related": ["competitor-watch", "win-loss-by-competitor"],
   "secrets": [],
   "setup": [
     "Import the template. No apps or secrets are required.",
     "Run it with a competitor's website, and optionally a one-line description of your product.",
     "Edit the `competitor-analyst` agent to focus on the angles your team cares about."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

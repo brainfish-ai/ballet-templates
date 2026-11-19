@@ -9,6 +9,10 @@ spec:
     type: manual
   inputSchema:
     type: object
+    properties:
+      slack_channel:
+        type: string
+        description: Slack channel ID or name for daily digest (e.g. #general)
   steps:
     - id: fetch_data
       type: http
@@ -42,25 +46,14 @@ spec:
         variable: result
         format: json
     - id: post_digest
-      type: http
+      type: code
+      language: typescript
+      codeFile: steps/post_digest.ts
       description: Post the digest to Slack.
       friendlyMessage: Posting to Slack
-      method: POST
-      url: https://slack.com/api/chat.postMessage
-      headers:
-        Content-Type: application/json
-      body:
-        channel: "{{ secret.SLACK_DIGEST_CHANNEL }}"
-        text: "{{ steps.summarize.output.text }}"
-      auth:
-        type: bearer
-        tokenRef: SLACK_BOT_TOKEN
-      input: {}
+      input:
+        digest_text: "{{ steps.summarize.output.text }}"
+        slack_channel: "{{ flow.input.slack_channel }}"
       output:
         variable: result
         format: json
-      timeoutMs: 15000
-      retry:
-        maxAttempts: 3
-        backoff: exponential
-        delayMs: 250

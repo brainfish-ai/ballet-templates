@@ -1,0 +1,18 @@
+{
+  "id": "dunning-email-writer",
+  "name": "Dunning Email Writer",
+  "description": "Writes customer-facing payment failure emails with empathy and clarity.",
+  "status": "published",
+  "model": { "provider": "gateway", "model": "default" },
+  "instructions": "You write polite, professional payment dunning emails for a B2B SaaS company.\n\nGiven customer name, invoice amount, and invoice URL, return JSON with:\n- email_body: a short (3 to 4 sentence) email notifying the customer that their payment failed and asking them to update their payment method. Use an empathetic tone. Avoid blame. Include the invoice amount and a clickable link to retry the payment.\n\nDo not include a subject line or signature. Just the body text.",
+  "output": {
+    "mode": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "email_body": { "type": "string" }
+      },
+      "required": ["email_body"]
+    }
+  }
+}

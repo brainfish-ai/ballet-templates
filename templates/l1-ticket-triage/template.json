@@ -8,6 +8,37 @@
   "difficulty": "beginner",
   "trigger": "Manual run; schedule it every hour or at the start of each shift",
   "integrations": ["zendesk"],
+  "primaryKeyword": "zendesk l1 triage automation",
+  "seoTitle": "L1 Zendesk Triage with AI Draft Replies",
+  "answer": "This template scans your most recent new and open Zendesk tickets with no assignee (up to 20 per run, configurable), classifies each ticket by category, priority and sentiment, suggests the best group to assign it to, and drafts a first reply. All triage output is written as an internal note that only agents see. The workflow adds the l1_triaged tag to prevent reprocessing and skips tickets already tagged, making scheduled runs safe.",
+  "faq": [
+    {
+      "q": "Can Zendesk triage tickets natively?",
+      "a": "Zendesk offers triggers and automations for routing and tagging, but it does not include AI that reads ticket content, classifies by topic and sentiment, and drafts a first reply in one step. This template delivers complete L1 triage with draft responses for agent review."
+    },
+    {
+      "q": "Does the template send replies to customers?",
+      "a": "No. All triage output (category, priority, sentiment, suggested group, draft reply) is written as an internal note visible only to agents. The template never changes status, priority, assignee, or sends public replies. Agents review the note and decide what to send."
+    },
+    {
+      "q": "How do I prevent tickets from being triaged twice?",
+      "a": "The workflow adds the l1_triaged tag to every ticket it processes and skips tickets already tagged. Re-running is safe. To triage a ticket again, remove the tag manually."
+    },
+    {
+      "q": "Can I schedule this to run hourly?",
+      "a": "Yes. Add a schedule trigger to the playbook (for example, every hour or at the start of each shift). The workflow will sweep new tickets automatically. Set max_tickets to control throughput."
+    },
+    {
+      "q": "What if my team uses different categories and groups?",
+      "a": "Edit the l1-triage-agent instructions to match your support team's category taxonomy, priority rules, group names, and tone. The AI agent will follow your custom triage logic."
+    }
+  ],
+  "sampleOutput": "Internal note on ticket #1234: Category: billing, Priority: normal, Sentiment: frustrated, Suggested group: Finance Support. Draft reply: Thanks for reaching out about your billing question. I can see your account was charged twice on Nov 15. I've escalated this to our billing team and you'll receive a refund within 3 business days. Built by the Brainfish team.",
+  "setupMinutes": 5,
+  "whatYouNeed": "Zendesk account with admin access, Zendesk connected to Ballet, l1_triaged tag created in Zendesk",
+  "failureHandling": "If Zendesk API calls fail, the workflow logs the error and stops. No retries since this is a manual or scheduled run. Dry run mode previews triage without writing notes. Tickets already tagged l1_triaged are skipped to prevent duplicate processing.",
+  "nativeVsTemplate": "Use Zendesk triggers and automations when you only need simple keyword-based routing. Use this template when you want AI-powered L1 triage that reads ticket content, classifies by topic and sentiment, suggests assignment groups, and drafts first replies for agents to review before sending.",
+  "related": ["zendesk-ticket-triage", "support-reply-drafter", "help-centre-audit"],
   "secrets": [],
   "setup": [
     "Import the template and connect Zendesk.",
@@ -20,5 +51,6 @@
     "Writes an internal note and adds the `l1_triaged` tag. It does not change status, priority, assignee or other tags, and never sends a public reply.",
     "Tickets tagged `l1_triaged` are skipped, so re-running is safe. Remove the tag to triage a ticket again.",
     "Checks the 100 most recently created tickets per run. For triage on every new ticket as it arrives, use the webhook-based Zendesk Ticket Triage template."
-  ]
+  ],
+  "lastValidated": "2026-11-19"
 }

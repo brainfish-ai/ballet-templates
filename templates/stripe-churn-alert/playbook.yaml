@@ -1,0 +1,86 @@
+apiVersion: metaphor.run/v1
+kind: Playbook
+metadata:
+  id: stripe-churn-alert
+  name: Stripe Churn Alert
+  description: Detect Stripe subscription cancellations, look up the customer in HubSpot, classify the churn reason with AI, and post an alert to Slack with a HubSpot note.
+spec:
+  trigger:
+    type: webhook
+    webhook:
+      provider: stripe
+      integrationId: stripe
+      token: ""
+      responseMode: immediate
+      events:
+        - customer.subscription.updated
+        - customer.subscription.deleted
+  inputSchema:
+    type: object
+    properties:
+      slack_channel:
+        type: string
+        description: Slack channel ID or name for churn alerts (e.g. #customer-success)
+    required:
+      - slack_channel
+  steps:
+    - id: check_cancellation
+      type: code
+      language: typescript
+      codeFile: steps/check_cancellation.ts
+      description: Verify the subscription is cancelled and fetch customer details from Stripe.
+      friendlyMessage: Checking the cancellation
+      input: "{{ flow.input }}"
+      output:
+        variable: result
+        format: json
+    - id: lookup_hubspot
+      type: code
+      language: typescript
+      codeFile: steps/lookup_hubspot.ts
+      description: Find the customer and company in HubSpot by email.
+      friendlyMessage: Looking up the account
+      input:
+        customer_email: "{{ steps.check_cancellation.output.customer_email }}"
+        customer_name: "{{ steps.check_cancellation.output.customer_name }}"
+      output:
+        variable: result
+        format: json
+    - id: classify_churn
+      type: code
+      language: typescript
+      codeFile: steps/classify_churn.ts
+      description: Use AI to classify the churn reason from subscription and customer context.
+      friendlyMessage: Analyzing the churn reason
+      input:
+        subscription: "{{ steps.check_cancellation.output }}"
+        hubspot_notes: "{{ steps.lookup_hubspot.output.notes }}"
+      output:
+        variable: result
+        format: json
+    - id: alert_slack
+      type: code
+      language: typescript
+      codeFile: steps/alert_slack.ts
+      description: Post the churn alert to Slack, tagging the account owner if found.
+      friendlyMessage: Alerting the team
+      input:
+        slack_message: "{{ steps.classify_churn.output.slack_message }}"
+        slack_channel: "{{ flow.input.slack_channel }}"
+      output:
+        variable: result
+        format: json
+    - id: log_hubspot_note
+      type: code
+      language: typescript
+      codeFile: steps/log_hubspot_note.ts
+      description: Write a note to the HubSpot contact or company with the churn details.
+      friendlyMessage: Logging to HubSpot
+      input:
+        contact_id: "{{ steps.lookup_hubspot.output.contact_id }}"
+        company_id: "{{ steps.lookup_hubspot.output.company_id }}"
+        churn_summary: "{{ steps.classify_churn.output.summary }}"
+        subscription_end: "{{ steps.check_cancellation.output.subscription_end }}"
+      output:
+        variable: result
+        format: json
