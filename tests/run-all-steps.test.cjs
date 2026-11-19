@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 /**
- * Simple test runner for Ballet template steps
+ * Test runner for Ballet template steps
  * Tests that all steps can be imported and executed with mock data
- * 
- * NOTE: This test runner strips TypeScript syntax for simple validation.
- * For full testing, use ts-node or compile TypeScript first.
+ * Uses esbuild to transpile TypeScript files to JavaScript
  */
 
 const fs = require('fs');
 const path = require('path');
+const esbuild = require('esbuild');
 const mockMetaphor = require('./mock-metaphor.cjs');
 const fixtures = require('./fixtures.cjs');
 
@@ -26,25 +25,32 @@ const errors = [];
 async function testStep(templateName, stepName, stepFile, inputData) {
   try {
     // Read the step file
-    let code = fs.readFileSync(stepFile, 'utf8');
+    const code = fs.readFileSync(stepFile, 'utf8');
     
-    // Strip TypeScript syntax (simple approach - works for most cases)
-    // Remove type annotations like `: type` and `as Type`
-    code = code.replace(/:\s*\{[^}]+\}/g, ''); // Remove `: { ... }` type annotations
-    code = code.replace(/\s+as\s+\{[^}]+\}/g, ''); // Remove `as { ... }` type assertions
-    code = code.replace(/\s+as\s+[A-Za-z0-9_<>[\],\s|&]+;/g, ';'); // Remove `as Type;`
-    code = code.replace(/\s+as\s+any/g, ''); // Remove `as any`
+    // Transpile TypeScript to JavaScript using esbuild
+    // Use 'esm' format to support top-level await
+    const transpiled = esbuild.transformSync(code, {
+      loader: 'ts',
+      format: 'esm',
+      target: 'node20',
+    });
+    
+    let jsCode = transpiled.code;
     
     // Check if code already declares result
-    const declaresResult = /\blet\s+result\b/.test(code) || /\bconst\s+result\b/.test(code);
+    const declaresResult = /\blet\s+result\b/.test(jsCode) || /\bconst\s+result\b/.test(jsCode);
     
-    // Create an async function wrapper
+    // Replace early returns with result assignment
+    // Match return statements outside of function bodies
+    jsCode = jsCode.replace(/^(\s*)return;/gm, '$1return result;');
+    
+    // Create an async function wrapper that preserves module behavior
     const wrappedCode = `
-      return (async function(input_data) {
+      return (async function(input_data, metaphor) {
         ${declaresResult ? '' : 'let result;'}
-        ${code}
+        ${jsCode}
         return result;
-      })(input_data);
+      })(input_data, metaphor);
     `;
     
     // Execute the step
