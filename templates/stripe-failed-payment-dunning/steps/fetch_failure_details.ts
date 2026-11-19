@@ -47,7 +47,7 @@ const result = {
   customer_name: customer.name || 'Unknown Customer',
   amount_due: invoiceData.amount_due,
   currency: invoiceData.currency.toUpperCase(),
-  attempt_count: invoiceData.attempt_count || 1,
+  attempt_count: Number(invoiceData.attempt_count || 1),
   failure_reason,
   invoice_url: invoiceData.hosted_invoice_url || `https://dashboard.stripe.com/invoices/${invoice_id}`,
   next_payment_attempt: invoiceData.next_payment_attempt ? new Date(invoiceData.next_payment_attempt * 1000).toISOString() : null,

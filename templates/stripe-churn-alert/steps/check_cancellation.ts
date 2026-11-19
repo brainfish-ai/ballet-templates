@@ -1,13 +1,19 @@
 // Read from flow.input which contains the native Stripe webhook payload
 const webhook = input_data as any;
+const eventType = webhook.type || '';
 const subscription = webhook.object || {};
 const previous = webhook.raw?.previous_attributes || webhook.raw?.data?.previous_attributes || {};
 
 // Check if this is a cancellation event
-const isCancelled = subscription.cancel_at_period_end === true || subscription.status === 'canceled';
+const isCancellation = eventType === 'customer.subscription.deleted' || subscription.cancel_at_period_end === true || subscription.status === 'canceled';
 
-if (!isCancelled) {
-  throw new Error('Subscription not cancelled. Exiting workflow.');
+if (!isCancellation) {
+  const result = {
+    skipped: true,
+    reason: 'Not a cancellation event',
+    event_type: eventType,
+  };
+  return;
 }
 
 const subscription_id = subscription.id;
@@ -28,6 +34,7 @@ const plan_name = plan?.nickname || `${plan?.currency?.toUpperCase()} ${(plan?.a
 const subscription_end = new Date((subscription.current_period_end || subscription.ended_at) * 1000).toISOString();
 
 const result = {
+  skipped: false,
   subscription_id,
   customer_id,
   customer_email: customer.email || 'unknown',

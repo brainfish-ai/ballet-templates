@@ -74,6 +74,7 @@ spec:
       input:
         slack_message: "{{ steps.summarize_ticket.output.slack_message }}"
         slack_channel: "{{ flow.input.slack_channel }}"
+        owner_email: "{{ steps.lookup_hubspot.output.owner_email }}"
       output:
         variable: result
         format: json

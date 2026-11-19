@@ -1,9 +1,15 @@
-const { contact_id, company_id, churn_summary, subscription_end } = input_data as {
+const { contact_id, company_id, churn_summary, subscription_end, skipped } = input_data as {
   contact_id?: string | null;
   company_id?: string | null;
-  churn_summary: string;
-  subscription_end: string;
+  churn_summary?: string;
+  subscription_end?: string;
+  skipped?: boolean;
 };
+
+if (skipped) {
+  const result = { skipped: true };
+  return;
+}
 
 if (!contact_id && !company_id) {
   const result = { logged: false, message: 'No HubSpot contact or company found. Skipping note.' };

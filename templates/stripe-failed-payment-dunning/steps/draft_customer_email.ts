@@ -7,10 +7,11 @@ const { should_draft, customer_email, customer_name, invoice_url, amount_due, cu
   currency: string;
 };
 
+let result;
+
 if (!should_draft || !customer_email || customer_email === 'unknown') {
-  const result = { drafted: false, sent: false, message: 'Email draft skipped per dunning rules or missing customer email.' };
-  return;
-}
+  result = { drafted: false, sent: false, message: 'Email draft skipped per dunning rules or missing customer email.' };
+} else {
 
 const amount_formatted = `${currency} ${(amount_due / 100).toFixed(2)}`;
 
@@ -46,28 +47,28 @@ const approval = metaphor.waitForInput({
   },
 });
 
-if (!approval.approved) {
-  const result = { drafted: true, sent: false, message: 'Email not sent: approval denied.' };
-  return;
+  if (!approval.approved) {
+    result = { drafted: true, sent: false, message: 'Email not sent: approval denied.' };
+  } else {
+    const final_body = approval.edited_body || email_body;
+
+    // Send the email
+    const sendResult = metaphor.integration('gmail', 'messages.send', {
+      to: [customer_email],
+      subject,
+      body: final_body,
+      contentType: 'text/plain',
+    });
+
+    if (!sendResult.ok) {
+      throw new Error(`Failed to send email: ${sendResult.error}`);
+    }
+
+    result = {
+      drafted: true,
+      sent: true,
+      to: customer_email,
+      message: `Email sent to ${customer_email}`,
+    };
+  }
 }
-
-const final_body = approval.edited_body || email_body;
-
-// Send the email
-const sendResult = metaphor.integration('gmail', 'messages.send', {
-  to: [customer_email],
-  subject,
-  body: final_body,
-  contentType: 'text/plain',
-});
-
-if (!sendResult.ok) {
-  throw new Error(`Failed to send email: ${sendResult.error}`);
-}
-
-const result = {
-  drafted: true,
-  sent: true,
-  to: customer_email,
-  message: `Email sent to ${customer_email}`,
-};

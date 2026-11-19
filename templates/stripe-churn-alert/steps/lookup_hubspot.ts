@@ -1,9 +1,14 @@
-const { customer_email, customer_name } = input_data as { customer_email: string; customer_name: string };
+const { customer_email, customer_name, skipped } = input_data as { customer_email?: string; customer_name?: string; skipped?: boolean };
+
+if (skipped) {
+  const result = { skipped: true };
+  return;
+}
 
 let contact_id: string | null = null;
 let company_id: string | null = null;
 let owner_email: string | null = null;
-let notes = '';
+let latest_source = '';
 
 if (customer_email && customer_email !== 'unknown') {
   // Search for contact by email
@@ -28,7 +33,7 @@ if (customer_email && customer_email !== 'unknown') {
     if (contactResult.ok) {
       const contact = contactResult.data;
       contact_id = contact.id;
-      notes = contact.properties?.hs_latest_source || '';
+      const latest_source = contact.properties?.hs_latest_source || '';
 
       // Get owner email if available
       if (contact.properties?.hubspot_owner_id) {
@@ -52,6 +57,6 @@ const result = {
   contact_id,
   company_id,
   owner_email,
-  notes,
+  latest_source,
   found: !!contact_id,
 };
